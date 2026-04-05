@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Torre das Linguagens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-hover: #f7c873;
+            --primary-glow: rgba(212, 175, 55, 0.4);
+            --bg-dark: #0a0a0c;
+            --bg-panel: rgba(20, 20, 25, 0.8);
+            --text-main: #f4f4f4;
+            --text-muted: #a0a0a0;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/dark-matter.png'),
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to bottom, rgba(5,5,7,0.95), rgba(15,15,20,0.8));
+            border-bottom: 2px solid var(--primary);
+            padding: 25px 0;
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.8);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.8em; color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 3px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 40px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1em; font-weight: bold; transition: var(--transition);
+            letter-spacing: 1px;
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+
+        main { 
+            max-width: 1200px; 
+            margin: 50px auto; 
+            padding: 0 30px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .hub-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hub-title h2 {
+            font-size: 2.5em;
+            color: var(--primary);
+            font-family: 'MedievalSharp', serif;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .hub-title p {
+            color: var(--text-muted);
+            font-size: 1.2em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            perspective: 1000px;
+        }
+
+        .lang-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .lang-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .lang-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            background: rgba(30, 30, 35, 0.95);
+        }
+
+        .lang-card:hover::before {
+            opacity: 1;
+        }
+
+        .lang-card span {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary);
+            letter-spacing: 1px;
+            z-index: 1;
+            transition: var(--transition);
+        }
+
+        .lang-card small {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+
+        .lang-card:hover span {
+            text-shadow: 0 0 15px var(--primary-glow);
+            color: var(--primary-hover);
+        }
+
+        .decorative-line {
+            width: 50px;
+            height: 2px;
+            background: var(--primary);
+            margin: 15px 0;
+            opacity: 0.3;
+            transition: var(--transition);
+        }
+
+        .lang-card:hover .decorative-line {
+            width: 100px;
+            opacity: 1;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9em;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .language-grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 { font-size: 2em; }
+            nav ul { gap: 20px; }
+        }
+
+        :root {
+            --line-soft: rgba(191, 214, 255, 0.16);
+            --line-strong: rgba(242, 199, 127, 0.28);
+            --text-soft: #d4dced;
+            --text-bright: #fff3d9;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background:
+                radial-gradient(circle at 16% 14%, rgba(186, 214, 255, 0.16), transparent 22%),
+                radial-gradient(circle at 84% 12%, rgba(246, 211, 145, 0.13), transparent 18%),
+                linear-gradient(180deg, #050911 0%, #0a101a 42%, #100c11 74%, #1a1110 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                radial-gradient(2px 2px at 10% 16%, rgba(255,255,255,0.82), transparent 58%),
+                radial-gradient(1.5px 1.5px at 22% 10%, rgba(191,214,255,0.7), transparent 58%),
+                radial-gradient(2px 2px at 42% 18%, rgba(255,240,212,0.7), transparent 58%),
+                radial-gradient(1.5px 1.5px at 74% 12%, rgba(255,255,255,0.75), transparent 58%),
+                radial-gradient(2px 2px at 88% 28%, rgba(242,199,127,0.52), transparent 58%);
+            opacity: 0.72;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at 20% 86%, rgba(146, 184, 255, 0.08), transparent 18%),
+                radial-gradient(circle at 84% 82%, rgba(242, 199, 127, 0.12), transparent 18%);
+            opacity: 0.95;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(6, 12, 24, 0.95), rgba(10, 18, 33, 0.78));
+            border-bottom: 1px solid rgba(191, 214, 255, 0.22);
+            box-shadow: 0 12px 36px rgba(2, 6, 14, 0.45);
+            backdrop-filter: blur(16px);
+        }
+
+        header h1 {
+            color: var(--text-bright);
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 0.16em;
+            text-shadow: 0 0 18px rgba(191, 214, 255, 0.14);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+            color: var(--text-soft);
+            font-family: 'Cinzel', serif;
+            font-size: 0.95em;
+            letter-spacing: 0.06em;
+        }
+
+        nav a:hover {
+            color: var(--text-bright);
+            background: linear-gradient(180deg, rgba(191,214,255,0.08), rgba(242,199,127,0.08));
+            border-color: var(--line-strong);
+            text-shadow: none;
+        }
+
+        main {
+            max-width: 1280px;
+            margin: 42px auto 56px;
+            padding: 0 24px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tower-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 34px;
+            border-radius: 34px;
+            border: 1px solid var(--line-soft);
+            background:
+                radial-gradient(circle at 14% 18%, rgba(191,214,255,0.16), transparent 24%),
+                radial-gradient(circle at 86% 22%, rgba(242,199,127,0.16), transparent 22%),
+                linear-gradient(135deg, rgba(9, 18, 34, 0.96), rgba(11, 20, 36, 0.92) 58%, rgba(43, 27, 17, 0.88) 100%);
+            box-shadow:
+                0 30px 70px rgba(0, 0, 0, 0.34),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .tower-hero::before {
+            content: "";
+            position: absolute;
+            inset: 16px;
+            border-radius: 26px;
+            border: 1px solid rgba(255, 243, 219, 0.08);
+            pointer-events: none;
+        }
+
+        .tower-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.88fr);
+            gap: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tower-kicker {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 999px;
+            border: 1px solid rgba(242,199,127,0.22);
+            background: linear-gradient(135deg, rgba(191,214,255,0.08), rgba(242,199,127,0.08));
+            color: var(--text-bright);
+            font-family: 'Cinzel', serif;
+            font-size: 0.78em;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+        }
+
+        .tower-hero h2 {
+            margin: 16px 0 12px;
+            color: var(--text-bright);
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2.2rem, 4vw, 3.7rem);
+            line-height: 1.04;
+        }
+
+        .tower-hero p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 1.24em;
+            line-height: 1.68;
+            max-width: 780px;
+        }
+
+        .tower-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .tower-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+            color: #e5edf9;
+            font-size: 0.92em;
+            letter-spacing: 0.04em;
+        }
+
+        .tower-panels {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .tower-panel {
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top, rgba(191,214,255,0.08), transparent 42%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .tower-panel span {
+            display: block;
+            color: var(--text-muted);
+            font-family: 'Cinzel', serif;
+            font-size: 0.76em;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+        }
+
+        .tower-panel strong {
+            display: block;
+            margin-top: 10px;
+            color: var(--text-bright);
+            font-size: 1.05em;
+            line-height: 1.42;
+        }
+
+        .hub-title {
+            margin-bottom: 6px;
+            padding: 0 6px;
+        }
+
+        .hub-title h2 {
+            color: #f1e6cb;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.8rem, 3vw, 2.7rem);
+            letter-spacing: 0.06em;
+            text-shadow: none;
+        }
+
+        .hub-title p {
+            color: var(--text-soft);
+            font-size: 1.16em;
+            margin-top: 12px;
+            font-style: normal;
+        }
+
+        .language-grid {
+            grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+            gap: 20px;
+            perspective: 1400px;
+        }
+
+        .lang-card {
+            min-height: 158px;
+            padding: 28px 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top right, rgba(191,214,255,0.06), transparent 34%);
+            box-shadow:
+                0 16px 30px rgba(0,0,0,0.26),
+                inset 0 1px 0 rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-card::after {
+            content: "";
+            position: absolute;
+            right: -18px;
+            bottom: -26px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(242,199,127,0.18), transparent 72%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .lang-card:hover {
+            transform: translateY(-10px) rotateX(4deg) rotateY(-2deg);
+            border-color: var(--line-strong);
+            box-shadow:
+                0 22px 44px rgba(0,0,0,0.30),
+                0 0 26px rgba(242,199,127,0.08);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03)),
+                radial-gradient(circle at top right, rgba(191,214,255,0.08), transparent 34%);
+        }
+
+        .lang-card span {
+            color: #fff1d6;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.32em;
+            letter-spacing: 0.04em;
+        }
+
+        .lang-card small {
+            color: var(--text-soft);
+            font-size: 0.8em;
+            letter-spacing: 0.16em;
+        }
+
+        .decorative-line {
+            width: 58px;
+            opacity: 0.42;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .lang-card:hover .decorative-line {
+            width: 124px;
+            box-shadow: 0 0 14px var(--primary-glow);
+        }
+
+        footer {
+            color: var(--text-soft);
+            border-top-color: rgba(191, 214, 255, 0.08);
+        }
+
+        @media (max-width: 900px) {
+            .tower-hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 0 14px;
+                margin-top: 30px;
+            }
+
+            .tower-hero {
+                padding: 24px 20px;
+                border-radius: 24px;
+            }
+
+            .tower-panels {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="menu.html">Início</a></li>
+                <li><a href="calculadora_rpg.html">Forja</a></li>
+                <li><a href="criador_personagem.html">Personagem</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="tower-hero">
+            <div class="tower-hero-grid">
+                <div>
+                    <span class="tower-kicker">Nucleo Linguistico</span>
+                    <h2>Uma torre para cada idioma e um ritual visual para cada voz.</h2>
+                    <p>O hub agora conversa melhor com os tradutores individuais: mais atmosfera, mais leitura rapida e uma apresentacao mais nobre para cada lingua do seu mundo.</p>
+                    <div class="tower-pills">
+                        <span class="tower-pill">Celestial</span>
+                        <span class="tower-pill">Imperial</span>
+                        <span class="tower-pill">Draconico</span>
+                        <span class="tower-pill">Florestal</span>
+                    </div>
+                </div>
+                <div class="tower-panels">
+                    <div class="tower-panel">
+                        <span>Hub</span>
+                        <strong>Cada idioma agora se apresenta como uma ala propria da Torre das Linguagens.</strong>
+                    </div>
+                    <div class="tower-panel">
+                        <span>Leitura</span>
+                        <strong>Os cards ficaram mais ricos, com profundidade, contraste e melhor separacao visual.</strong>
+                    </div>
+                    <div class="tower-panel">
+                        <span>Fluxo</span>
+                        <strong>Da torre para o tradutor, a navegacao ficou mais clara e mais tematica.</strong>
+                    </div>
+                    <div class="tower-panel">
+                        <span>Atmosfera</span>
+                        <strong>Ceu arcano, ouro ritual e sombras antigas agora moldam o centro linguistico.</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="hub-title">
+            <h2>Torre das Linguagens</h2>
+            <p>Selecione um dialeto antigo para realizar a transliteração ritual</p>
+        </div>
+        
+        <div class="language-grid">
+            <a href="tradutor_alto_humano.html" class="lang-card">
+                <span>Alto Humano</span>
+                <div class="decorative-line"></div>
+                <small>Arcaico / Nobre</small>
+            </a>
+
+            <a href="tradutor_anao.html" class="lang-card">
+                <span>Dialeto Anão</span>
+                <div class="decorative-line"></div>
+                <small>Khazâd / Profundezas</small>
+            </a>
+
+            <a href="tradutor_desereth.html" class="lang-card">
+                <span>Desereth</span>
+                <div class="decorative-line"></div>
+                <small>Areais / Nômade</small>
+            </a>
+
+            <a href="tradutor_draconico_antigo.html" class="lang-card">
+                <span>Dracônico Antigo</span>
+                <div class="decorative-line"></div>
+                <small>Primeva / Poder</small>
+            </a>
+
+            <a href="tradutor_draconico.html" class="lang-card">
+                <span>Dracônico</span>
+                <div class="decorative-line"></div>
+                <small>Moderno / Comum</small>
+            </a>
+
+            <a href="tradutor_edelin.html" class="lang-card">
+                <span>Edelin</span>
+                <div class="decorative-line"></div>
+                <small>Imperial / Sagrado</small>
+            </a>
+
+            <a href="tradutor_eladre.html" class="lang-card">
+                <span>Eladre</span>
+                <div class="decorative-line"></div>
+                <small>Celestial / Épico</small>
+            </a>
+
+            <a href="tradutor_elfico_antigo.html" class="lang-card">
+                <span>Élfico Antigo</span>
+                <div class="decorative-line"></div>
+                <small>Quenya / Estelar</small>
+            </a>
+
+            <a href="tradutor_elfico.html" class="lang-card">
+                <span>Élfico Padrão</span>
+                <div class="decorative-line"></div>
+                <small>Sindarin / Florestal</small>
+            </a>
+
+            <a href="tradutor_elfico_florialis.html" class="lang-card">
+                <span>Florialis</span>
+                <div class="decorative-line"></div>
+                <small>Natureza / Fey</small>
+            </a>
+
+            <a href="tradutor_hespelerine.html" class="lang-card">
+                <span>Hespélrinë</span>
+                <div class="decorative-line"></div>
+                <small>Amasia / Sombrio</small>
+            </a>
+
+            <a href="tradutor_snarilil.html" class="lang-card">
+                <span>Snarilil</span>
+                <div class="decorative-line"></div>
+                <small>Subterrâneo / Rúnico</small>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Indomitus Fantasy - Suíte de Linguística Medieval
+    </footer>
+</body>
+</html>

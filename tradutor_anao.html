@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Alfabeto Anão (Khazâd)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Alegreya:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8b8b8b; /* Cinza Pedra */
+            --primary-highlight: #d4af37; /* Detalhes em Ouro */
+            --primary-glow: rgba(212, 175, 55, 0.3);
+            --bg-dark: #0a0a0c;
+            --bg-panel: rgba(25, 25, 30, 0.95);
+            --bg-input: rgba(15, 15, 20, 0.9);
+            --text-main: #e0e0e0;
+            --text-muted: #808080;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/dark-paths.png'),
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to bottom, #000, rgba(20,20,22,0.9));
+            border-bottom: 3px solid var(--primary-highlight);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.8);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary-highlight);
+            text-shadow: 0 0 10px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1.1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary-highlight); text-shadow: 0 0 8px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; }
+
+        .forge-container {
+            background: var(--bg-panel);
+            border: 2px solid #333;
+            border-radius: 12px; padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .forge-container::after {
+            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary-highlight), transparent);
+        }
+
+        .forge-header h2 {
+            text-align: center; color: var(--primary-highlight); font-size: 2.2em; margin: 0;
+            font-family: 'MedievalSharp', serif; text-transform: uppercase; letter-spacing: 2px;
+        }
+        
+        .forge-header p.subtitle {
+            text-align: center; color: var(--text-muted); font-size: 1.1em;
+            margin-top: 10px; font-style: italic;
+        }
+
+        textarea {
+            width: 100%; min-height: 120px; padding: 20px; 
+            background: var(--bg-input); border: 1px solid #444; border-radius: 6px;
+            color: var(--text-main); font-family: 'Cinzel', serif; font-size: 1.1em;
+            margin-top: 30px; transition: var(--transition); box-sizing: border-box;
+        }
+
+        textarea:focus { border-color: var(--primary-highlight); outline: none; }
+
+        .output {
+            margin-top: 40px; padding: 30px; text-align: center;
+            font-size: 2em; color: var(--primary-highlight); font-weight: bold;
+            background: rgba(0,0,0,0.6); border: 1px solid var(--primary-highlight);
+            border-radius: 12px; box-shadow: 0 0 20px rgba(212,175,55,0.2);
+            font-family: 'MedievalSharp', serif;
+            word-wrap: break-word; white-space: pre-wrap; 
+            letter-spacing: 1px;
+        }
+
+        .error { color: #ff3333; text-align: center; margin-top: 10px; font-weight: bold; }
+
+        * { box-sizing: border-box; }
+        :root { --primary:#f0c27b; --primary-highlight:#ffdba2; --primary-glow:rgba(255, 194, 123, 0.22); --bg-dark:#130d09; --bg-panel:rgba(34, 25, 18, 0.9); --bg-input:rgba(24, 17, 12, 0.92); --text-main:#f7f1e7; --text-muted:#c8b395; --transition:all .32s ease; }
+        body { position:relative; overflow-x:hidden; font-family:'Alegreya',serif; background:radial-gradient(circle at 50% -10%, rgba(255, 211, 153, 0.2) 0%, transparent 26%), radial-gradient(circle at 18% 18%, rgba(255, 176, 84, 0.08) 0%, transparent 22%), linear-gradient(180deg, #2b1a0f 0%, #18100b 42%, #0b0705 100%); }
+        body::before, body::after { content:""; position:fixed; inset:0; pointer-events:none; }
+        body::before { background:linear-gradient(90deg, transparent 10%, rgba(255,255,255,.04) 10.4%, transparent 10.8%), linear-gradient(90deg, transparent 89%, rgba(255,255,255,.04) 89.4%, transparent 89.8%); opacity:.7; }
+        body::after { background:radial-gradient(circle at 14% 82%, rgba(255, 186, 106, 0.15) 0%, transparent 18%), radial-gradient(circle at 84% 88%, rgba(255, 212, 154, 0.12) 0%, transparent 18%); }
+        header { background:linear-gradient(180deg, rgba(17, 12, 9, 0.96), rgba(36, 25, 18, 0.76)); border-bottom:1px solid rgba(255, 211, 153, 0.26); box-shadow:0 12px 34px rgba(8, 5, 3, 0.48); backdrop-filter:blur(12px); }
+        header h1 { color:var(--primary-highlight); font-family:'Marcellus SC',serif; letter-spacing:.16em; text-shadow:0 0 16px rgba(255, 194, 123, 0.14); }
+        nav ul { flex-wrap:wrap; }
+        nav a:hover { color:var(--primary-highlight); text-shadow:0 0 10px rgba(255, 194, 123, 0.18); }
+        main { max-width:980px; margin:54px auto; padding:0 20px 36px; }
+        .forge-container { position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(38, 28, 20, 0.94), rgba(19, 13, 10, 0.9)); border:1px solid rgba(255, 211, 153, 0.16); border-radius:28px; padding:44px 36px; box-shadow:0 24px 58px rgba(8, 5, 3, 0.42); }
+        .forge-container::before { content:""; position:absolute; inset:16px; border:1px solid rgba(255, 226, 184, 0.1); border-radius:20px; pointer-events:none; }
+        .forge-container::after { content:""; position:absolute; inset:0; background:linear-gradient(135deg, transparent 14%, rgba(255, 194, 123, 0.05) 50%, transparent 86%); pointer-events:none; }
+        .forge-header h2 { color:var(--primary-highlight); font-family:'Marcellus SC',serif; font-size:2.25em; letter-spacing:.12em; text-transform:none; }
+        .forge-header p.subtitle { color:var(--text-muted); font-size:1.2em; margin:10px auto 28px; max-width:620px; line-height:1.5; }
+        textarea { min-height:130px; padding:18px 20px; background:linear-gradient(180deg, rgba(24, 17, 12, 0.96), rgba(18, 13, 9, 0.92)); border:1px solid rgba(255, 211, 153, 0.16); border-radius:18px; font-family:'Alegreya',serif; font-size:1.12em; box-shadow:inset 0 1px 0 rgba(255,255,255,.03); }
+        textarea::placeholder { color:rgba(200, 179, 149, 0.72); }
+        textarea:hover, textarea:focus { border-color:rgba(255, 211, 153, 0.42); box-shadow:0 0 0 4px rgba(255, 194, 123, 0.1), 0 0 18px rgba(255, 194, 123, 0.12); }
+        .output { margin-top:32px; padding:28px 22px; background:linear-gradient(180deg, rgba(21, 15, 11, 0.96), rgba(12, 8, 6, 0.92)); border:1px solid rgba(255, 211, 153, 0.18); border-radius:22px; color:var(--primary-highlight); font-family:'Marcellus SC',serif; font-size:1.82em; box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 32px rgba(8, 5, 3, 0.34); letter-spacing:.04em; text-shadow:0 0 14px rgba(255, 194, 123, 0.12); }
+        .error { color:#ffd6b3; margin-top:14px; text-shadow:none; }
+        @media (max-width:700px){ header h1{font-size:2em;} main{margin-top:30px; padding:0 14px 28px;} .forge-container{padding:28px 22px; border-radius:22px;} .forge-header h2{font-size:1.7em;} .forge-header p.subtitle{font-size:1.08em;} textarea{padding:16px; font-size:1.02em;} .output{font-size:1.34em; padding:20px 18px;} }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Linguística</a></li>
+                <li><a href="menu.html">Início</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forge-container">
+            <div class="forge-header">
+                <h2>Runas de Khazâd (Anão)</h2>
+                <p class="subtitle">Grave suas palavras na bigorna antiga. Khazâd responde em ferro, ouro e fogo contido.</p>
+            </div>
+            
+            <textarea id="inputWord" placeholder="Inscreva palavras na bigorna..." oninput="transcribe()"></textarea>
+            <div id="error" class="error"></div>
+            <div id="transcription" class="output">A guardiã descansa na pedra...</div>
+        </div>
+    </main>
+
+    <script>
+        const MAP = {
+            a: "Bar", b: "Dor", c: "Grum", d: "Thrain", e: "Forn", f: "Krag",
+            g: "Storn", h: "Harn", i: "Brist", j: "Jorn", k: "Kragg", l: "Grun",
+            m: "Mur", n: "Nor", o: "Thor", p: "Dwor", q: "Quarn", r: "Ragn",
+            s: "Sorn", t: "Torn", u: "Dur", v: "Varn", w: "Thrum", x: "Khaz",
+            y: "Yarn", z: "Zorn"
+        };
+
+        function smooth(text) {
+            // Suavização Anã: Mantém a dureza mas remove repetições e encurta
+            return text
+                .toLowerCase()
+                .replace(/([rgnmt])h\1/g, '$1h') // Funde Harn + Nor -> Harnor
+                .replace(/grun/g, 'grn')
+                .replace(/thrain/g, 'thr')
+                .replace(/storn/g, 'stn')
+                .replace(/thorn/g, 'thr')
+                .replace(/ragn/g, 'rgn')
+                .replace(/(\w)\1+/g, '$1') // Remove letras triplas (ex: rrr -> r)
+                .replace(/([aeiou])([aeiou])/g, '$1') // Remove vogais duplas para encurtar
+                .replace(/orn([rnmt])/g, 'o$1'); // Contração de "orn" (Thor-Nor -> Thonor)
+        }
+
+        function transcribe() {
+            const word = document.getElementById("inputWord").value.toLowerCase();
+            const out = document.getElementById("transcription");
+            const errorElement = document.getElementById("error");
+
+            if (!word.trim()) {
+                out.textContent = "A guardiã descansa na pedra...";
+                errorElement.textContent = "";
+                return;
+            }
+
+            let raw = "";
+            let hasError = false;
+
+            for (const char of word) {
+                if (char === " " || char === "\n") {
+                    raw += " ";
+                    continue;
+                }
+                if (MAP[char]) {
+                    raw += MAP[char];
+                } else if (/[.,!?;:]/.test(char)) {
+                    raw += char;
+                } else {
+                    hasError = true;
+                }
+            }
+
+            let final = smooth(raw);
+            // Capitaliza para estética anã
+            final = final.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+            errorElement.textContent = hasError ? "Símbolo imundo detectado." : "";
+            out.textContent = final;
+        }
+    </script>
+</body>
+</html>

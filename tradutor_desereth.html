@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Alfabeto Desereth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Marcellus+SC&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f0c27b;
+            --primary-hover: #ffe0b0;
+            --secondary: #c8803f;
+            --sun: #ffd89f;
+            --bg-dark: #2f1608;
+            --bg-panel: rgba(71, 37, 14, 0.8);
+            --bg-input: rgba(51, 25, 8, 0.84);
+            --text-main: #fff7ea;
+            --text-muted: #dbc2a0;
+            --primary-glow: rgba(240, 194, 123, 0.45);
+            --border-glow: 0 24px 54px rgba(77, 38, 8, 0.28);
+            --transition: all 0.32s ease;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-main);
+            font-family: 'Alegreya', serif;
+            background:
+                radial-gradient(circle at 50% -8%, rgba(255, 216, 159, 0.48) 0%, rgba(255, 216, 159, 0.1) 20%, transparent 34%),
+                linear-gradient(180deg, #8a4b1a 0%, #6b3512 18%, #4d230b 45%, #2f1608 100%);
+            min-height: 100vh;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                radial-gradient(circle at 15% 84%, rgba(229, 171, 97, 0.34) 0%, transparent 20%),
+                radial-gradient(circle at 48% 90%, rgba(170, 97, 35, 0.4) 0%, transparent 24%),
+                radial-gradient(circle at 82% 88%, rgba(240, 194, 123, 0.3) 0%, transparent 20%),
+                linear-gradient(180deg, transparent 62%, rgba(245, 194, 112, 0.08) 100%);
+        }
+
+        body::after {
+            background:
+                linear-gradient(12deg, transparent 58%, rgba(255, 238, 208, 0.06) 70%, transparent 82%),
+                repeating-linear-gradient(160deg, rgba(255, 214, 152, 0.02) 0 18px, rgba(120, 67, 23, 0.02) 18px 36px);
+            opacity: 0.7;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(82, 42, 14, 0.92), rgba(61, 28, 9, 0.78));
+            border-bottom: 1px solid rgba(255, 214, 152, 0.24);
+            padding: 20px 0 18px;
+            text-align: center;
+            box-shadow: 0 12px 34px rgba(50, 23, 6, 0.4);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.7em;
+            color: var(--primary);
+            text-shadow: 0 0 18px rgba(255, 216, 159, 0.2);
+            font-family: 'Marcellus SC', serif;
+            letter-spacing: 0.14em;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.03em;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            transition: var(--transition);
+        }
+
+        nav a:hover {
+            color: var(--primary-hover);
+            text-shadow: 0 0 10px rgba(255, 216, 159, 0.22);
+        }
+
+        main {
+            max-width: 980px;
+            margin: 54px auto;
+            padding: 0 20px 36px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .forge-container {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(88, 45, 15, 0.9), rgba(56, 27, 10, 0.84)),
+                radial-gradient(circle at top, rgba(255, 225, 170, 0.08), transparent 34%);
+            border: 1px solid rgba(255, 216, 159, 0.2);
+            border-radius: 30px;
+            padding: 42px 38px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .forge-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(155deg, rgba(255, 218, 155, 0.08), transparent 28%),
+                repeating-linear-gradient(170deg, rgba(255, 234, 205, 0.03) 0 12px, rgba(112, 60, 24, 0.03) 12px 24px);
+            pointer-events: none;
+        }
+
+        .forge-container::after {
+            content: "";
+            position: absolute;
+            left: -5%;
+            right: -5%;
+            bottom: -60px;
+            height: 140px;
+            background:
+                radial-gradient(circle at 18% 40%, rgba(240, 194, 123, 0.18) 0%, transparent 34%),
+                radial-gradient(circle at 52% 52%, rgba(173, 95, 37, 0.22) 0%, transparent 38%),
+                radial-gradient(circle at 82% 38%, rgba(255, 221, 168, 0.18) 0%, transparent 32%);
+            filter: blur(18px);
+            pointer-events: none;
+        }
+
+        .forge-header h2 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.3em;
+            margin-bottom: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 214, 152, 0.18);
+            font-family: 'Marcellus SC', serif;
+            letter-spacing: 0.12em;
+        }
+        
+        .forge-header p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.24em;
+            line-height: 1.5;
+            max-width: 620px;
+            margin: 0 auto 34px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        
+        select, input[type='number'], input[type='text'] {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 1.12em;
+            font-family: 'Alegreya', serif;
+            color: var(--text-main);
+            background:
+                linear-gradient(180deg, rgba(70, 35, 13, 0.96), rgba(48, 23, 8, 0.92));
+            border: 1px solid rgba(255, 214, 152, 0.2);
+            border-radius: 18px;
+            transition: var(--transition);
+            box-sizing: border-box;
+            box-shadow: inset 0 1px 0 rgba(255, 240, 214, 0.04);
+        }
+
+        input::placeholder {
+            color: rgba(219, 194, 160, 0.72);
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: rgba(255, 214, 152, 0.5);
+            box-shadow: 0 0 0 4px rgba(240, 194, 123, 0.12), 0 0 18px rgba(200, 128, 63, 0.18);
+            outline: none;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, rgba(255, 216, 159, 0.18), rgba(200, 128, 63, 0.2));
+            border: 1px solid rgba(255, 216, 159, 0.34);
+            color: var(--primary);
+            font-family: 'Marcellus SC', serif;
+            font-size: 1.02em;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            box-shadow: 0 18px 34px rgba(60, 28, 9, 0.34);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 224, 176, 0.26), rgba(200, 128, 63, 0.28));
+            color: var(--primary-hover);
+            box-shadow: 0 20px 38px rgba(60, 28, 9, 0.42), 0 0 22px rgba(240, 194, 123, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px 0;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .btn-list .action-btn {
+            margin: 0;
+            max-width: 100%;
+        }
+
+        .output {
+            margin-top: 28px;
+            padding: 24px 22px;
+            text-align: center;
+            font-size: 1.58em;
+            font-weight: 700;
+            color: var(--primary);
+            background:
+                linear-gradient(180deg, rgba(78, 39, 14, 0.95), rgba(47, 22, 8, 0.92));
+            border: 1px solid rgba(255, 214, 152, 0.22);
+            border-radius: 22px;
+            box-shadow: inset 0 1px 0 rgba(255, 235, 202, 0.05), 0 18px 32px rgba(51, 25, 8, 0.4);
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            text-shadow: 0 0 14px rgba(255, 216, 159, 0.16);
+            line-height: 1.35;
+        }
+
+        .error {
+            color: #ffd0a0;
+            text-align: center;
+            margin-top: 14px;
+            font-weight: 700;
+            font-size: 1em;
+            text-shadow: 0 0 10px rgba(120, 43, 8, 0.28);
+        }
+
+        @media (max-width: 700px) {
+            header h1 {
+                font-size: 2.05em;
+            }
+
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container {
+                padding: 28px 22px;
+                border-radius: 22px;
+            }
+
+            .forge-header h2 {
+                font-size: 1.72em;
+            }
+
+            .forge-header p.subtitle {
+                font-size: 1.08em;
+            }
+
+            select, input[type='number'], input[type='text'] {
+                padding: 14px 16px;
+                font-size: 1.04em;
+            }
+
+            .output {
+                font-size: 1.24em;
+                padding: 20px 18px;
+            }
+        }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Voltar aos Costumes (Idiomas)</a></li>
+                <li><a href="menu.html">Hub Principal</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forge-container">
+            <div class="forge-header">
+                <h2>Alfabeto Desereth</h2>
+                <p class="subtitle">Sopre palavras do idioma comum sobre as dunas. O calor antigo devolve a voz em Desereth.</p>
+            </div>
+            
+            <div class="form-group full-width">
+                <input type="text" id="inputWord" placeholder="Escreva no calor das areias..." oninput="transcribeWord()" autocomplete="off">
+                <div id="error" class="error"></div>
+            </div>
+
+            <div id="transcription" class="output">A guardiã descansa...</div>
+        </div>
+    </main>
+
+    <script>
+        function transcribeWord() {
+            const inputElement = document.getElementById("inputWord");
+            const transcriptionElement = document.getElementById("transcription");
+            const errorElement = document.getElementById("error");
+            const word = inputElement.value.toLowerCase();
+
+            const transcriptionMap = {
+              'a': 'ah',     
+ 'e': 'eh',      
+ 'i': 'ih',     
+ 'o': 're',      
+ 'u': 'uh',      
+ 'y': 'ya',      
+ 'b': 'ba',      
+ 'c': 'kh',      
+ 'd': 'dar',     
+ 'f': 'far',     
+ 'g': 'gh',    
+ 'h': 'ha',     
+ 'j': 'jah',     
+ 'k': 'ka',      
+ 'l': 'la',      
+ 'm': 'ma',      
+ 'n': 'na',     
+ 'p': 'pa',     
+ 'q': 'quh',    
+ 'r': 'rah',    
+ 's': 'sh',     
+ 't': 'th',     
+ 'v': 'va',      
+ 'w': 'wa',      
+ 'x': 'ks',      
+ 'z': 'za',      
+ 'kh': 'kha',    
+ 'sh': 'sha',  
+ 'th': 'tha',    
+ 'ph': 'fa',    
+ 'gh': 'gha',    
+ 'ch': 'cha',   
+ 'rh': 'ra',    
+ 'ae': 'aeh',   
+ 'oe': 'ohr',    
+ 'ui': 'uhih',  
+ 'au': 'aow',    
+ 'ei': 'eih',    
+ 'dr': 'dahr',   
+ 'sc': 'skh',    
+ 'mn': 'mna',   
+ 'pt': 'tha',        
+            };
+
+            let transcription = "";
+            let lastTranscribedChar = "";
+            let hasError = false;
+
+            if(word.length === 0) {
+                transcriptionElement.textContent = "A guardiã descansa...";
+                errorElement.textContent = "";
+                return;
+            }
+
+            for (const letter of word) {
+                if (letter === " ") {
+                    transcription += " ";
+                    lastTranscribedChar = "";
+                    continue;
+                }
+
+                const transcribedLetter = transcriptionMap[letter];
+                
+                if (transcribedLetter) {
+                    if (transcribedLetter.charAt(0) === lastTranscribedChar) {
+                        transcription += transcribedLetter.substring(1);
+                    } else {
+                        transcription += transcribedLetter;
+                    }
+                    lastTranscribedChar = transcription.charAt(transcription.length - 1);
+                } else {
+                    errorElement.textContent = `Alfabeto incapaz de reconhecer símbolo profano: "${letter}"`;
+                    hasError = true;
+                }
+            }
+
+            if (!hasError) {
+                errorElement.textContent = "";
+            }
+
+            transcriptionElement.innerHTML = `<span style="color:var(--text-muted); font-size:0.6em; display:block; margin-bottom:10px;">TRADUÇÃO FONÉTICA:</span>${transcription}`;
+        }
+    </script>
+</body>
+</html>

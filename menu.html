@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Menu Principal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --gold:#d8b56a;--gold-soft:#f0d79d;--bg:#050810;--bg-2:#0b1220;--panel:rgba(10,18,30,.82);
+            --text:#f5efe4;--muted:#bcc6d3;--line:rgba(216,181,106,.18);--cyan:#6dd5ff;--ember:#ff9e57;
+            --shadow:0 24px 60px rgba(0,0,0,.38);--radius:26px;--transition:240ms ease;
+        }
+        *{box-sizing:border-box} html{scroll-behavior:smooth}
+        body{
+            margin:0;color:var(--text);font-family:"Cormorant Garamond",serif;min-height:100vh;overflow-x:hidden;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(109,213,255,.14), transparent 24%),
+                radial-gradient(circle at 88% 16%, rgba(255,158,87,.14), transparent 24%),
+                radial-gradient(circle at 65% 82%, rgba(216,181,106,.1), transparent 28%),
+                linear-gradient(180deg, #04070d 0%, #08111b 50%, #05080f 100%);
+        }
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+            background:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size:72px 72px;
+            mask-image:linear-gradient(180deg, rgba(255,255,255,.55), transparent 85%);
+        }
+        a{color:inherit;text-decoration:none}
+        header{
+            position:sticky;top:0;z-index:10;backdrop-filter:blur(16px);
+            background:linear-gradient(180deg, rgba(5,8,16,.92), rgba(5,8,16,.72));
+            border-bottom:1px solid var(--line);
+        }
+        .topbar,.wrap{max-width:1220px;margin:0 auto;padding:0 24px}
+        .topbar{
+            min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+        }
+        .brand small{
+            display:block;color:var(--gold-soft);text-transform:uppercase;letter-spacing:.24em;font:600 .72rem "Cinzel",serif;
+        }
+        .brand h1{
+            margin:4px 0 0;color:var(--gold);font:700 clamp(1.45rem,2vw,2rem) "Cinzel",serif;
+            text-shadow:0 0 18px rgba(216,181,106,.22);
+        }
+        nav{display:flex;flex-wrap:wrap;gap:10px}
+        nav a{
+            padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.03);color:var(--muted);
+            border:1px solid transparent;transition:var(--transition);font:600 .92rem "Cinzel",serif;
+        }
+        nav a:hover{transform:translateY(-1px);color:var(--gold-soft);border-color:var(--line);background:rgba(216,181,106,.08)}
+        main{position:relative;z-index:1}
+        .hero{
+            display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:24px;padding:38px 0 0;
+        }
+        .panel{
+            background:linear-gradient(180deg, rgba(12,19,30,.9), rgba(7,11,18,.95));border:1px solid var(--line);
+            border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+        }
+        .hero-copy{padding:40px;position:relative}
+        .eyebrow{
+            display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;
+            background:rgba(216,181,106,.08);border:1px solid var(--line);color:var(--gold-soft);
+            text-transform:uppercase;letter-spacing:.24em;font:600 .74rem "Cinzel",serif;
+        }
+        .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px rgba(216,181,106,.55)}
+        .hero-copy h2{margin:20px 0 14px;font:700 clamp(2.7rem,4vw,4.8rem) "Cinzel",serif;line-height:.98}
+        .hero-copy h2 span{display:block;color:var(--gold)}
+        .hero-copy p{margin:0;max-width:640px;color:var(--muted);font-size:1.24rem;line-height:1.5}
+        .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+        .hero-btn,.card-link,.mini-link{
+            display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:16px;transition:var(--transition);
+        }
+        .hero-btn{min-height:56px;padding:14px 20px;font:600 .94rem "Cinzel",serif;letter-spacing:.05em}
+        .hero-btn.primary{color:#111;background:linear-gradient(135deg,var(--gold-soft),var(--gold));box-shadow:0 16px 34px rgba(216,181,106,.2)}
+        .hero-btn.secondary{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+        .hero-btn:hover,.card-link:hover,.mini-link:hover{transform:translateY(-3px)}
+        .hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+        .stat{padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+        .stat strong{display:block;margin-bottom:5px;color:var(--gold);font:600 .95rem "Cinzel",serif}
+        .stat span{color:var(--muted);font-size:.96rem;line-height:1.35}
+        .hero-art{
+            min-height:460px;padding:22px;position:relative;
+            background:
+                radial-gradient(circle at 20% 18%, rgba(109,213,255,.18), transparent 24%),
+                radial-gradient(circle at 82% 80%, rgba(255,158,87,.18), transparent 26%),
+                linear-gradient(180deg, rgba(10,17,28,.96), rgba(7,11,18,.98));
+        }
+        .atlas{
+            height:100%;border-radius:22px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;
+            background:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px),
+                radial-gradient(circle at center, rgba(255,255,255,.03), transparent 68%);
+            background-size:54px 54px,54px 54px,auto;
+        }
+        .ring,.core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%}
+        .ring{width:286px;height:286px;border:1px solid rgba(216,181,106,.18);box-shadow:0 0 34px rgba(216,181,106,.08), inset 0 0 24px rgba(216,181,106,.05)}
+        .ring::before,.ring::after{content:"";position:absolute;inset:22px;border-radius:50%;border:1px dashed rgba(255,255,255,.08)}
+        .ring::after{inset:56px;border-style:solid;border-color:rgba(109,213,255,.16)}
+        .core{
+            width:126px;height:126px;background:
+                radial-gradient(circle at 35% 30%, #fff8e5 0%, var(--gold-soft) 18%, rgba(216,181,106,.72) 36%, rgba(109,213,255,.18) 56%, transparent 74%);
+            box-shadow:0 0 32px rgba(216,181,106,.28),0 0 60px rgba(109,213,255,.14);
+        }
+        .float-card{
+            position:absolute;width:170px;padding:14px;border-radius:18px;background:rgba(10,17,28,.82);
+            border:1px solid rgba(255,255,255,.08);box-shadow:0 14px 30px rgba(0,0,0,.28)
+        }
+        .float-card svg{width:34px;height:34px;margin-bottom:10px;display:block}
+        .float-card strong{display:block;margin-bottom:6px;font:600 .86rem "Cinzel",serif}
+        .float-card span{color:var(--muted);font-size:.95rem;line-height:1.4}
+        .float-a{top:22px;left:22px}.float-b{top:86px;right:22px}.float-c{bottom:24px;left:54px}
+        .section{margin-top:28px;padding:28px}
+        .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:18px}
+        .section-head h3{margin:0;font:700 clamp(1.5rem,2vw,2rem) "Cinzel",serif;color:var(--gold)}
+        .section-head p{margin:8px 0 0;color:var(--muted);max-width:700px;font-size:1rem}
+        .badge{
+            padding:10px 14px;border-radius:999px;background:rgba(216,181,106,.08);border:1px solid var(--line);
+            color:var(--gold-soft);text-transform:uppercase;letter-spacing:.22em;font:600 .72rem "Cinzel",serif;white-space:nowrap
+        }
+        .portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+        .card{
+            display:flex;flex-direction:column;min-height:100%;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.08);
+            background:linear-gradient(180deg, rgba(12,19,29,.92), rgba(7,11,18,.98));transition:var(--transition)
+        }
+        .card:hover{transform:translateY(-6px);border-color:rgba(216,181,106,.28);box-shadow:0 24px 36px rgba(0,0,0,.28)}
+        .card-visual{min-height:220px;display:flex;align-items:center;justify-content:center;padding:18px;position:relative;overflow:hidden}
+        .card-visual::before{content:"";position:absolute;inset:0;opacity:.95}
+        .forge::before{background:radial-gradient(circle at 28% 35%, rgba(255,158,87,.34), transparent 26%), radial-gradient(circle at 78% 78%, rgba(216,181,106,.18), transparent 28%), linear-gradient(135deg, #31160c, #15171d)}
+        .auto::before{background:radial-gradient(circle at 50% 28%, rgba(109,213,255,.24), transparent 26%), radial-gradient(circle at 18% 82%, rgba(169,161,255,.2), transparent 28%), linear-gradient(135deg, #101d2e, #12141b)}
+        .manual::before{background:radial-gradient(circle at 72% 20%, rgba(216,181,106,.22), transparent 28%), radial-gradient(circle at 18% 82%, rgba(255,255,255,.1), transparent 26%), linear-gradient(135deg, #1f1b12, #12141a)}
+        .lang::before{background:radial-gradient(circle at 24% 24%, rgba(109,213,255,.22), transparent 26%), radial-gradient(circle at 80% 76%, rgba(255,158,87,.2), transparent 28%), linear-gradient(135deg, #141422, #0d121b)}
+        .dice::before{background:radial-gradient(circle at 20% 22%, rgba(109,213,255,.28), transparent 24%), radial-gradient(circle at 78% 78%, rgba(216,181,106,.2), transparent 28%), linear-gradient(135deg, #10182a, #12141c)}
+        .card-visual svg{position:relative;z-index:1;width:min(100%,260px);height:auto;color:#f8f3e7;filter:drop-shadow(0 0 18px rgba(255,255,255,.1))}
+        .card-body{padding:24px;display:flex;flex-direction:column;gap:14px;flex:1}
+        .kicker{color:var(--gold-soft);text-transform:uppercase;letter-spacing:.2em;font:600 .76rem "Cinzel",serif}
+        .card-body h4{margin:0;font:700 1.42rem "Cinzel",serif}
+        .card-body p{margin:0;color:var(--muted);font-size:1rem;line-height:1.55}
+        .tags{display:flex;flex-wrap:wrap;gap:8px}
+        .tags span{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:.82rem}
+        .card-link{
+            margin-top:auto;min-height:52px;padding:12px 18px;background:rgba(216,181,106,.08);border:1px solid rgba(216,181,106,.2);
+            color:var(--gold-soft);font:600 .9rem "Cinzel",serif
+        }
+        .card-link:hover{background:rgba(216,181,106,.16);border-color:rgba(216,181,106,.34)}
+        .mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+        .mini-link{
+            min-height:124px;padding:18px;flex-direction:column;align-items:flex-start;justify-content:flex-start;
+            border-radius:22px;background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border:1px solid rgba(255,255,255,.08)
+        }
+        .mini-link svg{width:26px;height:26px;color:var(--gold);margin-bottom:12px}
+        .mini-link strong{display:block;margin-bottom:6px;font:600 .98rem "Cinzel",serif}
+        .mini-link span{color:var(--muted);font-size:.95rem;line-height:1.4}
+        .mini-link:hover{border-color:rgba(216,181,106,.24);background:linear-gradient(180deg, rgba(216,181,106,.1), rgba(255,255,255,.03))}
+        .footer-note{margin-top:18px;text-align:center;color:var(--muted);font-size:1rem;line-height:1.45}
+        @media (max-width:980px){.hero,.portal-grid,.mini-grid,.hero-stats{grid-template-columns:1fr}}
+        @media (max-width:720px){
+            .topbar,.wrap{padding-left:18px;padding-right:18px}
+            .topbar{min-height:auto;padding-top:18px;padding-bottom:18px;flex-direction:column;align-items:flex-start}
+            nav{justify-content:flex-start}
+            .hero-copy,.section{padding:24px}
+            .hero-actions{flex-direction:column}
+            .hero-btn,.card-link,.mini-link{width:100%}
+            .hero-art{min-height:390px}.float-card{width:150px}.float-a{top:16px;left:16px}.float-b{top:74px;right:16px}.float-c{bottom:18px;left:24px}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="topbar">
+            <div class="brand">
+                <small>Hub Arcano</small>
+                <h1>Indomitus Fantasy</h1>
+            </div>
+            <nav>
+                <a href="menu.html">Inicio</a>
+                <a href="calculadora_rpg.html">Forja</a>
+                <a href="tradutores.html">Linguistica</a>
+                <a href="rolagens.html">Rolagens</a>
+                <a href="criador_personagem.html">Criador Auto</a>
+                <a href="criador_pessoal.html">Criador Manual</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="hero">
+            <div class="panel hero-copy">
+                <span class="eyebrow">Centro de Campanha</span>
+                <h2>O <span>Nexus</span> de Ferramentas</h2>
+                <p>Uma entrada mais bonita e sofisticada para a forja, as fichas e os idiomas do universo Indomitus. Menos lista de botoes, mais sala de comando.</p>
+                <div class="hero-actions">
+                    <a class="hero-btn primary" href="criador_pessoal.html">Abrir Criador Pessoal</a>
+                    <a class="hero-btn secondary" href="rolagens.html">Abrir Mesa de Rolagens</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat"><strong>Fichas vivas</strong><span>Recursos, inventario, notas e progresso em um unico fluxo.</span></div>
+                    <div class="stat"><strong>Forja integrada</strong><span>Itens criados podem seguir para a ficha com mais facilidade.</span></div>
+                    <div class="stat"><strong>Rolagens prontas</strong><span>Dados customizados, multiplos modificadores e historico curto para a mesa.</span></div>
+                </div>
+            </div>
+
+            <div class="panel hero-art">
+                <div class="atlas">
+                    <div class="ring"></div>
+                    <div class="core"></div>
+                    <div class="float-card float-a">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8L36.5 24L52 28L36.5 32L32 48L27.5 32L12 28L27.5 24L32 8Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"></path><circle cx="32" cy="28" r="5" fill="currentColor" opacity="0.18"></circle></svg>
+                        <strong>Arquivos do Ceu</strong>
+                        <span>Codices, sinais e referencias para mundos maiores.</span>
+                    </div>
+                    <div class="float-card float-b">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M38 10L54 26L34 46L18 30L38 10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"></path><path d="M14 50L26 38" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path></svg>
+                        <strong>Forja de Reliquias</strong>
+                        <span>Materiais, raridades e pecas com identidade propria.</span>
+                    </div>
+                    <div class="float-card float-c">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="44" cy="18" r="7" fill="none" stroke="currentColor" stroke-width="3"></circle><path d="M10 44C18 36 24 34 32 34C40 34 46 38 54 30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path><path d="M10 52C18 46 24 44 32 44C40 44 46 48 54 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>
+                        <strong>Rotas do Deserto</strong>
+                        <span>Idiomas, tons e atmosferas para cada povo.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-head">
+                <div>
+                    <h3>Portais Principais</h3>
+                    <p>Cinco acessos centrais para o software, agora com cara de portal tematico em vez de menu tecnico.</p>
+                </div>
+                <span class="badge">Acesso rapido</span>
+            </div>
+
+            <div class="portal-grid">
+                <article class="card">
+                    <div class="card-visual forge">
+                        <svg viewBox="0 0 320 220" aria-hidden="true"><path d="M160 30L198 88L160 126L122 88L160 30Z" fill="currentColor" opacity="0.13"></path><path d="M160 30L198 88L160 126L122 88L160 30Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"></path><path d="M160 126V165" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"></path><path d="M112 130H208" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"></path></svg>
+                    </div>
+                    <div class="card-body">
+                        <span class="kicker">Forja Arcana</span>
+                        <h4>Equipamentos e Materiais</h4>
+                        <p>Crie armas, armaduras e adornos com visual mais rico, aura de raridade e ligacao com a ficha manual.</p>
+                        <div class="tags"><span>Itens visuais</span><span>Material e raridade</span><span>Exporta para inventario</span></div>
+                        <a class="card-link" href="calculadora_rpg.html">Abrir Forja de Equipamentos</a>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-visual auto">
+                        <svg viewBox="0 0 320 220" aria-hidden="true"><circle cx="160" cy="108" r="58" fill="none" stroke="currentColor" stroke-width="7"></circle><circle cx="160" cy="108" r="94" fill="none" stroke="currentColor" stroke-width="3" opacity="0.45"></circle><path d="M160 34V182M86 108H234M110 58L210 158M210 58L110 158" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.68"></path></svg>
+                    </div>
+                    <div class="card-body">
+                        <span class="kicker">Mestre de Jogo</span>
+                        <h4>Criador Automatico</h4>
+                        <p>Fluxo rapido para montar personagens, NPCs e estruturas iniciais de campanha com agilidade.</p>
+                        <div class="tags"><span>Setup rapido</span><span>Visao de mestre</span><span>Base de campanha</span></div>
+                        <a class="card-link" href="criador_personagem.html">Abrir Criador Automatico</a>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-visual manual">
+                        <svg viewBox="0 0 320 220" aria-hidden="true"><path d="M132 34L160 22L188 34L206 42L200 78L188 92V174H132V92L120 78L114 42L132 34Z" fill="currentColor" opacity="0.13"></path><path d="M132 34L160 22L188 34L206 42L200 78L188 92V174H132V92L120 78L114 42L132 34Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"></path><path d="M82 188H236" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.72"></path></svg>
+                    </div>
+                    <div class="card-body">
+                        <span class="kicker">Jogador</span>
+                        <h4>Criador Pessoal Manual</h4>
+                        <p>A ficha mais completa para campanha longa, com save/load, inventario, notas, habilidades e C.A. integrada.</p>
+                        <div class="tags"><span>Save e load</span><span>Inventario visual</span><span>Habilidades custom</span></div>
+                        <a class="card-link" href="criador_pessoal.html">Abrir Criador Pessoal</a>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-visual lang">
+                        <svg viewBox="0 0 320 220" aria-hidden="true"><path d="M76 72C118 46 160 42 244 54" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.7"></path><path d="M82 110C128 86 175 84 244 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path><path d="M76 148C118 126 162 122 236 134" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.78"></path><circle cx="110" cy="60" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle><circle cx="222" cy="154" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle></svg>
+                    </div>
+                    <div class="card-body">
+                        <span class="kicker">Biblioteca Viva</span>
+                        <h4>Tradutores e Linguistica</h4>
+                        <p>Acesse os idiomas do mundo com paginas tematicas e uma identidade visual mais propria para cada cultura.</p>
+                        <div class="tags"><span>Elandre celestial</span><span>Desereth desertico</span><span>Hub dos idiomas</span></div>
+                        <a class="card-link" href="tradutores.html">Abrir Sala de Tradutores</a>
+                    </div>
+                </article>
+                <article class="card">
+                    <div class="card-visual dice">
+                        <svg viewBox="0 0 320 220" aria-hidden="true"><path d="M160 34L216 66V132L160 164L104 132V66L160 34Z" fill="currentColor" opacity="0.12"></path><path d="M160 34L216 66V132L160 164L104 132V66L160 34Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"></path><circle cx="160" cy="99" r="11" fill="currentColor" opacity="0.28"></circle><circle cx="138" cy="82" r="6" fill="currentColor"></circle><circle cx="182" cy="118" r="6" fill="currentColor"></circle></svg>
+                    </div>
+                    <div class="card-body">
+                        <span class="kicker">Mesa de Sessao</span>
+                        <h4>Rolagens e Modificadores</h4>
+                        <p>Abra uma aba dedicada para dados customizados, quantidades variaveis, pilha de modificadores e historico rapido de lancamentos.</p>
+                        <div class="tags"><span>d4 ate custom</span><span>Bonus empilhados</span><span>Historico local</span></div>
+                        <a class="card-link" href="rolagens.html">Abrir Mesa de Rolagens</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel section">
+            <div class="section-head">
+                <div>
+                    <h3>Atalhos Favoritos</h3>
+                    <p>Links menores para cortar caminho e chegar direto nas partes mais usadas do software.</p>
+                </div>
+                <span class="badge">Rota curta</span>
+            </div>
+
+            <div class="mini-grid">
+                <a class="mini-link" href="criador_pessoal.html">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 12H46V52H18Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path><path d="M24 24H40M24 32H40M24 40H34" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path></svg>
+                    <strong>Ficha em andamento</strong>
+                    <span>Voltar rapido para o criador pessoal e continuar a campanha.</span>
+                </a>
+                <a class="mini-link" href="calculadora_rpg.html">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 48L44 16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"></path><path d="M18 52L28 42" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"></path><path d="M34 14L50 30L42 38L26 22Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path></svg>
+                    <strong>Nova forja</strong>
+                    <span>Criar uma peca nova e mandar para o inventario.</span>
+                </a>
+                <a class="mini-link" href="tradutor_eladre.html">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10L36 24L50 28L36 32L32 46L28 32L14 28L28 24L32 10Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path></svg>
+                    <strong>Elandre</strong>
+                    <span>Ir direto ao tradutor celestial para nomes mais nobres.</span>
+                </a>
+                <a class="mini-link" href="tradutor_desereth.html">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="44" cy="18" r="7" fill="none" stroke="currentColor" stroke-width="4"></circle><path d="M10 44C18 36 24 34 32 34C40 34 46 38 54 30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path><path d="M10 52C18 46 24 44 32 44C40 44 46 48 54 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path></svg>
+                    <strong>Desereth</strong>
+                    <span>Atalho para o idioma de areia, pedra quente e caravanas.</span>
+                </a>
+                <a class="mini-link" href="rolagens.html">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10L50 22V42L32 54L14 42V22L32 10Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"></path><circle cx="32" cy="32" r="4" fill="none" stroke="currentColor" stroke-width="4"></circle><circle cx="24" cy="24" r="2" fill="currentColor"></circle><circle cx="40" cy="40" r="2" fill="currentColor"></circle></svg>
+                    <strong>Mesa de dados</strong>
+                    <span>Rolar d20, d100 ou qualquer dado custom com bonus empilhados.</span>
+                </a>
+            </div>
+
+            <p class="footer-note">O menu agora abre o projeto com mais atmosfera, mais hierarquia visual e links com cara de portal, nao so de painel tecnico.</p>
+        </section>
+    </main>
+</body>
+</html>

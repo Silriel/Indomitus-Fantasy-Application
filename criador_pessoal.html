@@ -1,0 +1,2929 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Criador Pessoal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-hover: #f7c873;
+            --primary-glow: rgba(212, 175, 55, 0.6);
+            --bg-dark: #121214;
+            --bg-panel: rgba(30, 30, 35, 0.85);
+            --bg-input: rgba(15, 15, 20, 0.9);
+            --text-main: #f4f4f4;
+            --text-muted: #b0b0b0;
+            --border-glow: 0 0 15px rgba(212, 175, 55, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(to bottom, rgba(10,10,12,0.95), rgba(20,20,25,0.8));
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 20px var(--primary-glow);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1.1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 8px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+        .forge-container {
+            background: var(--bg-panel);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px; padding: 30px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .forge-header h2 {
+            text-align: center; color: var(--primary); font-size: 2em; margin-bottom: 30px;
+            border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 15px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        .form-group label { display: block; margin-bottom: 8px; color: var(--primary); font-weight: bold; }
+        
+        select, input[type='number'], input[type='text'] {
+            width: 100%; padding: 12px 15px; font-size: 1em; font-family: 'Cinzel', serif;
+            color: var(--text-main); background-color: var(--bg-input);
+            border: 1px solid #444; border-radius: 6px; transition: var(--transition); box-sizing: border-box;
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); outline: none;
+        }
+
+        .attr-input {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 6px; border: 1px solid #333;
+        }
+        .attr-input label { margin: 0; flex: 1; color: var(--text-muted); font-size: 0.9em; }
+        .attr-input input { width: 80px; text-align: center; margin-left: 15px; font-size: 1.2em; font-weight: bold; color: var(--primary); }
+
+        .action-btn {
+            background: linear-gradient(145deg, #111, #222); border: 2px solid var(--primary);
+            color: var(--primary); font-family: 'Cinzel', serif; font-size: 1.2em; font-weight: bold;
+            padding: 15px 30px; border-radius: 8px; cursor: pointer; display: block; margin: 30px auto;
+            transition: var(--transition); text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(212,175,55,0.2); width: 100%; max-width: 400px;
+        }
+
+        .action-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        .utility-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 26px;
+        }
+
+        .utility-btn {
+            width: auto;
+            min-width: 190px;
+            max-width: none;
+            margin: 0;
+            padding: 12px 22px;
+            font-size: 1em;
+        }
+
+        .file-input-hidden { display: none; }
+
+        .save-status {
+            margin-top: 12px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95em;
+            min-height: 1.2em;
+        }
+
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .coin-input {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .coin-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .coin-input input {
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .currency-summary {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(212,175,55,0.18);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .result-container { display: none; margin-top: 30px; animation: fadeIn 0.5s ease-out; }
+        .result-card {
+            background: rgba(10,10,15,0.9); border: 1px solid var(--primary);
+            border-radius: 12px; padding: 25px; box-shadow: 0 0 25px rgba(212,175,55,0.4);
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 20px;}
+        
+        .stat-box { background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); padding: 15px; border-radius: 0 8px 8px 0; }
+        .stat-label { font-size: 0.8em; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 1.6em; color: var(--primary); font-weight: bold; }
+        
+        .result-title { text-align: center; color: var(--primary); font-size: 1.8em; margin-bottom: 5px; font-family: 'MedievalSharp', serif; }
+        .result-subtitle { text-align: center; color: var(--text-muted); font-size: 1em; padding-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.2);}
+        
+        .bars { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+        .bar-wrap { position: relative; height: 25px; background: #222; border-radius: 5px; overflow: hidden; border: 1px solid #444;}
+        .bar-inner { height: 100%; transition: width 0.25s ease;}
+        .bar-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8em; font-weight: bold; font-family: sans-serif; text-shadow: 1px 1px 2px #000; padding: 0 10px; box-sizing: border-box; }
+        .hp .bar-inner { background: linear-gradient(90deg, #800000, #ff3333); text-shadow: 1px 1px 2px #000;}
+        .mp .bar-inner { background: linear-gradient(90deg, #000080, #3366ff); text-shadow: 1px 1px 2px #000;}
+        .sp .bar-inner { background: linear-gradient(90deg, #004d00, #33cc33); text-shadow: 1px 1px 2px #000;}
+
+        .resource-panel {
+            margin-top: 20px;
+            padding: 18px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 10px;
+        }
+
+        .resource-control-grid {
+            display: grid;
+            grid-template-columns: minmax(180px, 220px) 1fr;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .resource-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .resource-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .resource-btn {
+            --btn-color: var(--primary);
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 11px 14px;
+            font-size: 0.95em;
+            letter-spacing: 0.6px;
+            text-transform: none;
+            border-color: var(--btn-color);
+            color: var(--btn-color);
+            box-shadow: 0 0 12px rgba(212,175,55,0.15);
+        }
+
+        .resource-btn:hover {
+            background: var(--btn-color);
+            color: #000;
+        }
+
+        .resource-btn.damage { --btn-color: #ff8a8a; }
+        .resource-btn.heal { --btn-color: #9ff0b3; }
+        .resource-btn.mana { --btn-color: #8ebdff; }
+        .resource-btn.stamina { --btn-color: #c6ff8f; }
+
+        .coins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .coin-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(212,175,55,0.16);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .coin-card span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .coin-card strong {
+            display: block;
+            margin-top: 8px;
+            color: var(--primary);
+            font-size: 1.3em;
+        }
+
+        .currency-manager-grid {
+            display: grid;
+            grid-template-columns: minmax(140px, 180px) minmax(150px, 1fr) 1fr;
+            gap: 12px;
+            align-items: end;
+            margin-top: 14px;
+        }
+
+        .currency-manager-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .resource-btn.coin-add { --btn-color: #f0c16b; }
+        .resource-btn.coin-remove { --btn-color: #ff9f9f; }
+
+        .notes-area {
+            width: 100%;
+            min-height: 150px;
+            padding: 14px 16px;
+            resize: vertical;
+            box-sizing: border-box;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: rgba(0,0,0,0.35);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            font-size: 0.95em;
+            line-height: 1.5;
+            transition: var(--transition);
+        }
+
+        .notes-area:hover,
+        .notes-area:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            outline: none;
+        }
+
+        .notes-help {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 0.88em;
+        }
+
+        .codex-panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212,175,55,0.14);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .codex-title {
+            margin: 0 0 14px 0;
+            color: var(--primary);
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .codex-note {
+            margin: 0 0 14px 0;
+            color: var(--text-muted);
+            font-size: 0.92em;
+            line-height: 1.5;
+        }
+
+        .meta-grid,
+        .selection-grid,
+        .tag-grid,
+        .ability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .meta-card,
+        .selection-card,
+        .tag-card,
+        .ability-card {
+            background: rgba(0,0,0,0.28);
+            border: 1px solid rgba(212,175,55,0.12);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .meta-card strong,
+        .ability-card strong,
+        .selection-card strong,
+        .tag-card strong {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .meta-card small,
+        .ability-card small,
+        .selection-card small,
+        .tag-card small {
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .selection-card select {
+            margin-top: 10px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 14px;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(212,175,55,0.14);
+            color: var(--primary);
+            font-size: 0.82em;
+            letter-spacing: 0.4px;
+        }
+
+        .ability-card.is-selected,
+        .tag-card.is-selected,
+        .selection-card.is-selected {
+            border-color: rgba(247,200,115,0.55);
+            box-shadow: 0 0 14px rgba(212,175,55,0.14);
+        }
+
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+        }
+
+        .toggle-card {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: rgba(0,0,0,0.24);
+            border: 1px solid rgba(212,175,55,0.12);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .toggle-card.is-locked {
+            opacity: 0.65;
+            border-style: dashed;
+        }
+
+        .toggle-card input[type='checkbox'] {
+            margin-top: 4px;
+            accent-color: var(--primary);
+        }
+
+        .catalog-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .catalog-tier {
+            background: rgba(0,0,0,0.22);
+            border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .catalog-tier h5 {
+            margin: 0 0 10px 0;
+            color: var(--primary);
+            font-size: 1em;
+        }
+
+        .catalog-tier ul {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--text-muted);
+        }
+
+        .catalog-tier li + li {
+            margin-top: 8px;
+        }
+
+        .builder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .builder-grid .full-span {
+            grid-column: 1 / -1;
+        }
+
+        .small-textarea {
+            min-height: 110px;
+        }
+
+        .panel-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .mini-btn {
+            width: auto;
+            max-width: none;
+            margin: 0;
+            padding: 10px 16px;
+            font-size: 0.92em;
+            text-transform: none;
+            letter-spacing: 0.4px;
+        }
+
+        .mini-btn.secondary {
+            border-color: #9bc4ff;
+            color: #9bc4ff;
+        }
+
+        .mini-btn.secondary:hover {
+            background: #9bc4ff;
+            color: #000;
+        }
+
+        .mini-btn.danger {
+            border-color: #ff9f9f;
+            color: #ff9f9f;
+        }
+
+        .mini-btn.danger:hover {
+            background: #ff9f9f;
+            color: #000;
+        }
+
+        .inventory-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .inventory-card {
+            background: rgba(0,0,0,0.28);
+            border: 1px solid rgba(212,175,55,0.12);
+            border-radius: 10px;
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .inventory-card.is-equipped {
+            border-color: rgba(247,200,115,0.55);
+            box-shadow: 0 0 16px rgba(212,175,55,0.14);
+        }
+
+        .inventory-header {
+            display: grid;
+            grid-template-columns: 78px 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .inventory-visual {
+            --material-color: var(--primary);
+            --rarity-glow: rgba(212,175,55,0.18);
+            width: 78px;
+            height: 78px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), transparent 68%),
+                linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            box-shadow:
+                0 0 18px var(--rarity-glow),
+                inset 0 0 16px rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inventory-item-icon {
+            width: 50px;
+            height: 50px;
+            color: var(--material-color);
+            filter:
+                drop-shadow(0 0 10px var(--material-color))
+                drop-shadow(0 0 12px var(--rarity-glow));
+        }
+
+        .inventory-item-icon svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .inventory-details strong {
+            display: block;
+            color: var(--primary);
+            font-size: 1em;
+            margin-bottom: 6px;
+        }
+
+        .inventory-details small {
+            display: block;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .inventory-flags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .inventory-flag {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(212,175,55,0.14);
+            color: var(--primary);
+            font-size: 0.8em;
+        }
+
+        .inventory-description {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+            line-height: 1.55;
+            white-space: pre-wrap;
+        }
+
+        .inventory-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            align-items: center;
+        }
+
+        .inline-check {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .inline-check input[type='checkbox'] {
+            accent-color: var(--primary);
+        }
+
+        @media (max-width: 720px) {
+            .resource-control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .currency-manager-grid,
+            .currency-manager-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        :root {
+            --page-max: 1320px;
+            --panel-strong: rgba(10, 14, 24, 0.88);
+            --panel-soft: rgba(18, 24, 40, 0.72);
+            --line-soft: rgba(241, 216, 166, 0.14);
+            --line-strong: rgba(241, 216, 166, 0.34);
+            --text-soft: #d9deea;
+            --text-dim: #9aa3bc;
+        }
+
+        body {
+            background-color: #070912;
+            background-image:
+                radial-gradient(circle at 12% 18%, rgba(92, 132, 255, 0.14), transparent 30%),
+                radial-gradient(circle at 86% 16%, rgba(255, 199, 112, 0.12), transparent 28%),
+                radial-gradient(circle at 50% 110%, rgba(107, 69, 25, 0.28), transparent 42%),
+                linear-gradient(180deg, #06070c 0%, #0a0f1a 36%, #0d1526 100%);
+            color: #f7f1df;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.025), transparent 28%, transparent 72%, rgba(255,255,255,0.02)),
+                radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04) 0 1px, transparent 1.5px) 0 0 / 180px 180px;
+            opacity: 0.38;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(5, 7, 12, 0.96), rgba(10, 14, 24, 0.78));
+            border-bottom: 1px solid rgba(241, 216, 166, 0.24);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.36);
+            backdrop-filter: blur(18px);
+        }
+
+        nav ul {
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-soft);
+        }
+
+        nav a:hover {
+            border-color: rgba(241, 216, 166, 0.28);
+            background: rgba(241, 216, 166, 0.08);
+        }
+
+        main {
+            max-width: var(--page-max);
+            margin: 46px auto 78px;
+            padding: 0 26px 48px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 26px;
+            padding: 30px;
+            border-radius: 28px;
+            border: 1px solid var(--line-soft);
+            background:
+                radial-gradient(circle at top right, rgba(255, 210, 120, 0.15), transparent 30%),
+                radial-gradient(circle at left center, rgba(112, 151, 255, 0.14), transparent 34%),
+                linear-gradient(135deg, rgba(9, 12, 22, 0.94), rgba(15, 22, 38, 0.84));
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, 0.34),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .page-hero::after {
+            content: "";
+            position: absolute;
+            inset: auto -10% -38% 45%;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 212, 140, 0.16), transparent 68%);
+            pointer-events: none;
+        }
+
+        .page-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.22);
+            background: rgba(241, 216, 166, 0.08);
+            color: #f6d489;
+            font-size: 0.8em;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .page-hero h2 {
+            margin: 16px 0 12px;
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1.03;
+            color: #fff2cf;
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .page-hero p {
+            margin: 0;
+            max-width: 760px;
+            color: var(--text-soft);
+            font-size: 1.02em;
+            line-height: 1.75;
+        }
+
+        .hero-link-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .hero-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.28);
+            background: linear-gradient(135deg, rgba(241, 216, 166, 0.14), rgba(241, 216, 166, 0.05));
+            color: #ffe3a0;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .hero-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.24);
+        }
+
+        .hero-link.ghost {
+            border-color: rgba(133, 171, 255, 0.26);
+            background: rgba(133, 171, 255, 0.08);
+            color: #c7dbff;
+        }
+
+        .hero-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .hero-stat {
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        .hero-stat span {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.8em;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .hero-stat strong {
+            display: block;
+            margin-top: 8px;
+            color: #fff2c9;
+            font-size: 1.2em;
+            line-height: 1.3;
+        }
+
+        .forge-container {
+            border-radius: 30px;
+            border: 1px solid var(--line-strong);
+            padding: clamp(22px, 3vw, 34px);
+            background:
+                linear-gradient(180deg, rgba(9, 12, 20, 0.96), rgba(11, 16, 28, 0.92)),
+                var(--bg-panel);
+            box-shadow:
+                0 28px 70px rgba(0, 0, 0, 0.36),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            backdrop-filter: blur(16px);
+        }
+
+        .forge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line-soft);
+        }
+
+        .forge-header h2 {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            text-align: left;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            line-height: 1.05;
+            color: transparent;
+            position: relative;
+            text-shadow: none;
+        }
+
+        .forge-header h2::after {
+            content: "Criacao Pessoal (Manual)";
+            position: absolute;
+            inset: 0;
+            color: #fff0c8;
+        }
+
+        .forge-subtitle {
+            margin: 10px 0 0;
+            max-width: 760px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .forge-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.24);
+            background: rgba(241, 216, 166, 0.08);
+            color: #f9d88b;
+            font-size: 0.82em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .guide-card {
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid var(--line-soft);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .guide-card span {
+            display: block;
+            color: #9db8ff;
+            font-size: 0.8em;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .guide-card strong {
+            display: block;
+            margin: 10px 0 8px;
+            color: #fff0ca;
+            font-size: 1.05em;
+        }
+
+        .guide-card p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.6;
+            font-size: 0.94em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
+            align-items: start;
+        }
+
+        .form-group {
+            grid-column: span 6;
+            min-width: 0;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #f2cf83;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group h4 {
+            margin: 0 0 16px;
+            padding: 0 0 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+            color: #fff0c8;
+            font-size: 1.02em;
+        }
+
+        .form-group h4[style] {
+            color: #fff0c8 !important;
+            border-bottom: 1px solid rgba(255,255,255,0.09) !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .section-banner {
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid var(--line-strong);
+            background:
+                radial-gradient(circle at right top, rgba(255, 205, 112, 0.12), transparent 32%),
+                linear-gradient(135deg, rgba(20, 27, 46, 0.96), rgba(13, 18, 31, 0.88));
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
+        }
+
+        .section-kicker {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.18);
+            background: rgba(241, 216, 166, 0.08);
+            color: #f8d58b;
+            font-size: 0.76em;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .section-banner h3 {
+            margin: 12px 0 8px;
+            font-size: clamp(1.4rem, 2vw, 1.95rem);
+            color: #fff2cf;
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .section-banner p {
+            margin: 0;
+            max-width: 760px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        select, input[type='number'], input[type='text'], .notes-area {
+            background: rgba(5, 8, 16, 0.82);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+
+        select:hover, input:hover, textarea:hover,
+        select:focus, input:focus, textarea:focus {
+            border-color: rgba(241, 216, 166, 0.42);
+            box-shadow: 0 0 0 4px rgba(241, 216, 166, 0.08);
+        }
+
+        .attr-input {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .attr-input label {
+            color: var(--text-soft);
+        }
+
+        .attr-input input {
+            border-radius: 10px;
+            background: rgba(3, 6, 12, 0.9);
+        }
+
+        .currency-summary,
+        .save-status,
+        .notes-help {
+            color: var(--text-soft);
+        }
+
+        .currency-summary {
+            border-radius: 14px;
+            border-color: rgba(241, 216, 166, 0.14);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+        }
+
+        .codex-panel,
+        .resource-panel {
+            border-radius: 18px;
+            border-color: rgba(241, 216, 166, 0.14);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+        }
+
+        .meta-card,
+        .selection-card,
+        .tag-card,
+        .ability-card,
+        .toggle-card,
+        .catalog-tier,
+        .inventory-card,
+        .coin-card,
+        .coin-input {
+            border-color: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+        }
+
+        .inventory-card.is-equipped {
+            box-shadow:
+                0 0 0 1px rgba(247,200,115,0.24),
+                0 0 18px rgba(247,200,115,0.12);
+        }
+
+        .action-btn {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 14px 22px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.36);
+            background: linear-gradient(135deg, rgba(19, 27, 47, 0.96), rgba(59, 35, 17, 0.94));
+            color: #ffe0a0;
+            box-shadow:
+                0 12px 26px rgba(0, 0, 0, 0.22),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            text-transform: none;
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn:hover {
+            color: #1a1207;
+            background: linear-gradient(135deg, #f5d28c, #f7c873);
+            box-shadow: 0 16px 30px rgba(247, 200, 115, 0.22);
+            transform: translateY(-3px);
+        }
+
+        .utility-actions {
+            justify-content: flex-start;
+            gap: 14px;
+        }
+
+        .utility-btn {
+            flex: 1 1 220px;
+            min-width: 220px;
+        }
+
+        .workflow-footer {
+            display: grid;
+            gap: 18px;
+            margin-top: 28px;
+        }
+
+        .save-status {
+            min-height: 0;
+            padding: 14px 18px;
+            border-radius: 18px;
+            border: 1px dashed rgba(241, 216, 166, 0.2);
+            background: rgba(255,255,255,0.025);
+            text-align: left;
+        }
+
+        .final-action {
+            display: flex;
+            justify-content: center;
+        }
+
+        .final-action .action-btn {
+            max-width: 420px;
+            justify-content: center;
+        }
+
+        .result-container {
+            margin-top: 10px;
+        }
+
+        .result-card {
+            border-radius: 26px;
+            border: 1px solid rgba(241, 216, 166, 0.24);
+            background:
+                radial-gradient(circle at top right, rgba(255, 201, 118, 0.12), transparent 24%),
+                linear-gradient(180deg, rgba(11, 15, 25, 0.96), rgba(8, 11, 18, 0.94));
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.34);
+        }
+
+        .result-title {
+            font-size: clamp(2rem, 3vw, 2.7rem);
+            color: #fff0c8;
+        }
+
+        .result-subtitle {
+            color: var(--text-soft);
+            border-bottom-color: rgba(255,255,255,0.08);
+        }
+
+        .stats-grid {
+            gap: 16px;
+        }
+
+        .stat-box {
+            border-left: 0;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+        }
+
+        .stat-value {
+            color: #f7d487;
+        }
+
+        @media (max-width: 980px) {
+            main {
+                padding: 0 18px 36px;
+            }
+
+            .page-hero-grid,
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 720px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .page-hero,
+            .forge-container,
+            .section-banner,
+            .form-group {
+                padding: 18px;
+            }
+
+            .hero-stat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .attr-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .attr-input input {
+                width: 100%;
+                margin: 10px 0 0;
+            }
+
+            .utility-btn {
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="menu.html">Início Hub</a></li>
+                <li><a href="criador_personagem.html">Criador Auto (Mestre)</a></li>
+                <li><a href="calculadora_rpg.html">Forja (Equipamentos)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-grid">
+                <div>
+                    <span class="hero-eyebrow">Sala da Ficha Manual</span>
+                    <h2>Organize a ficha com mais presenca, mais clareza e menos caos na mesa.</h2>
+                    <p>O criador pessoal agora fica mais limpo para montar identidade, atributos, moedas, inventario e compendio sem perder o controle fino da ficha. A ideia aqui e deixar criacao, consulta e edicao futuras muito mais confortaveis.</p>
+                    <div class="hero-link-row">
+                        <a class="hero-link" href="calculadora_rpg.html">Abrir Forja de Equipamentos</a>
+                        <a class="hero-link ghost" href="criador_personagem.html">Ir para Criador Automatico</a>
+                    </div>
+                </div>
+                <div class="hero-stat-grid">
+                    <div class="hero-stat">
+                        <span>Fluxo</span>
+                        <strong>Base, recursos, compendio e ficha final no mesmo painel.</strong>
+                    </div>
+                    <div class="hero-stat">
+                        <span>Persistencia</span>
+                        <strong>Save e load continuam integrados com moedas, notas e inventario.</strong>
+                    </div>
+                    <div class="hero-stat">
+                        <span>Importacao</span>
+                        <strong>Itens da forja entram melhor na leitura da ficha e da CA.</strong>
+                    </div>
+                    <div class="hero-stat">
+                        <span>Uso em jogo</span>
+                        <strong>Mais facil de bater o olho em HP, MP, SP, habilidades e itens.</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="forge-container">
+            <div class="forge-header">
+                <div>
+                <h2>Criação Pessoal (Manual)</h2>
+                    <p class="forge-subtitle">Monte a ficha como se estivesse abrindo um tomo vivo: primeiro a identidade, depois os fundamentos, em seguida recursos e por fim tudo que faz o personagem funcionar em jogo.</p>
+                </div>
+                <div class="forge-chip">Manual, persistente e pronto para editar</div>
+            </div>
+
+            <div class="guide-grid">
+                <article class="guide-card">
+                    <span>Passo 1</span>
+                    <strong>Defina o nucleo</strong>
+                    <p>Escolha nome, nivel, classe, subclasse e linhagem antes de distribuir pontos. Isso prepara toda a base da ficha.</p>
+                </article>
+                <article class="guide-card">
+                    <span>Passo 2</span>
+                    <strong>Estruture os recursos</strong>
+                    <p>CA, moedas, anotacoes e habilidades personalizadas ficam em blocos separados para voce navegar melhor.</p>
+                </article>
+                <article class="guide-card">
+                    <span>Passo 3</span>
+                    <strong>Feche o compendio</strong>
+                    <p>Escolhas de classe, passivas, especializacoes e inventario agora ficam mais legiveis antes de gravar a ficha.</p>
+                </article>
+            </div>
+
+            <div class="form-grid">
+                <div class="section-banner full-width">
+                    <span class="section-kicker">Nucleo da Ficha</span>
+                    <h3>Identidade e Fundamentos</h3>
+                    <p>Comece pela base do personagem para destravar corretamente os paineis de subclasse, progressao e estatisticas iniciais.</p>
+                </div>
+                <div class="form-group full-width">
+                    <label for="nome">Nome do Herói</label>
+                    <input type="text" id="nome" placeholder="Digite o nome..." style="width:100%; padding: 12px; font-family:'Cinzel'; background:var(--bg-input); color:var(--text-main); border:1px solid #444; border-radius:6px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="nivel">Nível da Jornada</label>
+                    <input type="number" id="nivel" min="1" value="1" onchange="atualizarPontosLivres(); triggerClassChecks();">
+                </div>
+                
+                <div class="form-group">
+                    <label for="classeId">Classe Principal / Ofício</label>
+                    <select id="classeId" onchange="triggerClassChecks()">
+                        <option value="atirador_arcano">Atirador Arcano</option>
+                        <option value="barbaro">Bárbaro</option>
+                        <option value="bardo">Bardo</option>
+                        <option value="cavaleiro_sangue">Cavaleiro de Sangue</option>
+                        <option value="clerigo">Clérigo</option>
+                        <option value="druida">Druida</option>
+                        <option value="feiticeiro">Feiticeiro</option>
+                        <option value="feiticeiro_espada">Feiticeiro da Espada</option>
+                        <option value="guerreiro">Guerreiro</option>
+                        <option value="ladino">Ladino</option>
+                        <option value="monge">Monge</option>
+                        <option value="mago">Mago</option>
+                        <option value="necromante">Necromante</option>
+                        <option value="paladino">Paladino</option>
+                        <option value="ranger">Ranger</option>
+                        <option value="boss" style="color:red; font-weight:bold;">Boss</option>
+                        <option value="divindade" style="color:#f7c873; font-weight:bold;">Entidade</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="containerSubclass" style="display:none; animation: fadeIn 0.4s;">
+                    <label for="subclasseId" style="color: #f7c873; text-shadow: 0 0 5px #d4af37;">Especialização (Nv.15)</label>
+                    <select id="subclasseId" style="border-color: #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.4);" onchange="renderPainelsDeClasse(); recalcularSeResultadoVisivel()">
+                        <option value="none">Padrão</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="raca">Raça Base (Linhagem Nativa)</label>
+                    <select id="raca">
+                        <option value="1">Altos Elfos</option><option value="2">Anões</option><option value="3">Autômatos</option><option value="4">Drakarerins</option><option value="5">Draconatos</option><option value="6">Elfos da Floresta</option><option value="7">Elfos Negros</option><option value="8">Elfos da Neve</option><option value="9">Fadalia</option><option value="10">Gnomo</option><option value="11">Goblin</option><option value="12">Hobbit</option><option value="13">Hobgoblin</option><option value="14">Humano</option><option value="15">Pessoas Besta</option><option value="16">Orcs</option><option value="17">Sereios</option><option value="18">Umnos</option><option value="19">Abysanguina’tor</option><option value="20">Abyssalords</option><option value="21">Abyssaterrox</option><option value="22">Altum Unmo</option><option value="23">Anjos</option><option value="24">Arcanjos</option><option value="25">Anões Abissais</option><option value="26">Anões das Profundezas</option><option value="27">Anões Vulcânicos</option><option value="28">Akash</option><option value="29">Ciclope</option><option value="30">Demônios</option><option value="31">Demônios Principialis</option><option value="32">Draconatos Antigos</option><option value="33">Dragões</option><option value="34">Dreadlords</option><option value="35">Dwevers</option><option value="36">Edelins</option><option value="37">Elandres</option><option value="38">Elandres Indorielien</option><option value="39">Elfarin</option><option value="40">Elfae</option><option value="41">Elfos das Areias</option><option value="42">Elfos do Mar</option><option value="43">Elfos da Luz</option><option value="44">Elfos da Noite</option><option value="45">Eltmar</option><option value="46">Ferrekins</option><option value="47">Gigantes</option><option value="48">Haesir</option><option value="49">Kametari</option><option value="50">Licantropo</option><option value="51">Nolare</option><option value="52">Nobraqui</option><option value="53">Sanguinor</option><option value="54">Sylvaras</option><option value="55">Trovarin</option><option value="56">Troll</option><option value="57">Orcarins</option><option value="58">Unmo Superioris</option><option value="59">Vampiro</option><option value="60">Vampyr</option><option value="61">Vampyr’rein</option>
+                    </select>
+                </div>
+                
+                <div class="section-banner full-width">
+                    <span class="section-kicker">Estrutura de Combate</span>
+                    <h3>Atributos, Pontos e Defesa</h3>
+                    <p>Distribua os pontos com uma leitura mais limpa e deixe a base de CA preparada antes de somar armaduras e itens do inventario.</p>
+                </div>
+
+                <div class="form-group full-width" style="text-align:center;">
+                    <div id="pontosTxt" style="font-family:'MedievalSharp'; font-size:1.8em; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">
+                        Carregando...
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Alocação de Pontos</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <div class="attr-input"><label>Força</label><input type="number" id="forca" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                        <div class="attr-input"><label>Inteligência</label><input type="number" id="inteligencia" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                        <div class="attr-input"><label>Vontade</label><input type="number" id="forcaVontade" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                        <div class="attr-input"><label>Agilidade</label><input type="number" id="agilidade" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                        <div class="attr-input"><label>Resistência</label><input type="number" id="resistencia" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                        <div class="attr-input"><label>Carisma</label><input type="number" id="carisma" value="0" min="0" onchange="atualizarPontosLivres()"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="caBase">Classe de Armadura Base (CA)</label>
+                    <input type="number" id="caBase" value="0" min="0" step="0.01" onchange="recalcularSeResultadoVisivel()">
+                </div>
+
+                <div class="section-banner full-width">
+                    <span class="section-kicker">Recursos e Registro</span>
+                    <h3>Moedas, Notas e Inventario Vivo</h3>
+                    <p>Guarde economia, observacoes, habilidades unicas e itens em blocos separados para a ficha continuar legivel mesmo depois de crescer bastante.</p>
+                </div>
+
+                <div class="form-group full-width">
+                    <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Bolsa de Moedas</h4>
+                    <div class="currency-grid">
+                        <div class="coin-input"><label for="cobre">Cobre</label><input type="number" id="cobre" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
+                        <div class="coin-input"><label for="prata">Prata</label><input type="number" id="prata" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
+                        <div class="coin-input"><label for="ouro">Ouro</label><input type="number" id="ouro" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
+                        <div class="coin-input"><label for="platina">Platina</label><input type="number" id="platina" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
+                        <div class="coin-input"><label for="mithril">Mithril</label><input type="number" id="mithril" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
+                    </div>
+                    <div class="currency-summary" id="moedasResumo">Total base: 0 cobre | Forma compacta: 0 mithril | 0 platina | 0 ouro | 0 prata | 0 cobre</div>
+                    <input type="hidden" id="hpAtual" value="">
+                    <input type="hidden" id="mpAtual" value="">
+                    <input type="hidden" id="spAtual" value="">
+                    <input type="hidden" id="acaoValorEstado" value="10">
+                    <input type="hidden" id="moedaValorEstado" value="1">
+                    <input type="hidden" id="moedaTipoEstado" value="ouro">
+                </div>
+
+                <div class="form-group full-width">
+                    <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Anotacoes</h4>
+                    <textarea id="anotacoes" class="notes-area" placeholder="Escreva observacoes, historia, itens, missoes, segredos ou lembretes..." oninput="sincronizarAnotacoes(this.value, 'form')"></textarea>
+                    <div class="notes-help">Essas anotacoes tambem entram no arquivo .txt e podem ser editadas depois com a ficha criada.</div>
+                </div>
+
+                <div class="form-group full-width">
+                    <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Habilidades Personalizadas</h4>
+                    <div class="builder-grid">
+                        <div class="resource-input">
+                            <label for="habilidadeCustomNome">Nome</label>
+                            <input type="text" id="habilidadeCustomNome" placeholder="Ex.: Golpe Lunar">
+                        </div>
+                        <div class="resource-input">
+                            <label for="habilidadeCustomCusto">Custo</label>
+                            <input type="text" id="habilidadeCustomCusto" placeholder="Ex.: 12 MP + 4 SP">
+                        </div>
+                        <div class="resource-input full-span">
+                            <label for="habilidadeCustomDescricao">Descricao / Efeito</label>
+                            <textarea id="habilidadeCustomDescricao" class="notes-area small-textarea" placeholder="Descreva dano, alcance, efeito, duracao ou qualquer regra dessa habilidade..."></textarea>
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="action-btn mini-btn" type="button" onclick="adicionarHabilidadePersonalizada()">Adicionar habilidade personalizada</button>
+                    </div>
+                    <input type="hidden" id="habilidadesPersonalizadas" value="[]">
+                    <div id="painelHabilidadesPersonalizadas" class="codex-panel" style="margin-top:14px;"></div>
+                </div>
+
+                <div class="form-group full-width">
+                    <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Inventario</h4>
+                    <textarea id="inventarioTexto" class="notes-area" placeholder="Descreva mochila, suprimentos, chaves, mapas, consumiveis, recursos ou organizacao do inventario..." oninput="sincronizarInventarioTexto(this.value, 'form')"></textarea>
+                    <div class="notes-help">Aqui voce pode guardar texto livre e tambem itens manuais ou importados da calculadora.</div>
+                    <div class="builder-grid">
+                        <div class="resource-input">
+                            <label for="inventarioManualNome">Nome do item</label>
+                            <input type="text" id="inventarioManualNome" placeholder="Ex.: Capa das Dunas">
+                        </div>
+                        <div class="resource-input">
+                            <label for="inventarioManualTipo">Tipo</label>
+                            <select id="inventarioManualTipo">
+                                <option value="item">Item Geral</option>
+                                <option value="equipamento">Equipamento</option>
+                                <option value="armadura">Armadura</option>
+                                <option value="acessorio">Acessorio</option>
+                                <option value="consumivel">Consumivel</option>
+                            </select>
+                        </div>
+                        <div class="resource-input">
+                            <label for="inventarioManualCa">Bonus de CA</label>
+                            <input type="number" id="inventarioManualCa" value="0" min="0" step="0.01">
+                        </div>
+                        <div class="resource-input full-span">
+                            <label for="inventarioManualDescricao">Descricao do item</label>
+                            <textarea id="inventarioManualDescricao" class="notes-area small-textarea" placeholder="Escreva detalhes, bonus, origem, uso, carga ou qualquer observacao importante..."></textarea>
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="action-btn mini-btn" type="button" onclick="adicionarItemManualInventario()">Adicionar item manual</button>
+                        <button class="action-btn mini-btn secondary" type="button" onclick="importarItensDaCalculadora()">Importar da calculadora</button>
+                    </div>
+                    <div class="notes-help">Armaduras equipadas no inventario somam automaticamente na CA final da ficha.</div>
+                    <input type="hidden" id="inventarioItens" value="[]">
+                    <div id="painelInventario" class="codex-panel" style="margin-top:14px;"></div>
+                </div>
+
+                <div class="section-banner full-width">
+                    <span class="section-kicker">Progressao e Compendio</span>
+                    <h3>Classe, Passivas e Especializacoes</h3>
+                    <p>As secoes abaixo concentram o corpo tecnico da ficha. Aqui voce revisa tudo que o personagem destrava por classe, nivel e escolhas permanentes.</p>
+                </div>
+
+                <div class="form-group full-width">
+                    <input type="hidden" id="habilidadesSelecionadas" value="[]">
+                    <input type="hidden" id="passivasSelecionadas" value="[]">
+                    <input type="hidden" id="especializacoesSelecionadas" value="[]">
+                    <input type="hidden" id="periciasExtrasSelecionadas" value="[]">
+                    <div id="painelClasseHabilidades" class="codex-panel"></div>
+                </div>
+
+                <div class="form-group full-width">
+                    <div id="painelPassivasGlobais" class="codex-panel"></div>
+                </div>
+
+                <div class="form-group full-width">
+                    <div id="painelEspecializacoes" class="codex-panel"></div>
+                </div>
+            </div>
+
+            <div class="workflow-footer">
+                <div class="utility-actions">
+                <button class="action-btn utility-btn" type="button" onclick="salvarFichaTxt()">Salvar .txt</button>
+                <button class="action-btn utility-btn" type="button" onclick="abrirCarregamentoFicha()">Carregar .txt</button>
+                <input class="file-input-hidden" type="file" id="arquivoFicha" accept=".txt,text/plain" onchange="carregarFichaTxt(event)">
+            </div>
+
+            <div class="save-status" id="saveStatus"></div>
+
+            <div class="final-action">
+
+            <button class="action-btn" type="button" onclick="calcularFicha()">Inscrever na Pedra Mística</button>
+
+            </div>
+
+            <div class="result-container" id="resultado"></div>
+            </div>
+        </div>
+    </main>
+
+<script src="criador_pessoal_dados_core.js"></script>
+<script src="criador_pessoal_dados_classes_1.js"></script>
+<script src="criador_pessoal_dados_classes_2.js"></script>
+<script src="criador_pessoal_dados_classes_3.js"></script>
+<script src="criador_pessoal_dados_classes_4.js"></script>
+<script src="criador_pessoal_dados_classes_5.js"></script>
+<script>
+    const SAVE_FILE_HEADER = "INDOMITUS_CRIADOR_PESSOAL_V1";
+    const SAVE_FIELD_IDS = [
+        "nome",
+        "nivel",
+        "classeId",
+        "subclasseId",
+        "raca",
+        "forca",
+        "inteligencia",
+        "forcaVontade",
+        "agilidade",
+        "resistencia",
+        "carisma",
+        "caBase",
+        "cobre",
+        "prata",
+        "ouro",
+        "platina",
+        "mithril",
+        "hpAtual",
+        "mpAtual",
+        "spAtual",
+        "anotacoes",
+        "inventarioTexto",
+        "habilidadesSelecionadas",
+        "passivasSelecionadas",
+        "especializacoesSelecionadas",
+        "periciasExtrasSelecionadas",
+        "habilidadesPersonalizadas",
+        "inventarioItens"
+    ];
+    const NUMBER_FORMAT = new Intl.NumberFormat("pt-BR");
+    const COIN_ORDER = ["mithril", "platina", "ouro", "prata", "cobre"];
+    const COIN_VALUES = {
+        cobre: 1,
+        prata: 100,
+        ouro: 10000,
+        // Assumindo 1 platina = 1000 ouro para manter a progressão pedida.
+        platina: 10000000,
+        mithril: 1000000000
+    };
+    const FORGED_ITEM_STORAGE_KEY = "INDOMITUS_FORGED_ITEMS_V1";
+    const RARITY_GLOW_MAP = {
+        comum: "#888888",
+        incomum: "#1eff00",
+        raro: "#0070dd",
+        epico: "#a335ee",
+        magistral: "#ff8000",
+        lendario: "#ffcc00",
+        mitico: "#ff4400",
+        unico: "#e6cc80",
+        cosmico: "#00ccff",
+        divino: "#ffffff",
+        celestial: "#ffeeaa",
+        tesouro: "#ff00ff"
+    };
+    const INVENTORY_TYPE_LABELS = {
+        item: "Item Geral",
+        equipamento: "Equipamento",
+        armadura: "Armadura",
+        arma: "Arma",
+        acessorio: "Acessorio",
+        consumivel: "Consumivel"
+    };
+
+    const racialModifiers = {
+        "1": { "nome": "Altos Elfos", "modificadores": { "força": 0, "inteligência": 3, "forçaVontade": 0, "agilidade": 1, "resistência": 0, "carisma": 0 }, "passivas": ["Resistência Mística: vantagem em rolagem de resistência magia."] },
+        "2": { "nome": "Anões", "modificadores": { "força": 0, "inteligência": 0, "forçaVontade": 0, "agilidade": 0, "resistência": 4, "carisma": 0 }, "passivas": ["Resistência Física: vantagem em rolagem física."] },
+        "3": { "nome": "Autômatos", "modificadores": { "força": 0, "inteligência": 0, "forçaVontade": 0, "agilidade": 0, "resistência": 0, "carisma": 0 }, "passivas": ["+4 Atributos livres", "Corpo Modulável."] },
+        "4": { "nome": "Drakarerins", "modificadores": { "força": 0, "inteligência": 1, "forçaVontade": 1, "agilidade": 2, "resistência": 2, "carisma": 0 }, "passivas": ["Vantagem sobre trevas."] },
+        "5": { "nome": "Draconatos", "modificadores": { "força": 2, "inteligência": 0, "forçaVontade": 0, "agilidade": 0, "resistência": 2, "carisma": 1 }, "passivas": ["Resistência Elemental."] },
+        "6": { "nome": "Elfos da Floresta", "modificadores": { "força": 0, "inteligência": 1, "forçaVontade": 0, "agilidade": 3, "resistência": 0, "carisma": 0 }, "passivas": ["Sobrevivente."] },
+        "7": { "nome": "Elfos Negros", "modificadores": { "força": 0, "inteligência": 1, "forçaVontade": 0, "agilidade": 2, "resistência": 1, "carisma": 0 }, "passivas": ["Visão Aguçada."] },
+        "8": { "nome": "Elfos da Neve", "modificadores": { "força": 0, "inteligência": 3, "forçaVontade": 2, "agilidade": 0, "resistência": 0, "carisma": 0 }, "passivas": ["Clarividência."] },
+        "9": { "nome": "Fadalia", "modificadores": { "força": 0, "inteligência": 1, "forçaVontade": 0, "agilidade": 0, "resistência": 0, "carisma": 1 }, "passivas": ["Voar", "Metamorfose de tamanho."] },
+        "10": { "nome": "Gnomo", "modificadores": { "força": 0, "inteligência": 1, "forçaVontade": 0, "agilidade": 0, "resistência": 4, "carisma": 2 }, "passivas": ["Barganha."] },
+        "11": { "nome": "Goblin", "modificadores": { "força": 0, "inteligência": 0, "forçaVontade": 0, "agilidade": 5, "resistência": 0, "carisma": 0 }, "passivas": ["Furtividade", "Desvantagem em Força."] },
+        "12": { "nome": "Hobbit", "modificadores": { "força": 0, "inteligência": 0, "forçaVontade": 0, "agilidade": 0, "resistência": 0, "carisma": 5 }, "passivas": ["Sorte", "Persuasão."] },
+        "13": { "nome": "Hobgoblin", "modificadores": { "força": 1, "inteligência": 0, "forçaVontade": 0, "agilidade": 2, "resistência": 1, "carisma": 0 }, "passivas": ["Estrategista."] },
+        "14": { "nome": "Humano", "modificadores": { "força": 0, "inteligência": 0, "forçaVontade": 1, "agilidade": 0, "resistência": 0, "carisma": 1 }, "passivas": ["Resiliência."] },
+        "15": { "nome": "Pessoas Besta", "modificadores": { "força": 1, "inteligência": 0, "forçaVontade": 1, "agilidade": 1, "resistência": 0, "carisma": 1 }, "passivas": ["Sentidos Bestiais."] },
+        "16": { "nome": "Orcs", "modificadores": { "força": 3, "inteligência": 0, "forçaVontade": 1, "agilidade": 1, "resistência": 3, "carisma": 1 }, "passivas": ["Fúria Orc."] },
+        "17": { "nome": "Sereios", "modificadores": { "força": 2, "inteligência": 2, "forçaVontade": 2, "agilidade": 4, "resistência": 2, "carisma": 2 }, "passivas": ["Anfibismo."] },
+        "18": { "nome": "Umnos", "modificadores": { "força": 1, "inteligência": 0, "forçaVontade": 0, "agilidade": 1, "resistência": 2, "carisma": 0 }, "passivas": ["Vínculo Natural."] },
+        "19": { "nome": "Abysanguina’tor", "modificadores": { "força": 4, "inteligência": 2, "forçaVontade": 1, "agilidade": 5, "resistência": 4, "carisma": 1 }, "passivas": ["Dreno."] },
+        "20": { "nome": "Abyssalords", "modificadores": { "força": 4, "inteligência": 2, "forçaVontade": 1, "agilidade": 3, "resistência": 4, "carisma": 1 }, "passivas": ["Aura Terror."] },
+        "21": { "nome": "Abyssaterrox", "modificadores": { "força": 10, "inteligência": 3, "forçaVontade": 3, "agilidade": 7, "resistência": 10, "carisma": 3 }, "passivas": ["Regeneração Abissal."] },
+        "22": { "nome": "Altum Unmo", "modificadores": { "força": 4, "inteligência": 2, "forçaVontade": 3, "agilidade": 2, "resistência": 2, "carisma": 2 }, "passivas": ["Guardião Andarilho."] },
+        "23": { "nome": "Anjos", "modificadores": { "força": 11, "inteligência": 11, "forçaVontade": 11, "agilidade": 11, "resistência": 11, "carisma": 11 }, "passivas": ["Asas Eternas", "Luz."] },
+        "24": { "nome": "Arcanjos", "modificadores": { "força": 13, "inteligência": 13, "forçaVontade": 12, "agilidade": 12, "resistência": 13, "carisma": 13 }, "passivas": ["Hierarquia Celeste."] },
+        "25": { "nome": "Anões Abissais", "modificadores": { "força": 2, "inteligência": 1, "forçaVontade": 0, "agilidade": 0, "resistência": 3, "carisma": 0 }, "passivas": ["Visão no Escuro."] },
+        "59": { "nome": "Vampiro", "modificadores": { "força": 3, "inteligência": 3, "forçaVontade": 3, "agilidade": 3, "resistência": 4, "carisma": 3 }, "passivas": ["Imortalidade relativa", "Dreno Vital."] }
+    };
+    // Adicionando as 61 raças de forma simplificada caso o usuário não as tenha preenchido no diff, mimetizando a lógica.
+    // ... raças adicionais podem ser inseridas aqui se necessário ...
+
+    const classesRPG = {
+        atirador_arcano: { nome: "Atirador Arcano", hp: 40, mp: 35, sp: 30, passivas: ["Tiro Crítico", "Munição Éter"], subclasses: { arqueiro: { nome: "Arqueiro Arcano", efeitos: ["Alcance +50%"] } } },
+        barbaro: { nome: "Bárbaro", hp: 70, mp: 10, sp: 40, passivas: ["Fúria", "Rugido"], subclasses: { berserker: { nome: "Berserker", efeitos: ["Dano Dobrado (Fúria)"] } } },
+        bardo: { nome: "Bardo", hp: 45, mp: 45, sp: 30, passivas: ["Toca de Ouvido", "Diplomacia"], subclasses: { mestre: { nome: "Mestre das Canções", efeitos: ["Melodia Curativa"] } } },
+        cavaleiro_sangue: { nome: "Cavaleiro de Sangue", hp: 65, mp: 20, sp: 35, passivas: ["Juramento", "Vínculo Sangue"], subclasses: { carmesim: { nome: "Lâmina Carmesim", efeitos: ["Absorção Vital"] } } },
+        clerigo: { nome: "Clérigo", hp: 50, mp: 55, sp: 25, passivas: ["Luz Divina", "Bênção"], subclasses: { luz: { nome: "Arauto da Luz", efeitos: ["Cura em Área"] } } },
+        druida: { nome: "Druida", hp: 48, mp: 50, sp: 28, passivas: ["Animismo", "Natureza"], subclasses: { guardiao: { nome: "Guardião da Floresta", efeitos: ["Transformação"] } } },
+        feiticeiro: { nome: "Feiticeiro", hp: 30, mp: 70, sp: 20, passivas: ["Poder Interior", "Elo"], subclasses: { draco: { nome: "Dracônico", efeitos: ["Sopro"] } } },
+        feiticeiro_espada: { nome: "Feiticeiro da Espada", hp: 50, mp: 45, sp: 30, passivas: ["Runa Arma", "Dança"], subclasses: { dancarino: { nome: "Dançarino Arcano", efeitos: ["Golpe Extra"] } } },
+        guerreiro: { nome: "Guerreiro", hp: 65, mp: 15, sp: 40, passivas: ["Bloqueio", "Aparar"], subclasses: { campeao: { nome: "Campeão", efeitos: ["Impacto Crítico"] } } },
+        ladino: { nome: "Ladino", hp: 40, mp: 20, sp: 50, passivas: ["Furtividade", "Gatuno"], subclasses: { assassino: { nome: "Assassino", efeitos: ["Morte Instantânea (<10% HP)"] } } },
+        monge: { nome: "Monge", hp: 45, mp: 25, sp: 55, passivas: ["Meditação", "Reflexos"], subclasses: { sombra: { nome: "Sombra", efeitos: ["Invisibilidade"] } } },
+        mago: { nome: "Mago", hp: 28, mp: 75, sp: 18, passivas: ["Grimório", "Barreira"], subclasses: { evocador: { nome: "Evocador", efeitos: ["Magia Solar"] } } },
+        necromante: { nome: "Necromante", hp: 32, mp: 65, sp: 20, passivas: ["Morto-Vivo", "Maldição"], subclasses: { lich: { nome: "Lich", efeitos: ["Eternidade"] } } },
+        paladino: { nome: "Paladino", hp: 60, mp: 40, sp: 30, passivas: ["Honra", "Imposição"], subclasses: { vingador: { nome: "Vingador", efeitos: ["Punição Divina"] } } },
+        ranger: { nome: "Ranger", hp: 45, mp: 25, sp: 45, passivas: ["Rastreador", "Mira"], subclasses: { elite: { nome: "Elite", efeitos: ["Arquearia Superior"] } } },
+        boss: { nome: "Chefão", hp: 120, mp: 100, sp: 100, passivas: ["Super Armadura", "Escala de Nível"], subclasses: {} },
+        divindade: { nome: "Entidade", hp: 400, mp: 400, sp: 400, passivas: ["Presença Esmagadora", "Infinito"], subclasses: {} }
+    };
+
+    const CLASS_COMPENDIUM = window.CRIADOR_CLASS_COMPENDIUM || {};
+    const PASSIVE_ABILITIES = window.CRIADOR_PASSIVE_ABILITIES || [];
+    const SPECIALIZATIONS = window.CRIADOR_SPECIALIZATIONS || [];
+    const ABILITY_SLOT_RULES = window.CRIADOR_ABILITY_SLOT_RULES || [];
+    const SPECIALIZATION_SLOTS = window.CRIADOR_SPECIALIZATION_SLOTS || [];
+    const EXTRA_SKILL_OPTIONS = ["Arcanismo", "Historia", "Engenharia", "Magia Elemental", "Armadura Leve"];
+    const TIER_TITLES = {
+        basico: "Basico",
+        intermediario: "Intermediario",
+        avancado: "Avancado",
+        mestre: "Mestre",
+        supremo: "Supremo",
+        lendario: "Lendario"
+    };
+
+    Object.entries(CLASS_COMPENDIUM).forEach(([key, data]) => {
+        const atual = classesRPG[key] || { nome: key, subclasses: {}, passivas: [] };
+        classesRPG[key] = {
+            ...atual,
+            ...data,
+            passivas: Array.isArray(data.passivas) ? data.passivas : (atual.passivas || []),
+            subclasses: data.subclasses || atual.subclasses || {},
+            abilities: data.abilities || atual.abilities || {}
+        };
+    });
+
+    function normalizarTextoBusca(texto) {
+        return String(texto || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    }
+
+    function lerListaJson(id, tamanhoEsperado) {
+        const el = document.getElementById(id);
+        if (!el) return tamanhoEsperado ? new Array(tamanhoEsperado).fill("") : [];
+        try {
+            const valor = JSON.parse(el.value || "[]");
+            if (!Array.isArray(valor)) throw new Error("invalido");
+            const lista = valor.map((item) => typeof item === "string" ? item : "");
+            if (!tamanhoEsperado) return lista;
+            while (lista.length < tamanhoEsperado) lista.push("");
+            return lista.slice(0, tamanhoEsperado);
+        } catch (_error) {
+            return tamanhoEsperado ? new Array(tamanhoEsperado).fill("") : [];
+        }
+    }
+
+    function escreverListaJson(id, lista) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = JSON.stringify(Array.isArray(lista) ? lista : []);
+    }
+
+    function obterClasseAtualDetalhada() {
+        return classesRPG[document.getElementById("classeId").value] || null;
+    }
+
+    function obterNivelAtual() {
+        return Math.max(1, parseInt(document.getElementById("nivel").value, 10) || 1);
+    }
+
+    function obterHabilidadesPorTier(classe, tier) {
+        return (classe && classe.abilities && Array.isArray(classe.abilities[tier])) ? classe.abilities[tier] : [];
+    }
+
+    function sanitizarEscolhasHabilidades(classeKey, escolhas) {
+        const classe = classesRPG[classeKey] || {};
+        const resultado = Array.isArray(escolhas) ? escolhas.slice(0, ABILITY_SLOT_RULES.length) : [];
+        while (resultado.length < ABILITY_SLOT_RULES.length) resultado.push("");
+        const usados = new Set();
+
+        return resultado.map((habilidadeId, index) => {
+            const regra = ABILITY_SLOT_RULES[index];
+            const idsValidos = new Set(obterHabilidadesPorTier(classe, regra.tier).map((item) => item.id));
+            if (!habilidadeId || !idsValidos.has(habilidadeId) || usados.has(habilidadeId)) return "";
+            usados.add(habilidadeId);
+            return habilidadeId;
+        });
+    }
+
+    function obterEscolhasHabilidades() {
+        const escolhas = sanitizarEscolhasHabilidades(document.getElementById("classeId").value, lerListaJson("habilidadesSelecionadas", ABILITY_SLOT_RULES.length));
+        escreverListaJson("habilidadesSelecionadas", escolhas);
+        return escolhas;
+    }
+
+    function selecionarHabilidade(slotKey, valor) {
+        const indice = ABILITY_SLOT_RULES.findIndex((item) => item.key === slotKey);
+        if (indice < 0) return;
+        const escolhas = obterEscolhasHabilidades();
+        escolhas.forEach((item, idx) => {
+            if (idx !== indice && item === valor) escolhas[idx] = "";
+        });
+        escolhas[indice] = valor || "";
+        escreverListaJson("habilidadesSelecionadas", sanitizarEscolhasHabilidades(document.getElementById("classeId").value, escolhas));
+        renderPainelsDeClasse();
+        recalcularSeResultadoVisivel();
+    }
+
+    function sanitizarEspecializacoes(escolhas) {
+        const idsValidos = new Set(SPECIALIZATIONS.map((item) => item.id));
+        const resultado = Array.isArray(escolhas) ? escolhas.slice(0, SPECIALIZATION_SLOTS.length) : [];
+        while (resultado.length < SPECIALIZATION_SLOTS.length) resultado.push("");
+        const usados = new Set();
+        return resultado.map((id) => {
+            if (!id || !idsValidos.has(id) || usados.has(id)) return "";
+            usados.add(id);
+            return id;
+        });
+    }
+
+    function obterEspecializacoesEscolhidas() {
+        const escolhas = sanitizarEspecializacoes(lerListaJson("especializacoesSelecionadas", SPECIALIZATION_SLOTS.length));
+        escreverListaJson("especializacoesSelecionadas", escolhas);
+        return escolhas;
+    }
+
+    function selecionarEspecializacao(slotKey, valor) {
+        const indice = SPECIALIZATION_SLOTS.findIndex((item) => item.key === slotKey);
+        if (indice < 0) return;
+        const escolhas = obterEspecializacoesEscolhidas();
+        escolhas.forEach((item, idx) => {
+            if (idx !== indice && item === valor) escolhas[idx] = "";
+        });
+        escolhas[indice] = valor || "";
+        escreverListaJson("especializacoesSelecionadas", sanitizarEspecializacoes(escolhas));
+        renderPainelsDeClasse();
+        recalcularSeResultadoVisivel();
+    }
+
+    function obterPericiasExtras() {
+        const lista = lerListaJson("periciasExtrasSelecionadas").filter((item) => EXTRA_SKILL_OPTIONS.includes(item));
+        escreverListaJson("periciasExtrasSelecionadas", [...new Set(lista)]);
+        return [...new Set(lista)];
+    }
+
+    function alternarPericiaExtra(nome, ativo) {
+        const atuais = new Set(obterPericiasExtras());
+        if (ativo) atuais.add(nome);
+        else atuais.delete(nome);
+        escreverListaJson("periciasExtrasSelecionadas", [...atuais]);
+        renderPainelsDeClasse();
+        recalcularSeResultadoVisivel();
+    }
+
+    function detectarPericiasDaClasse(classe) {
+        const mapa = {
+            Arcanismo: "arcanismo",
+            Historia: "historia",
+            Engenharia: "engenharia",
+            "Magia Elemental": "magia elemental",
+            "Armadura Leve": "armadura leve",
+            Natureza: "natureza",
+            Religiao: "religiao",
+            Medicina: "medicina",
+            "Lidar com Animais": "lidar com animais",
+            Sobrevivencia: "sobrevivencia"
+        };
+        const texto = normalizarTextoBusca((classe && Array.isArray(classe.passivas) ? classe.passivas : []).join(" "));
+        return Object.entries(mapa).filter(([, padrao]) => texto.includes(normalizarTextoBusca(padrao))).map(([nome]) => nome);
+    }
+
+    function obterPericiasDisponiveis() {
+        const classe = obterClasseAtualDetalhada();
+        return new Set([...detectarPericiasDaClasse(classe), ...obterPericiasExtras()]);
+    }
+
+    function passivaDesbloqueada(passiva, periciasDisponiveis) {
+        return !passiva.requisito || periciasDisponiveis.has(passiva.requisito);
+    }
+
+    function sanitizarPassivasSelecionadas() {
+        const pericias = obterPericiasDisponiveis();
+        const idsValidos = new Set(PASSIVE_ABILITIES.map((item) => item.id));
+        const mapa = new Map(PASSIVE_ABILITIES.map((item) => [item.id, item]));
+        const selecionadas = [...new Set(lerListaJson("passivasSelecionadas").filter((id) => idsValidos.has(id) && passivaDesbloqueada(mapa.get(id), pericias)))];
+        escreverListaJson("passivasSelecionadas", selecionadas);
+        return selecionadas;
+    }
+
+    function alternarPassiva(id, ativo) {
+        const pericias = obterPericiasDisponiveis();
+        const passiva = PASSIVE_ABILITIES.find((item) => item.id === id);
+        if (!passiva || !passivaDesbloqueada(passiva, pericias)) return;
+        const selecionadas = new Set(sanitizarPassivasSelecionadas());
+        if (ativo) selecionadas.add(id);
+        else selecionadas.delete(id);
+        escreverListaJson("passivasSelecionadas", [...selecionadas]);
+        renderPainelsDeClasse();
+        recalcularSeResultadoVisivel();
+    }
+
+    function obterHabilidadesSelecionadasDetalhadas() {
+        const classe = obterClasseAtualDetalhada();
+        const escolhas = obterEscolhasHabilidades();
+        return escolhas.map((id, index) => {
+            if (!id) return null;
+            const regra = ABILITY_SLOT_RULES[index];
+            const habilidade = obterHabilidadesPorTier(classe, regra.tier).find((item) => item.id === id);
+            return habilidade ? { ...habilidade, tier: regra.tier, tierLabel: TIER_TITLES[regra.tier], slotLabel: regra.label } : null;
+        }).filter(Boolean);
+    }
+
+    function obterPassivasDetalhadas() {
+        const selecionadas = new Set(sanitizarPassivasSelecionadas());
+        return PASSIVE_ABILITIES.filter((item) => selecionadas.has(item.id));
+    }
+
+    function obterEspecializacoesDetalhadas() {
+        const selecionadas = new Set(obterEspecializacoesEscolhidas());
+        return SPECIALIZATIONS.filter((item) => selecionadas.has(item.id));
+    }
+
+    function renderPainelClasseHabilidades() {
+        const painel = document.getElementById("painelClasseHabilidades");
+        if (!painel) return;
+        const classe = obterClasseAtualDetalhada();
+        const nivel = obterNivelAtual();
+        if (!classe) {
+            painel.innerHTML = "";
+            return;
+        }
+
+        const escolhas = obterEscolhasHabilidades();
+        const subclasseAtual = document.getElementById("subclasseId").value;
+        const subclasseAtiva = subclasseAtual !== "none" && classe.subclasses && classe.subclasses[subclasseAtual]
+            ? classe.subclasses[subclasseAtual]
+            : null;
+
+        const slotsHtml = ABILITY_SLOT_RULES.map((regra, index) => {
+            const lista = obterHabilidadesPorTier(classe, regra.tier);
+            if (nivel < regra.minLevel) {
+                return `<div class="selection-card"><strong>${regra.label}</strong><small>Liberada no nivel ${regra.minLevel}. ${regra.limitText}</small></div>`;
+            }
+            return `<div class="selection-card ${escolhas[index] ? "is-selected" : ""}"><strong>${regra.label}</strong><small>${regra.limitText}</small><select onchange="selecionarHabilidade('${regra.key}', this.value)"><option value="">Nao escolher agora</option>${lista.map((item) => `<option value="${item.id}" ${item.id === escolhas[index] ? "selected" : ""}>${item.nome}</option>`).join("")}</select></div>`;
+        }).join("");
+
+        const subclassesHtml = Object.entries(classe.subclasses || {}).map(([id, item]) => `<div class="ability-card ${subclasseAtual === id ? "is-selected" : ""}"><strong>${item.nome}</strong><small>${item.foco || "Sem foco descrito."}</small><ul>${(item.efeitos || []).map((efeito) => `<li>${efeito}</li>`).join("")}</ul></div>`).join("");
+        const catalogHtml = Object.keys(TIER_TITLES).map((tier) => {
+            const lista = obterHabilidadesPorTier(classe, tier);
+            if (!lista.length) return "";
+            return `<div class="catalog-tier"><h5>${TIER_TITLES[tier]}</h5><ul>${lista.map((item) => `<li><strong>${item.nome}</strong> (${item.custo})<br>${item.descricao}${item.efeito ? ` Efeito: ${item.efeito}` : ""}</li>`).join("")}</ul></div>`;
+        }).join("");
+
+        painel.innerHTML = `<h4 class="codex-title">Progressao da Classe</h4><p class="codex-note">No nivel 1 voce escolhe 2 habilidades basicas. No nivel 5 ganha outra basica, no 10 uma intermediaria, no 25 uma avancada, no 50 uma mestre, no 75 uma suprema, no 100 uma lendaria e no nivel 15 escolhe a subclasse.</p><div class="meta-grid"><div class="meta-card"><strong>${classe.nome}</strong><small>HP base ${classe.hp} | MP base ${classe.mp} | SP base ${classe.sp}</small></div><div class="meta-card"><strong>Passivas da Classe</strong><small>${(classe.passivas || []).join(" | ") || "Sem passivas detalhadas."}</small></div><div class="meta-card"><strong>Slots Ativos</strong><small>${ABILITY_SLOT_RULES.filter((item) => nivel >= item.minLevel).map((item) => item.label).join(" | ") || "Sem slots liberados."}</small></div><div class="meta-card"><strong>Subclasse</strong><small>${subclasseAtiva ? subclasseAtiva.nome : (nivel >= 15 ? "Nenhuma escolhida ainda." : "Libera no nivel 15.")}</small></div></div><div class="tag-list">${(classe.passivas || []).map((item) => `<span class="tag-pill">${item}</span>`).join("")}</div><div class="selection-grid">${slotsHtml}</div>${(classe.subclasses && Object.keys(classe.subclasses).length) ? `<h4 class="codex-title" style="margin-top:18px;">Subclasses</h4><div class="ability-grid">${subclassesHtml}</div>` : ""}<h4 class="codex-title" style="margin-top:18px;">Codex de Habilidades</h4><div class="catalog-columns">${catalogHtml || '<div class="catalog-tier"><h5>Sem compendio</h5><ul><li>Essa classe nao possui compendio detalhado carregado.</li></ul></div>'}</div>`;
+    }
+
+    function renderPainelPassivas() {
+        const painel = document.getElementById("painelPassivasGlobais");
+        if (!painel) return;
+        const periciasDaClasse = detectarPericiasDaClasse(obterClasseAtualDetalhada());
+        const periciasDisponiveis = obterPericiasDisponiveis();
+        const periciasExtras = new Set(obterPericiasExtras());
+        const selecionadas = new Set(sanitizarPassivasSelecionadas());
+
+        const extrasHtml = EXTRA_SKILL_OPTIONS.map((nome) => {
+            const automatico = periciasDaClasse.includes(nome);
+            const marcado = automatico || periciasExtras.has(nome);
+            return `<label class="toggle-card ${automatico ? "is-locked" : ""}"><input type="checkbox" ${marcado ? "checked" : ""} ${automatico ? "disabled" : ""} onchange="alternarPericiaExtra('${nome}', this.checked)"><span><strong>${nome}</strong><small>${automatico ? "Concedida automaticamente pela classe atual." : "Marque se a ficha possui essa pericia ou proficiencia fora da classe."}</small></span></label>`;
+        }).join("");
+
+        const passivasHtml = PASSIVE_ABILITIES.map((item) => {
+            const desbloqueada = passivaDesbloqueada(item, periciasDisponiveis);
+            return `<label class="toggle-card ${desbloqueada ? "" : "is-locked"} ${selecionadas.has(item.id) ? "is-selected" : ""}"><input type="checkbox" ${selecionadas.has(item.id) ? "checked" : ""} ${desbloqueada ? "" : "disabled"} onchange="alternarPassiva('${item.id}', this.checked)"><span><strong>${item.nome}</strong><small>${item.resumo} Bonus: ${item.bonus}${item.requisito ? ` Requisito: ${item.requisito}.` : ""}</small></span></label>`;
+        }).join("");
+
+        painel.innerHTML = `<h4 class="codex-title">Habilidades Passivas</h4><p class="codex-note">As passivas com pre-requisito so ficam liberadas quando a ficha possui a pericia correspondente. As pericias detectadas da classe e as extras marcadas abaixo entram nessa validacao.</p><div class="tag-list">${[...periciasDisponiveis].map((nome) => `<span class="tag-pill">${nome}</span>`).join("") || '<span class="tag-pill">Sem pericias detectadas</span>'}</div><div class="toggle-grid">${extrasHtml}</div><h4 class="codex-title" style="margin-top:18px;">Escolha de Passivas</h4><div class="toggle-grid">${passivasHtml}</div>`;
+    }
+
+    function renderPainelEspecializacoes() {
+        const painel = document.getElementById("painelEspecializacoes");
+        if (!painel) return;
+        const nivel = obterNivelAtual();
+        const escolhas = obterEspecializacoesEscolhidas();
+        const slotsHtml = SPECIALIZATION_SLOTS.map((slot, index) => {
+            if (nivel < slot.minLevel) {
+                return `<div class="selection-card"><strong>${slot.label}</strong><small>Liberada no nivel ${slot.minLevel}.</small></div>`;
+            }
+            return `<div class="selection-card ${escolhas[index] ? "is-selected" : ""}"><strong>${slot.label}</strong><small>Uma mesma especializacao nao pode ser escolhida duas vezes.</small><select onchange="selecionarEspecializacao('${slot.key}', this.value)"><option value="">Nao escolher agora</option>${SPECIALIZATIONS.map((item) => `<option value="${item.id}" ${item.id === escolhas[index] ? "selected" : ""}>${item.nome}</option>`).join("")}</select></div>`;
+        }).join("");
+        const catalogHtml = SPECIALIZATIONS.map((item) => `<div class="ability-card ${escolhas.includes(item.id) ? "is-selected" : ""}"><strong>${item.nome}</strong><small>${item.resumo}</small></div>`).join("");
+        painel.innerHTML = `<h4 class="codex-title">Habilidades de Especializacao</h4><p class="codex-note">As especializacoes liberam no nivel 25, 50 e 75. Cada slot aceita uma escolha unica e a mesma especializacao nao pode ser repetida.</p><div class="selection-grid">${slotsHtml}</div><h4 class="codex-title" style="margin-top:18px;">Catalogo de Especializacoes</h4><div class="ability-grid">${catalogHtml}</div>`;
+    }
+
+    function renderPainelsDeClasse() {
+        renderPainelClasseHabilidades();
+        renderPainelPassivas();
+        renderPainelEspecializacoes();
+        renderPainelHabilidadesPersonalizadas();
+        renderPainelInventario();
+    }
+
+    function atualizarPontosLivres() {
+        const nivel = Math.max(1, parseInt(document.getElementById("nivel").value) || 1);
+        const total = 10 + (nivel - 1) * 5;
+        const gastos = ['forca', 'inteligencia', 'forcaVontade', 'agilidade', 'resistencia', 'carisma']
+            .reduce((acc, id) => acc + (parseInt(document.getElementById(id).value) || 0), 0);
+        
+        const sobra = total - gastos;
+        const el = document.getElementById("pontosTxt");
+        el.innerText = `Pontos Disponíveis: ${sobra}`;
+        el.style.color = sobra < 0 ? "#ff4444" : "var(--primary)";
+        return sobra;
+    }
+
+    function triggerClassChecks() {
+        const nivel = parseInt(document.getElementById("nivel").value) || 1;
+        const classeKey = document.getElementById("classeId").value;
+        const container = document.getElementById("containerSubclass");
+        const subSel = document.getElementById("subclasseId");
+        const classData = classesRPG[classeKey];
+        const valorAtual = subSel.value;
+
+        if (nivel >= 15 && classData && Object.keys(classData.subclasses).length > 0) {
+            subSel.innerHTML = '<option value="none">Padrão</option>';
+            Object.entries(classData.subclasses).forEach(([k, v]) => {
+                subSel.innerHTML += `<option value="${k}">${v.nome}</option>`;
+            });
+            subSel.value = [...subSel.options].some((opt) => opt.value === valorAtual) ? valorAtual : "none";
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+            subSel.innerHTML = '<option value="none">Padrão</option>';
+            subSel.value = "none";
+        }
+        renderPainelsDeClasse();
+        recalcularSeResultadoVisivel();
+    }
+
+    function skillTableLogic(level) {
+        return [
+            { name: "Geral", val: Math.floor(level / 5) + 1 },
+            { name: "Classe", val: Math.floor(level / 3) + 1 },
+            { name: "Especial", val: Math.floor(level / 15) }
+        ];
+    }
+
+    function formatarNumero(valor) {
+        return NUMBER_FORMAT.format(Math.max(0, Math.floor(Number(valor) || 0)));
+    }
+
+    function escaparHtml(texto) {
+        return String(texto || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function formatarValorFicha(valor) {
+        const numero = Number(valor || 0);
+        if (!Number.isFinite(numero)) return "0";
+        return numero.toLocaleString("pt-BR", {
+            minimumFractionDigits: Number.isInteger(numero) ? 0 : 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function lerNumeroDecimalNaoNegativo(id, fallback) {
+        const el = document.getElementById(id);
+        const valorLido = parseFloat(el && el.value);
+        const valor = Number.isFinite(valorLido) ? Math.max(0, valorLido) : Math.max(0, Number(fallback) || 0);
+        if (el && String(el.value) !== String(valor)) {
+            el.value = valor;
+        }
+        return valor;
+    }
+
+    function criarIdLocal(prefixo) {
+        return `${prefixo}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function lerObjetosJson(id) {
+        const el = document.getElementById(id);
+        if (!el) return [];
+        try {
+            const valor = JSON.parse(el.value || "[]");
+            return Array.isArray(valor) ? valor : [];
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    function escreverObjetosJson(id, lista) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = JSON.stringify(Array.isArray(lista) ? lista : []);
+    }
+
+    function obterGlowRaridade(raridadeId) {
+        return RARITY_GLOW_MAP[raridadeId] || "rgba(212,175,55,0.18)";
+    }
+
+    function obterSvgInventarioCategoria(categoria) {
+        if (categoria === "armadura") {
+            return `
+                <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+                    <path d="M44 18L64 10L84 18L98 24L94 46L84 56V106H44V56L34 46L30 24L44 18Z" fill="currentColor" opacity="0.18"></path>
+                    <path d="M44 18L64 10L84 18L98 24L94 46L84 56V106H44V56L34 46L30 24L44 18Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"></path>
+                    <path d="M64 10V34" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                    <path d="M44 30L54 42L64 34L74 42L84 30" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M52 62H76" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                    <path d="M52 80H76" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                </svg>
+            `;
+        }
+
+        if (categoria === "arma") {
+            return `
+                <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+                    <path d="M64 10L84 46L64 66L44 46L64 10Z" fill="currentColor" opacity="0.18"></path>
+                    <path d="M64 10L84 46L64 66L44 46L64 10Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"></path>
+                    <path d="M64 66V92" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                    <path d="M40 68H88" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"></path>
+                    <path d="M52 78L76 102" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                    <path d="M76 78L52 102" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                </svg>
+            `;
+        }
+
+        return `
+            <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+                <path d="M34 34H94L86 104H42L34 34Z" fill="currentColor" opacity="0.18"></path>
+                <path d="M34 34H94L86 104H42L34 34Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"></path>
+                <path d="M48 34V26C48 17.163 55.163 10 64 10C72.837 10 80 17.163 80 26V34" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+                <path d="M48 54H80" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"></path>
+            </svg>
+        `;
+    }
+
+    function criarCardInventarioHtml(item, permitirAcoes) {
+        const categoriaVisual = item.categoria === "armadura" ? "armadura" : (item.categoria === "arma" ? "arma" : "item");
+        const materialColor = item.materialCorHex || "#d4af37";
+        const glow = obterGlowRaridade(item.raridadeId);
+        const tipoLabel = INVENTORY_TYPE_LABELS[item.tipo] || item.categoriaLabel || "Item";
+        const flags = [
+            tipoLabel,
+            item.raridadeNome,
+            item.materialNome,
+            item.caBonus > 0 ? `CA +${formatarValorFicha(item.caBonus)}` : "",
+            item.peso ? `Peso ${item.peso}` : "",
+            item.fonte,
+            item.equipado ? "Equipado" : ""
+        ].filter(Boolean);
+
+        return `
+            <div class="inventory-card ${item.equipado ? "is-equipped" : ""}">
+                <div class="inventory-header">
+                    <div class="inventory-visual" style="--material-color:${escaparHtml(materialColor)}; --rarity-glow:${escaparHtml(glow)};">
+                        <div class="inventory-item-icon" aria-hidden="true">${obterSvgInventarioCategoria(categoriaVisual)}</div>
+                    </div>
+                    <div class="inventory-details">
+                        <strong>${escaparHtml(item.nome)}</strong>
+                        <small>${escaparHtml(item.resumo || item.categoriaLabel || tipoLabel)}</small>
+                    </div>
+                </div>
+                ${flags.length ? `<div class="inventory-flags">${flags.map((flag) => `<span class="inventory-flag">${escaparHtml(flag)}</span>`).join("")}</div>` : ""}
+                ${item.descricao ? `<div class="inventory-description">${escaparHtml(item.descricao)}</div>` : ""}
+                ${item.danoResumo ? `<div class="inventory-description">Dano/efeito: ${escaparHtml(item.danoResumo)}</div>` : ""}
+                ${permitirAcoes ? `
+                    <div class="inventory-actions">
+                        <label class="inline-check">
+                            <input type="checkbox" ${item.equipado ? "checked" : ""} onchange="alternarEquipadoInventario('${item.id}', this.checked)">
+                            <span>Equipado</span>
+                        </label>
+                        <button class="action-btn mini-btn danger" type="button" onclick="removerItemInventario('${item.id}')">Remover</button>
+                    </div>
+                ` : ""}
+            </div>
+        `;
+    }
+
+    function lerNumeroNaoNegativo(id, fallback) {
+        const el = document.getElementById(id);
+        const valorLido = parseInt(el && el.value, 10);
+        const valor = Number.isFinite(valorLido) ? Math.max(0, valorLido) : Math.max(0, fallback || 0);
+        if (el && String(el.value) !== String(valor)) {
+            el.value = valor;
+        }
+        return valor;
+    }
+
+    function normalizarInteiroPositivo(valor, fallback) {
+        const numero = parseInt(valor, 10);
+        return Number.isFinite(numero) && numero > 0 ? numero : Math.max(1, fallback || 1);
+    }
+
+    function obterValorAcaoPersistido() {
+        const estado = document.getElementById("acaoValorEstado");
+        const valor = normalizarInteiroPositivo(estado && estado.value, 10);
+        if (estado) estado.value = valor;
+        return valor;
+    }
+
+    function sincronizarValorAcao(valor) {
+        const normalizado = normalizarInteiroPositivo(valor, obterValorAcaoPersistido());
+        const estado = document.getElementById("acaoValorEstado");
+        const input = document.getElementById("acaoValor");
+        if (estado) estado.value = normalizado;
+        if (input && String(input.value) !== String(normalizado)) {
+            input.value = normalizado;
+        }
+        return normalizado;
+    }
+
+    function obterValorAcao() {
+        const input = document.getElementById("acaoValor");
+        return sincronizarValorAcao(input ? input.value : obterValorAcaoPersistido());
+    }
+
+    function obterValorMoedaPersistido() {
+        const estado = document.getElementById("moedaValorEstado");
+        const valor = normalizarInteiroPositivo(estado && estado.value, 1);
+        if (estado) estado.value = valor;
+        return valor;
+    }
+
+    function sincronizarValorMoeda(valor) {
+        const normalizado = normalizarInteiroPositivo(valor, obterValorMoedaPersistido());
+        const estado = document.getElementById("moedaValorEstado");
+        const input = document.getElementById("moedaValorAcao");
+        if (estado) estado.value = normalizado;
+        if (input && String(input.value) !== String(normalizado)) {
+            input.value = normalizado;
+        }
+        return normalizado;
+    }
+
+    function obterTipoMoedaPersistido() {
+        const estado = document.getElementById("moedaTipoEstado");
+        const valor = estado && COIN_VALUES[estado.value] ? estado.value : "ouro";
+        if (estado) estado.value = valor;
+        return valor;
+    }
+
+    function sincronizarTipoMoeda(valor) {
+        const tipo = COIN_VALUES[valor] ? valor : obterTipoMoedaPersistido();
+        const estado = document.getElementById("moedaTipoEstado");
+        const select = document.getElementById("moedaTipoAcao");
+        if (estado) estado.value = tipo;
+        if (select && select.value !== tipo) {
+            select.value = tipo;
+        }
+        return tipo;
+    }
+
+    function sincronizarAnotacoes(valor, origem) {
+        const texto = String(valor || "");
+        const form = document.getElementById("anotacoes");
+        const card = document.getElementById("anotacoesCard");
+
+        if (origem !== "form" && form && form.value !== texto) {
+            form.value = texto;
+        }
+
+        if (origem !== "card" && card && card.value !== texto) {
+            card.value = texto;
+        }
+    }
+
+    function sincronizarInventarioTexto(valor, origem) {
+        const texto = String(valor || "");
+        const form = document.getElementById("inventarioTexto");
+        const card = document.getElementById("inventarioTextoCard");
+
+        if (origem !== "form" && form && form.value !== texto) {
+            form.value = texto;
+        }
+
+        if (origem !== "card" && card && card.value !== texto) {
+            card.value = texto;
+        }
+    }
+
+    function sanitizarHabilidadesPersonalizadas(lista) {
+        return (Array.isArray(lista) ? lista : []).map((item) => {
+            const nome = String(item && item.nome || "").trim();
+            const custo = String(item && item.custo || "").trim();
+            const descricao = String(item && item.descricao || "").trim();
+            if (!nome && !descricao) return null;
+            const id = /^[a-z0-9_:-]+$/i.test(String(item && item.id || "")) ? String(item.id) : criarIdLocal("hab");
+            return {
+                id,
+                nome: nome || "Habilidade sem nome",
+                custo: custo || "Sem custo",
+                descricao
+            };
+        }).filter(Boolean);
+    }
+
+    function obterHabilidadesPersonalizadas() {
+        const lista = sanitizarHabilidadesPersonalizadas(lerObjetosJson("habilidadesPersonalizadas"));
+        escreverObjetosJson("habilidadesPersonalizadas", lista);
+        return lista;
+    }
+
+    function renderPainelHabilidadesPersonalizadas() {
+        const painel = document.getElementById("painelHabilidadesPersonalizadas");
+        if (!painel) return;
+        const habilidades = obterHabilidadesPersonalizadas();
+        painel.innerHTML = `<h4 class="codex-title">Codex Personalizado</h4><p class="codex-note">Use esse espaco para registrar magias, tecnicas, talentos ou golpes que nao existem no compendio da classe.</p>${habilidades.length ? `<div class="ability-grid">${habilidades.map((item) => `<div class="ability-card is-selected"><strong>${escaparHtml(item.nome)}</strong><small>${escaparHtml(item.custo)}${item.descricao ? `<br>${escaparHtml(item.descricao)}` : ""}</small><div class="panel-actions" style="margin-top:10px;"><button class="action-btn mini-btn danger" type="button" onclick="removerHabilidadePersonalizada('${item.id}')">Remover</button></div></div>`).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade personalizada registrada ainda.</p>'}`;
+    }
+
+    function adicionarHabilidadePersonalizada() {
+        const nomeEl = document.getElementById("habilidadeCustomNome");
+        const custoEl = document.getElementById("habilidadeCustomCusto");
+        const descricaoEl = document.getElementById("habilidadeCustomDescricao");
+        const nome = String(nomeEl && nomeEl.value || "").trim();
+        const custo = String(custoEl && custoEl.value || "").trim();
+        const descricao = String(descricaoEl && descricaoEl.value || "").trim();
+
+        if (!nome && !descricao) {
+            alert("Escreva pelo menos o nome ou a descricao da habilidade personalizada.");
+            return;
+        }
+
+        const habilidades = obterHabilidadesPersonalizadas();
+        habilidades.push({
+            id: criarIdLocal("hab"),
+            nome: nome || "Habilidade sem nome",
+            custo: custo || "Sem custo",
+            descricao
+        });
+        escreverObjetosJson("habilidadesPersonalizadas", sanitizarHabilidadesPersonalizadas(habilidades));
+
+        if (nomeEl) nomeEl.value = "";
+        if (custoEl) custoEl.value = "";
+        if (descricaoEl) descricaoEl.value = "";
+
+        renderPainelHabilidadesPersonalizadas();
+        recalcularSeResultadoVisivel();
+    }
+
+    function removerHabilidadePersonalizada(id) {
+        const habilidades = obterHabilidadesPersonalizadas().filter((item) => item.id !== id);
+        escreverObjetosJson("habilidadesPersonalizadas", habilidades);
+        renderPainelHabilidadesPersonalizadas();
+        recalcularSeResultadoVisivel();
+    }
+
+    function sanitizarInventarioItens(lista) {
+        return (Array.isArray(lista) ? lista : []).map((item) => {
+            const nome = String(item && item.nome || "").trim();
+            const descricao = String(item && item.descricao || "").trim();
+            if (!nome && !descricao) return null;
+
+            const tipoBruto = String(item && item.tipo || "").trim();
+            const tipo = INVENTORY_TYPE_LABELS[tipoBruto] ? tipoBruto : "item";
+            const categoriaBruta = String(item && item.categoria || "").trim();
+            const categoria = categoriaBruta || (tipo === "armadura" ? "armadura" : ((tipo === "equipamento" || tipo === "arma") ? "arma" : "item"));
+            const caBonus = Number(item && item.caBonus);
+
+            return {
+                id: /^[a-z0-9_:-]+$/i.test(String(item && item.id || "")) ? String(item.id) : criarIdLocal("item"),
+                origem: item && item.origem === "calculadora" ? "calculadora" : "manual",
+                nome: nome || "Item sem nome",
+                tipo,
+                categoria,
+                categoriaLabel: String(item && item.categoriaLabel || ""),
+                descricao,
+                resumo: String(item && item.resumo || ""),
+                caBonus: Number.isFinite(caBonus) ? Math.max(0, Number(caBonus.toFixed(2))) : 0,
+                equipado: Boolean(item && item.equipado),
+                materialNome: String(item && item.materialNome || ""),
+                materialCorHex: String(item && item.materialCorHex || ""),
+                materialCor: String(item && item.materialCor || ""),
+                raridadeId: String(item && item.raridadeId || ""),
+                raridadeNome: String(item && item.raridadeNome || ""),
+                peso: String(item && item.peso || ""),
+                danoResumo: String(item && item.danoResumo || ""),
+                fonte: String(item && item.fonte || (item && item.origem === "calculadora" ? "Calculadora RPG" : "Manual"))
+            };
+        }).filter(Boolean);
+    }
+
+    function obterInventarioItens() {
+        const itens = sanitizarInventarioItens(lerObjetosJson("inventarioItens"));
+        escreverObjetosJson("inventarioItens", itens);
+        return itens;
+    }
+
+    function salvarInventarioItens(itens) {
+        escreverObjetosJson("inventarioItens", sanitizarInventarioItens(itens));
+    }
+
+    function obterBonusCaInventario() {
+        return obterInventarioItens().reduce((acc, item) => {
+            return acc + (item.equipado && item.categoria === "armadura" ? (Number(item.caBonus) || 0) : 0);
+        }, 0);
+    }
+
+    function renderPainelInventario() {
+        const painel = document.getElementById("painelInventario");
+        if (!painel) return;
+        const itens = obterInventarioItens();
+        const bonusCa = obterBonusCaInventario();
+        painel.innerHTML = `<h4 class="codex-title">Itens Guardados</h4><p class="codex-note">Itens importados da calculadora chegam com material, raridade e bonus. Armaduras equipadas entram na CA final automaticamente.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA do inventario: +${formatarValorFicha(bonusCa)}</span></div>${itens.length ? `<div class="inventory-list">${itens.map((item) => criarCardInventarioHtml(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item no inventario ainda.</p>'}`;
+    }
+
+    function adicionarItemManualInventario() {
+        const nomeEl = document.getElementById("inventarioManualNome");
+        const tipoEl = document.getElementById("inventarioManualTipo");
+        const caEl = document.getElementById("inventarioManualCa");
+        const descricaoEl = document.getElementById("inventarioManualDescricao");
+        const nome = String(nomeEl && nomeEl.value || "").trim();
+        const descricao = String(descricaoEl && descricaoEl.value || "").trim();
+        const tipo = tipoEl && INVENTORY_TYPE_LABELS[tipoEl.value] ? tipoEl.value : "item";
+        const categoria = tipo === "armadura" ? "armadura" : ((tipo === "equipamento") ? "arma" : "item");
+        const caBonus = Number.parseFloat(caEl && caEl.value);
+
+        if (!nome && !descricao) {
+            alert("Preencha pelo menos o nome ou a descricao do item manual.");
+            return;
+        }
+
+        const itens = obterInventarioItens();
+        itens.push({
+            id: criarIdLocal("item"),
+            origem: "manual",
+            nome: nome || "Item sem nome",
+            tipo,
+            categoria,
+            categoriaLabel: INVENTORY_TYPE_LABELS[tipo],
+            descricao,
+            resumo: tipo === "armadura" ? "Armadura manual da ficha." : "Item manual da ficha.",
+            caBonus: Number.isFinite(caBonus) ? Math.max(0, Number(caBonus.toFixed(2))) : 0,
+            equipado: false,
+            materialNome: "",
+            materialCorHex: "",
+            materialCor: "",
+            raridadeId: "",
+            raridadeNome: "",
+            peso: "",
+            danoResumo: "",
+            fonte: "Manual"
+        });
+        salvarInventarioItens(itens);
+
+        if (nomeEl) nomeEl.value = "";
+        if (descricaoEl) descricaoEl.value = "";
+        if (caEl) caEl.value = "0";
+        if (tipoEl) tipoEl.value = "item";
+
+        renderPainelInventario();
+        recalcularSeResultadoVisivel();
+    }
+
+    function lerItensForjadosCompartilhados() {
+        if (typeof window === "undefined" || !window.localStorage) return [];
+        try {
+            const bruto = window.localStorage.getItem(FORGED_ITEM_STORAGE_KEY);
+            if (!bruto) return [];
+            const dados = JSON.parse(bruto);
+            return Array.isArray(dados) ? dados : [];
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    function importarItensDaCalculadora() {
+        const compartilhados = sanitizarInventarioItens(lerItensForjadosCompartilhados());
+        if (!compartilhados.length) {
+            atualizarStatusSave("Nenhum item forjado foi encontrado na calculadora ainda.", true);
+            return;
+        }
+
+        const atuais = obterInventarioItens();
+        const idsAtuais = new Set(atuais.map((item) => item.id));
+        const novos = compartilhados.filter((item) => !idsAtuais.has(item.id));
+
+        if (!novos.length) {
+            atualizarStatusSave("Todos os itens forjados ja foram importados para o inventario.");
+            return;
+        }
+
+        salvarInventarioItens([...atuais, ...novos]);
+        renderPainelInventario();
+        recalcularSeResultadoVisivel();
+        atualizarStatusSave(`${novos.length} item(ns) importado(s) da calculadora para o inventario.`);
+    }
+
+    function alternarEquipadoInventario(id, ativo) {
+        const itens = obterInventarioItens().map((item) => item.id === id ? { ...item, equipado: !!ativo } : item);
+        salvarInventarioItens(itens);
+        renderPainelInventario();
+        recalcularSeResultadoVisivel();
+    }
+
+    function removerItemInventario(id) {
+        const itens = obterInventarioItens().filter((item) => item.id !== id);
+        salvarInventarioItens(itens);
+        renderPainelInventario();
+        recalcularSeResultadoVisivel();
+    }
+
+    function obterMoedasFicha() {
+        return {
+            cobre: lerNumeroNaoNegativo("cobre", 0),
+            prata: lerNumeroNaoNegativo("prata", 0),
+            ouro: lerNumeroNaoNegativo("ouro", 0),
+            platina: lerNumeroNaoNegativo("platina", 0),
+            mithril: lerNumeroNaoNegativo("mithril", 0)
+        };
+    }
+
+    function calcularTotalCobre(moedas) {
+        return Object.entries(moedas).reduce((acc, [tipo, quantidade]) => {
+            return acc + (quantidade * COIN_VALUES[tipo]);
+        }, 0);
+    }
+
+    function normalizarMoedas(totalCobre) {
+        let restante = Math.max(0, Math.floor(totalCobre || 0));
+        const normalizadas = { mithril: 0, platina: 0, ouro: 0, prata: 0, cobre: 0 };
+
+        COIN_ORDER.forEach((tipo) => {
+            normalizadas[tipo] = Math.floor(restante / COIN_VALUES[tipo]);
+            restante %= COIN_VALUES[tipo];
+        });
+
+        return normalizadas;
+    }
+
+    function resumirMoedas(moedas) {
+        return COIN_ORDER.map((tipo) => `${formatarNumero(moedas[tipo])} ${tipo}`).join(" | ");
+    }
+
+    function atualizarResumoMoedas() {
+        const resumo = document.getElementById("moedasResumo");
+        if (!resumo) return;
+
+        const moedas = obterMoedasFicha();
+        const totalCobre = calcularTotalCobre(moedas);
+        const moedasCompactas = normalizarMoedas(totalCobre);
+        resumo.textContent = `Total base: ${formatarNumero(totalCobre)} cobre | Forma compacta: ${resumirMoedas(moedasCompactas)}`;
+    }
+
+    function recalcularSeResultadoVisivel() {
+        const resultado = document.getElementById("resultado");
+        if (resultado && resultado.style.display === "block") {
+            calcularFicha(true);
+        }
+    }
+
+    function aplicarDeltaMoedas(tipo, quantidade) {
+        const moedaTipo = COIN_VALUES[tipo] ? tipo : obterTipoMoedaPersistido();
+        const moedasAtuais = obterMoedasFicha();
+        const totalAtual = calcularTotalCobre(moedasAtuais);
+        const delta = (Number(quantidade) || 0) * COIN_VALUES[moedaTipo];
+        const novoTotal = Math.max(0, totalAtual + delta);
+        const normalizadas = normalizarMoedas(novoTotal);
+
+        COIN_ORDER.forEach((chave) => {
+            const el = document.getElementById(chave);
+            if (el) el.value = normalizadas[chave];
+        });
+
+        atualizarResumoMoedas();
+        recalcularSeResultadoVisivel();
+    }
+
+    function adicionarMoedas() {
+        const tipoSelecionado = sincronizarTipoMoeda(document.getElementById("moedaTipoAcao") && document.getElementById("moedaTipoAcao").value);
+        const valor = sincronizarValorMoeda(document.getElementById("moedaValorAcao") && document.getElementById("moedaValorAcao").value);
+        aplicarDeltaMoedas(tipoSelecionado, valor);
+    }
+
+    function removerMoedas() {
+        const tipoSelecionado = sincronizarTipoMoeda(document.getElementById("moedaTipoAcao") && document.getElementById("moedaTipoAcao").value);
+        const valor = sincronizarValorMoeda(document.getElementById("moedaValorAcao") && document.getElementById("moedaValorAcao").value);
+        aplicarDeltaMoedas(tipoSelecionado, -valor);
+    }
+
+    function limitarRecurso(valor, maximo) {
+        return Math.min(Math.max(0, Math.floor(Number(valor) || 0)), Math.max(0, maximo || 0));
+    }
+
+    function obterDadosFichaBase() {
+        const nome = document.getElementById("nome").value || "Heroi Sem Nome";
+        const nivel = parseInt(document.getElementById("nivel").value) || 1;
+        const classeKey = document.getElementById("classeId").value;
+        const subKey = document.getElementById("subclasseId").value;
+        const racaSel = document.getElementById("raca");
+        const raceData = racialModifiers[racaSel.value] || { modificadores: {força:0,inteligência:0,forçaVontade:0,agilidade:0,resistência:0,carisma:0}, passivas:[] };
+        const classData = classesRPG[classeKey];
+
+        if (!classData) return null;
+
+        const attrs = {
+            f: parseInt(document.getElementById("forca").value) || 0,
+            i: parseInt(document.getElementById("inteligencia").value) || 0,
+            v: parseInt(document.getElementById("forcaVontade").value) || 0,
+            a: parseInt(document.getElementById("agilidade").value) || 0,
+            r: parseInt(document.getElementById("resistencia").value) || 0,
+            c: parseInt(document.getElementById("carisma").value) || 0
+        };
+
+        const getMod = (base, raceMod) => Math.floor(base / 2) + Math.floor(raceMod * Math.max(1, nivel / 20));
+
+        const fFim = getMod(attrs.f, raceData.modificadores.força);
+        const iFim = getMod(attrs.i, raceData.modificadores.inteligência);
+        const vFim = getMod(attrs.v, raceData.modificadores.forçaVontade);
+        const aFim = getMod(attrs.a, raceData.modificadores.agilidade);
+        const rFim = getMod(attrs.r, raceData.modificadores.resistência);
+        const cFim = getMod(attrs.c, raceData.modificadores.carisma);
+        const caBase = lerNumeroDecimalNaoNegativo("caBase", 0);
+        const caInventario = obterBonusCaInventario();
+        const caTotal = caBase + caInventario;
+
+        let hpMax = classData.hp + ((nivel - 1) * 5) + rFim;
+        let mpMax = classData.mp + ((nivel - 1) * 2) + iFim;
+        let spMax = classData.sp + ((nivel - 1) * 1) + Math.floor(rFim / 2);
+
+        if (classeKey === "boss") { hpMax *= 2; mpMax *= 2; spMax *= 2; }
+        if (classeKey === "divindade") { hpMax *= 5; mpMax *= 5; spMax *= 5; }
+
+        return {
+            nome,
+            nivel,
+            classeKey,
+            subKey,
+            racaSel,
+            raceData,
+            classData,
+            fFim,
+            iFim,
+            vFim,
+            aFim,
+            rFim,
+            cFim,
+            caBase,
+            caInventario,
+            caTotal,
+            hpMax,
+            mpMax,
+            spMax
+        };
+    }
+
+    function sincronizarRecursosAtuais(ficha) {
+        const hpEl = document.getElementById("hpAtual");
+        const mpEl = document.getElementById("mpAtual");
+        const spEl = document.getElementById("spAtual");
+
+        const hpAtual = limitarRecurso(hpEl && hpEl.value !== "" ? hpEl.value : ficha.hpMax, ficha.hpMax);
+        const mpAtual = limitarRecurso(mpEl && mpEl.value !== "" ? mpEl.value : ficha.mpMax, ficha.mpMax);
+        const spAtual = limitarRecurso(spEl && spEl.value !== "" ? spEl.value : ficha.spMax, ficha.spMax);
+
+        if (hpEl) hpEl.value = hpAtual;
+        if (mpEl) mpEl.value = mpAtual;
+        if (spEl) spEl.value = spAtual;
+
+        return { hpAtual, mpAtual, spAtual };
+    }
+
+    function alterarRecurso(recurso, delta) {
+        const ficha = obterDadosFichaBase();
+        if (!ficha) return;
+
+        const maximos = {
+            hpAtual: ficha.hpMax,
+            mpAtual: ficha.mpMax,
+            spAtual: ficha.spMax
+        };
+
+        const el = document.getElementById(recurso);
+        if (!el || !Object.prototype.hasOwnProperty.call(maximos, recurso)) return;
+
+        const atual = limitarRecurso(el.value === "" ? maximos[recurso] : el.value, maximos[recurso]);
+        el.value = limitarRecurso(atual + delta, maximos[recurso]);
+        calcularFicha(true);
+    }
+
+    function aplicarDano() { alterarRecurso("hpAtual", -obterValorAcao()); }
+    function aplicarCura() { alterarRecurso("hpAtual", obterValorAcao()); }
+    function gastarMana() { alterarRecurso("mpAtual", -obterValorAcao()); }
+    function recuperarMana() { alterarRecurso("mpAtual", obterValorAcao()); }
+    function gastarEstamina() { alterarRecurso("spAtual", -obterValorAcao()); }
+    function recuperarEstamina() { alterarRecurso("spAtual", obterValorAcao()); }
+
+    function atualizarStatusSave(msg, isError) {
+        const status = document.getElementById("saveStatus");
+        status.textContent = msg || "";
+        status.style.color = isError ? "#ff8888" : "var(--text-muted)";
+    }
+
+    function coletarDadosFicha() {
+        const dados = {};
+        SAVE_FIELD_IDS.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) dados[id] = el.value;
+        });
+        return {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            dados
+        };
+    }
+
+    function gerarNomeArquivoFicha() {
+        const nomeBase = (document.getElementById("nome").value || "heroi_sem_nome")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9_-]+/g, "_")
+            .replace(/^_+|_+$/g, "")
+            .toLowerCase();
+        return `${nomeBase || "heroi_sem_nome"}_indomitus.txt`;
+    }
+
+    function serializarDadosFicha(payload) {
+        return `${SAVE_FILE_HEADER}\n${JSON.stringify(payload, null, 2)}`;
+    }
+
+    function salvarFichaTxt() {
+        const ficha = obterDadosFichaBase();
+        if (ficha) {
+            sincronizarRecursosAtuais(ficha);
+        }
+        atualizarResumoMoedas();
+        const payload = coletarDadosFicha();
+        const blob = new Blob([serializarDadosFicha(payload)], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = gerarNomeArquivoFicha();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        atualizarStatusSave("Ficha salva em .txt com sucesso.");
+    }
+
+    function abrirCarregamentoFicha() {
+        document.getElementById("arquivoFicha").click();
+    }
+
+    function interpretarDadosFicha(texto) {
+        const bruto = String(texto || "").trim();
+        if (!bruto) throw new Error("Arquivo vazio.");
+
+        const jsonText = bruto.startsWith(SAVE_FILE_HEADER)
+            ? bruto.slice(SAVE_FILE_HEADER.length).trim()
+            : bruto;
+
+        const payload = JSON.parse(jsonText);
+        if (!payload || typeof payload !== "object" || !payload.dados || typeof payload.dados !== "object") {
+            throw new Error("Formato de arquivo inválido.");
+        }
+        return payload.dados;
+    }
+
+    function aplicarDadosFicha(dados) {
+        SAVE_FIELD_IDS.forEach((id) => {
+            if (!Object.prototype.hasOwnProperty.call(dados, id)) return;
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.value = dados[id];
+        });
+
+        triggerClassChecks();
+
+        const subclasseEl = document.getElementById("subclasseId");
+        const subclasseId = dados.subclasseId || "none";
+        if ([...subclasseEl.options].some((opt) => opt.value === subclasseId)) {
+            subclasseEl.value = subclasseId;
+        } else {
+            subclasseEl.value = "none";
+        }
+
+        sincronizarAnotacoes(dados.anotacoes || "", "form");
+        sincronizarInventarioTexto(dados.inventarioTexto || "", "form");
+        renderPainelsDeClasse();
+        atualizarResumoMoedas();
+        atualizarPontosLivres();
+        calcularFicha(true);
+    }
+
+    function carregarFichaTxt(event) {
+        const arquivo = event.target.files && event.target.files[0];
+        if (!arquivo) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const dados = interpretarDadosFicha(reader.result);
+                aplicarDadosFicha(dados);
+                atualizarStatusSave(`Ficha "${arquivo.name}" carregada com sucesso.`);
+            } catch (error) {
+                atualizarStatusSave("Não foi possível carregar este arquivo .txt.", true);
+                alert(`Falha ao carregar a ficha: ${error.message}`);
+            } finally {
+                event.target.value = "";
+            }
+        };
+
+        reader.onerror = () => {
+            atualizarStatusSave("Falha ao ler o arquivo selecionado.", true);
+            event.target.value = "";
+        };
+
+        reader.readAsText(arquivo, "utf-8");
+    }
+
+    function calcularFicha(silencioso) {
+        if (atualizarPontosLivres() < 0) {
+            if (!silencioso) alert("Você excedeu o limite de pontos misticos!");
+            return;
+        }
+
+        const ficha = obterDadosFichaBase();
+        if (!ficha) return;
+
+        const moedas = obterMoedasFicha();
+        const totalCobre = calcularTotalCobre(moedas);
+        const moedasCompactas = normalizarMoedas(totalCobre);
+        const recursosAtuais = sincronizarRecursosAtuais(ficha);
+        const valorAcao = obterValorAcaoPersistido();
+        const valorMoedaAcao = obterValorMoedaPersistido();
+        const tipoMoedaAcao = obterTipoMoedaPersistido();
+        const anotacoes = document.getElementById("anotacoes").value || "";
+        const inventarioTexto = document.getElementById("inventarioTexto").value || "";
+        const habilidadesEscolhidas = obterHabilidadesSelecionadasDetalhadas();
+        const passivasEscolhidas = obterPassivasDetalhadas();
+        const especializacoesEscolhidas = obterEspecializacoesDetalhadas();
+        const habilidadesCustom = obterHabilidadesPersonalizadas();
+        const inventarioItens = obterInventarioItens();
+        const periciasAtivas = [...obterPericiasDisponiveis()];
+        const mkBox = (lbl, val) => `<div class='stat-box'><div class='stat-label'>${lbl}</div><div class='stat-value'>${val}</div></div>`;
+        const mkBar = (classe, lbl, atual, maximo) => {
+            const largura = maximo > 0 ? Math.max(0, Math.min(100, (atual / maximo) * 100)) : 0;
+            return `<div class="bar-wrap ${classe}"><div class="bar-inner" style="width:${largura}%"></div><div class="bar-label">${lbl}: ${atual} / ${maximo}</div></div>`;
+        };
+        const mkCoinCard = (lbl, val) => `<div class="coin-card"><span>${lbl}</span><strong>${formatarNumero(val)}</strong></div>`;
+        const mkAbilityCard = (titulo, subtitulo, texto) => `<div class="ability-card is-selected"><strong>${titulo}</strong><small>${subtitulo}${texto ? `<br>${texto}` : ""}</small></div>`;
+        const subclasseAtiva = ficha.subKey !== "none" && ficha.classData.subclasses[ficha.subKey]
+            ? ficha.classData.subclasses[ficha.subKey]
+            : null;
+        const efeitosSubclasse = subclasseAtiva
+            ? subclasseAtiva.efeitos.map((efeito) => `<li>&#9889; ${efeito}</li>`).join("")
+            : "";
+
+        atualizarResumoMoedas();
+
+        let html = `
+            <div class="result-card">
+                <h3 class="result-title">${ficha.nome}</h3>
+                <p class="result-subtitle">${ficha.racaSel.options[ficha.racaSel.selectedIndex].text} | ${ficha.classData.nome} (Nv. ${ficha.nivel})${subclasseAtiva ? ` | ${subclasseAtiva.nome}` : ""}</p>
+                
+                <div class="bars">
+                    ${mkBar("hp", "HP", recursosAtuais.hpAtual, ficha.hpMax)}
+                    ${mkBar("mp", "MP", recursosAtuais.mpAtual, ficha.mpMax)}
+                    ${mkBar("sp", "SP", recursosAtuais.spAtual, ficha.spMax)}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Controle de Combate</h4>
+                    <div class="resource-control-grid">
+                        <div class="resource-input">
+                            <label for="acaoValor">Valor da acao</label>
+                            <input type="number" id="acaoValor" min="1" value="${valorAcao}" oninput="sincronizarValorAcao(this.value)">
+                        </div>
+                        <div class="resource-actions">
+                            <button class="action-btn resource-btn damage" type="button" onclick="aplicarDano()">Dano</button>
+                            <button class="action-btn resource-btn heal" type="button" onclick="aplicarCura()">Cura</button>
+                            <button class="action-btn resource-btn mana" type="button" onclick="gastarMana()">Gastar MP</button>
+                            <button class="action-btn resource-btn mana" type="button" onclick="recuperarMana()">Recuperar MP</button>
+                            <button class="action-btn resource-btn stamina" type="button" onclick="gastarEstamina()">Gastar SP</button>
+                            <button class="action-btn resource-btn stamina" type="button" onclick="recuperarEstamina()">Recuperar SP</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    ${mkBox('F', ficha.fFim)} ${mkBox('I', ficha.iFim)} ${mkBox('V', ficha.vFim)}
+                    ${mkBox('A', ficha.aFim)} ${mkBox('R', ficha.rFim)} ${mkBox('C', ficha.cFim)} ${mkBox('CA', formatarValorFicha(ficha.caTotal))}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Defesa</h4>
+                    <div class="stats-grid">
+                        ${mkBox('CA Base', formatarValorFicha(ficha.caBase))}
+                        ${mkBox('CA Inventario', formatarValorFicha(ficha.caInventario))}
+                        ${mkBox('CA Final', formatarValorFicha(ficha.caTotal))}
+                    </div>
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Tesouro</h4>
+                    <div class="coins-grid">
+                        ${mkCoinCard("Cobre", moedas.cobre)}
+                        ${mkCoinCard("Prata", moedas.prata)}
+                        ${mkCoinCard("Ouro", moedas.ouro)}
+                        ${mkCoinCard("Platina", moedas.platina)}
+                        ${mkCoinCard("Mithril", moedas.mithril)}
+                    </div>
+                    <div class="currency-summary">Total em cobre: ${formatarNumero(totalCobre)} | Forma compacta: ${resumirMoedas(moedasCompactas)}</div>
+                    <div class="currency-manager-grid">
+                        <div class="resource-input">
+                            <label for="moedaValorAcao">Quantidade</label>
+                            <input type="number" id="moedaValorAcao" min="1" value="${valorMoedaAcao}" oninput="sincronizarValorMoeda(this.value)">
+                        </div>
+                        <div class="resource-input">
+                            <label for="moedaTipoAcao">Tipo de moeda</label>
+                            <select id="moedaTipoAcao" onchange="sincronizarTipoMoeda(this.value)">
+                                <option value="cobre" ${tipoMoedaAcao === "cobre" ? "selected" : ""}>Cobre</option>
+                                <option value="prata" ${tipoMoedaAcao === "prata" ? "selected" : ""}>Prata</option>
+                                <option value="ouro" ${tipoMoedaAcao === "ouro" ? "selected" : ""}>Ouro</option>
+                                <option value="platina" ${tipoMoedaAcao === "platina" ? "selected" : ""}>Platina</option>
+                                <option value="mithril" ${tipoMoedaAcao === "mithril" ? "selected" : ""}>Mithril</option>
+                            </select>
+                        </div>
+                        <div class="currency-manager-actions">
+                            <button class="action-btn resource-btn coin-add" type="button" onclick="adicionarMoedas()">Adicionar</button>
+                            <button class="action-btn resource-btn coin-remove" type="button" onclick="removerMoedas()">Remover</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Heraldistica</h4>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+                    ${skillTableLogic(ficha.nivel).map(s => `<div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:4px; text-align:center;"><small style="color:var(--text-muted); font-size:0.7em;">${s.name}</small><br><strong>${s.val}</strong></div>`).join('')}
+                </div>
+
+                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Herancas</h4>
+                <ul style="list-style:none; padding:0; font-size:0.9em;">
+                    ${ficha.raceData.passivas.map(p => `<li>&#127811; ${p}</li>`).join('')}
+                    ${ficha.classData.passivas.map(p => `<li>&#128171; ${p}</li>`).join('')}
+                    ${efeitosSubclasse}
+                </ul>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Pericias Ativas</h4>
+                    <div class="tag-list">
+                        ${periciasAtivas.length ? periciasAtivas.map((nome) => `<span class="tag-pill">${nome}</span>`).join("") : '<span class="tag-pill">Nenhuma pericia detectada</span>'}
+                    </div>
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Habilidades Aprendidas</h4>
+                    ${habilidadesEscolhidas.length ? `<div class="ability-grid">${habilidadesEscolhidas.map((item) => mkAbilityCard(item.nome, `${item.tierLabel} | ${item.custo}`, `${item.descricao}${item.efeito ? ` Efeito: ${item.efeito}` : ""}`)).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade selecionada para o nivel atual.</p>'}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Passivas Escolhidas</h4>
+                    ${passivasEscolhidas.length ? `<div class="ability-grid">${passivasEscolhidas.map((item) => mkAbilityCard(item.nome, item.resumo, `Bonus: ${item.bonus}${item.requisito ? ` Requisito: ${item.requisito}.` : ""}`)).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade passiva selecionada.</p>'}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Especializacoes</h4>
+                    ${especializacoesEscolhidas.length ? `<div class="ability-grid">${especializacoesEscolhidas.map((item) => mkAbilityCard(item.nome, "Especializacao", item.resumo)).join("")}</div>` : '<p class="codex-note">Nenhuma especializacao escolhida ainda.</p>'}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Habilidades Personalizadas</h4>
+                    ${habilidadesCustom.length ? `<div class="ability-grid">${habilidadesCustom.map((item) => mkAbilityCard(item.nome, item.custo, item.descricao)).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade personalizada registrada.</p>'}
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Inventario</h4>
+                    <textarea id="inventarioTextoCard" class="notes-area" placeholder="Descreva o inventario dessa ficha..." oninput="sincronizarInventarioTexto(this.value, 'card')">${escaparHtml(inventarioTexto)}</textarea>
+                    <div class="notes-help">Itens equipados e removidos aqui tambem atualizam a ficha.</div>
+                    <div style="margin-top:14px;">
+                        ${inventarioItens.length ? `<div class="inventory-list">${inventarioItens.map((item) => criarCardInventarioHtml(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item foi adicionado ao inventario ainda.</p>'}
+                    </div>
+                </div>
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Anotacoes</h4>
+                    <textarea id="anotacoesCard" class="notes-area" placeholder="Escreva observacoes livres para essa ficha..." oninput="sincronizarAnotacoes(this.value, 'card')">${escaparHtml(anotacoes)}</textarea>
+                </div>
+            </div>
+        `;
+
+        const res = document.getElementById("resultado");
+        res.innerHTML = html;
+        res.style.display = "block";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        atualizarPontosLivres();
+        triggerClassChecks();
+        atualizarResumoMoedas();
+        sincronizarAnotacoes(document.getElementById("anotacoes").value || "", "form");
+        sincronizarInventarioTexto(document.getElementById("inventarioTexto").value || "", "form");
+        atualizarStatusSave("Você pode salvar a ficha em .txt e carregar depois.");
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Alto Humano</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-hover: #f7c873;
+            --primary-glow: rgba(212, 175, 55, 0.6);
+            --bg-dark: #121214;
+            --bg-panel: rgba(30, 30, 35, 0.85);
+            --bg-input: rgba(15, 15, 20, 0.9);
+            --text-main: #f4f4f4;
+            --text-muted: #b0b0b0;
+            --border-glow: 0 0 15px rgba(212, 175, 55, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(to bottom, rgba(10,10,12,0.95), rgba(20,20,25,0.8));
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 20px var(--primary-glow);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1.1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 8px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; }
+
+        .forge-container {
+            background: var(--bg-panel);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px; padding: 30px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .forge-header h2 {
+            text-align: center; color: var(--primary); font-size: 2em; margin-bottom: 30px;
+            border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 15px;
+            font-family: 'MedievalSharp', serif;
+        }
+        
+        .forge-header p.subtitle {
+            text-align: center; color: var(--text-muted); font-size: 1.1em;
+            margin-top: -15px; margin-bottom: 30px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        .form-group label { display: block; margin-bottom: 8px; color: var(--primary); font-weight: bold; }
+        
+        select, input[type='number'], input[type='text'] {
+            width: 100%; padding: 12px 15px; font-size: 1em; font-family: 'Cinzel', serif;
+            color: var(--text-main); background-color: var(--bg-input);
+            border: 1px solid #444; border-radius: 6px; transition: var(--transition); box-sizing: border-box;
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); outline: none;
+        }
+
+        .action-btn {
+            background: linear-gradient(145deg, #111, #222); border: 2px solid var(--primary);
+            color: var(--primary); font-family: 'Cinzel', serif; font-size: 1.2em; font-weight: bold;
+            padding: 15px 30px; border-radius: 8px; cursor: pointer; display: block; margin: 30px auto;
+            transition: var(--transition); text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(212,175,55,0.2); width: 100%; max-width: 400px;
+            text-align: center; text-decoration: none;
+        }
+
+        .action-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        .btn-list {
+            display: flex; flex-direction: column; gap: 15px; padding: 20px 0;
+            max-width: 500px; margin: 0 auto;
+        }
+
+        .btn-list .action-btn {
+            margin: 0; max-width: 100%;
+        }
+
+        .output {
+            margin-top: 30px; padding: 20px; text-align: center;
+            font-size: 1.5em; font-weight: bold; color: var(--primary);
+            background: rgba(10,10,15,0.9); border: 1px solid var(--primary);
+            border-radius: 12px; box-shadow: 0 0 25px rgba(212,175,55,0.4);
+            word-wrap: break-word; white-space: pre-wrap; 
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
+        .error { color: #ff3333; text-align: center; margin-top: 10px; font-weight: bold; text-shadow: 0 0 5px #ff0000; }
+
+        * { box-sizing: border-box; }
+
+        :root {
+            --primary: #f5e0ad;
+            --primary-hover: #fff3d7;
+            --secondary: #b8d4f2;
+            --primary-glow: rgba(184, 212, 242, 0.42);
+            --bg-dark: #0a1220;
+            --bg-panel: rgba(18, 30, 52, 0.78);
+            --bg-input: rgba(10, 19, 35, 0.86);
+            --text-main: #f8fbff;
+            --text-muted: #becee0;
+            --border-glow: 0 24px 58px rgba(13, 23, 42, 0.34);
+        }
+
+        body {
+            position: relative;
+            overflow-x: hidden;
+            font-family: 'Cormorant Garamond', serif;
+            background:
+                radial-gradient(circle at 50% -8%, rgba(255, 244, 219, 0.34) 0%, transparent 28%),
+                radial-gradient(circle at 15% 20%, rgba(184, 212, 242, 0.16) 0%, transparent 26%),
+                radial-gradient(circle at 85% 18%, rgba(255, 247, 230, 0.08) 0%, transparent 24%),
+                linear-gradient(180deg, #14243d 0%, #0d1728 42%, #09111d 100%);
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                linear-gradient(90deg, transparent 8%, rgba(255,255,255,0.05) 8.3%, transparent 8.6%),
+                linear-gradient(90deg, transparent 91%, rgba(255,255,255,0.05) 91.3%, transparent 91.6%),
+                radial-gradient(circle at 50% 16%, rgba(255, 244, 219, 0.14) 0%, transparent 18%);
+            opacity: 0.75;
+        }
+
+        body::after {
+            background: linear-gradient(180deg, transparent 72%, rgba(184, 212, 242, 0.08) 100%);
+            opacity: 0.9;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(10, 20, 36, 0.96), rgba(18, 32, 54, 0.74));
+            border-bottom: 1px solid rgba(184, 212, 242, 0.3);
+            box-shadow: 0 12px 34px rgba(7, 13, 25, 0.45);
+            backdrop-filter: blur(14px);
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 3px;
+            text-shadow: 0 0 16px rgba(184, 212, 242, 0.22);
+        }
+
+        nav ul { flex-wrap: wrap; }
+
+        nav a {
+            letter-spacing: 0.06em;
+            font-size: 1.02em;
+        }
+
+        nav a:hover {
+            color: var(--primary-hover);
+            text-shadow: 0 0 10px rgba(184, 212, 242, 0.24);
+        }
+
+        main {
+            max-width: 980px;
+            margin: 54px auto;
+            padding: 0 20px 36px;
+        }
+
+        .forge-container {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(19, 33, 57, 0.92), rgba(11, 20, 37, 0.86));
+            border: 1px solid rgba(184, 212, 242, 0.22);
+            border-radius: 28px;
+            padding: 42px 36px;
+            box-shadow: var(--border-glow);
+        }
+
+        .forge-container::before {
+            content: "";
+            position: absolute;
+            inset: 16px;
+            border: 1px solid rgba(255, 243, 214, 0.12);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .forge-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 10%, rgba(255, 244, 219, 0.06) 50%, transparent 90%);
+            pointer-events: none;
+        }
+
+        .forge-header h2 {
+            color: var(--primary);
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.25em;
+            letter-spacing: 0.08em;
+            border-bottom-color: rgba(184, 212, 242, 0.2);
+            margin-bottom: 16px;
+        }
+
+        .forge-header p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.24em;
+            margin: 0 auto 34px;
+            max-width: 620px;
+            line-height: 1.5;
+        }
+
+        select, input[type='number'], input[type='text'] {
+            padding: 16px 18px;
+            font-size: 1.12em;
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(180deg, rgba(10, 19, 35, 0.95), rgba(8, 15, 28, 0.92));
+            border: 1px solid rgba(184, 212, 242, 0.24);
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        input::placeholder {
+            color: rgba(190, 206, 224, 0.72);
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: rgba(245, 224, 173, 0.52);
+            box-shadow: 0 0 0 4px rgba(184, 212, 242, 0.12), 0 0 18px rgba(184, 212, 242, 0.16);
+        }
+
+        .output {
+            margin-top: 28px;
+            padding: 24px 22px;
+            background: linear-gradient(180deg, rgba(14, 24, 42, 0.96), rgba(10, 17, 31, 0.92));
+            border: 1px solid rgba(184, 212, 242, 0.22);
+            border-radius: 22px;
+            color: var(--primary);
+            font-size: 1.62em;
+            font-weight: 600;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 18px 32px rgba(7, 13, 25, 0.34);
+            text-shadow: 0 0 16px rgba(184, 212, 242, 0.14);
+            line-height: 1.35;
+        }
+
+        .error {
+            color: #ffd5ae;
+            margin-top: 14px;
+            text-shadow: none;
+        }
+
+        @media (max-width: 700px) {
+            header h1 { font-size: 2em; }
+            main { margin-top: 30px; padding: 0 14px 28px; }
+            .forge-container { padding: 28px 22px; border-radius: 22px; }
+            .forge-header h2 { font-size: 1.72em; }
+            .forge-header p.subtitle { font-size: 1.08em; }
+            select, input[type='number'], input[type='text'] { padding: 14px 16px; font-size: 1.04em; }
+            .output { font-size: 1.28em; padding: 20px 18px; }
+        }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Voltar aos Costumes (Idiomas)</a></li>
+                <li><a href="menu.html">Hub Principal</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forge-container">
+            <div class="forge-header">
+                <h2>Voz do Alto Trono</h2>
+                <p class="subtitle">Erga palavras do idioma comum como quem fala diante de colunas sagradas. O Alto Humano responde com brilho imperial.</p>
+            </div>
+            
+            <div class="form-group full-width">
+                <input type="text" id="inputWord" placeholder="Escreva como quem fala à corte..." oninput="transcribeWord()" autocomplete="off">
+                <div id="error" class="error"></div>
+            </div>
+
+            <div id="transcription" class="output">A guardiã descansa...</div>
+        </div>
+    </main>
+
+    <script>
+        function transcribeWord() {
+            const inputElement = document.getElementById("inputWord");
+            const transcriptionElement = document.getElementById("transcription");
+            const errorElement = document.getElementById("error");
+            const word = inputElement.value.toLowerCase();
+
+            const transcriptionMap = {
+                 'a': 'ā',      
+    'e': 'ēl',     
+    'i': 'eī',     
+    'o': 'ōh',     
+    'u': 'ūl',     
+    'y': 'ȳ',   
+    'b': 'v',      
+    'c': 'k',      
+    'd': 'dh',   
+    'f': 'ph',     
+    'g': 'da',    
+    'h': 'kha',    
+    'j': 'y',      
+    'k': 'q',      
+    'l': 'lil',     
+    'm': 'm',     
+    'n': 'ner',    
+    'p': 'b',      
+    'q': 'qu',     
+    'r': 'ris',   
+    's': 'zes',  
+    't': 'fez',   
+    'v': 'war',   
+    'w': 'vis',    
+    'x': 'ks',   
+    'z': 'zh',    
+    'ae': 'āi',   
+    'oe': 'ūi',    
+    'au': 'āw',    
+    'eu': 'ēw',   
+    'ui': 'ūi',   
+    'ph': 'f',    
+    'th': 't',   
+    'kh': 'h',    
+    'gh': 'g',     
+    'ch': 'k',    
+    'sh': 's',    
+    'rh': 'r',     
+    'dr': 'dhār',
+    'sc': 'skh',  
+    'mn': 'mnū',   
+    'pt': 'the', 
+    'é': 'qui', 
+     'ê': 'que',
+     'ã': 'ne',
+     'Õ': 've',
+            };
+
+            let transcription = "";
+            let lastTranscribedChar = "";
+            let hasError = false;
+
+            if(word.length === 0) {
+                transcriptionElement.textContent = "A guardiã descansa...";
+                errorElement.textContent = "";
+                return;
+            }
+
+            for (const letter of word) {
+                if (letter === " ") {
+                    transcription += " ";
+                    lastTranscribedChar = "";
+                    continue;
+                }
+
+                const transcribedLetter = transcriptionMap[letter];
+                
+                if (transcribedLetter) {
+                    if (transcribedLetter.charAt(0) === lastTranscribedChar) {
+                        transcription += transcribedLetter.substring(1);
+                    } else {
+                        transcription += transcribedLetter;
+                    }
+                    lastTranscribedChar = transcription.charAt(transcription.length - 1);
+                } else {
+                    errorElement.textContent = `Alfabeto incapaz de reconhecer símbolo profano: "${letter}"`;
+                    hasError = true;
+                }
+            }
+
+            if (!hasError) {
+                errorElement.textContent = "";
+            }
+
+            transcriptionElement.innerHTML = `<span style="color:var(--text-muted); font-size:0.6em; display:block; margin-bottom:10px;">TRADUÇÃO FONÉTICA:</span>${transcription}`;
+        }
+    </script>
+</body>
+</html>

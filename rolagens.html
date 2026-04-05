@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Mesa de Rolagens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --gold:#d8b56a;--gold-soft:#f0d79d;--bg:#050810;--panel:rgba(10,18,30,.84);--panel-2:rgba(8,13,22,.96);
+            --text:#f5efe4;--muted:#bcc6d3;--line:rgba(216,181,106,.18);--cyan:#6dd5ff;--ember:#ff9e57;
+            --shadow:0 24px 60px rgba(0,0,0,.38);--radius:26px;--transition:220ms ease;
+        }
+        *{box-sizing:border-box} html{scroll-behavior:smooth}
+        body{
+            margin:0;color:var(--text);font-family:"Cormorant Garamond",serif;min-height:100vh;overflow-x:hidden;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(109,213,255,.16), transparent 24%),
+                radial-gradient(circle at 84% 14%, rgba(255,158,87,.16), transparent 24%),
+                radial-gradient(circle at 70% 84%, rgba(216,181,106,.08), transparent 28%),
+                linear-gradient(180deg, #04070d 0%, #08111b 50%, #05080f 100%);
+        }
+        body::before{
+            content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;
+            background:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size:72px 72px;mask-image:linear-gradient(180deg, rgba(255,255,255,.55), transparent 85%);
+        }
+        a{color:inherit;text-decoration:none}
+        header{
+            position:sticky;top:0;z-index:10;backdrop-filter:blur(16px);
+            background:linear-gradient(180deg, rgba(5,8,16,.92), rgba(5,8,16,.72));border-bottom:1px solid var(--line);
+        }
+        .topbar,.wrap{max-width:1220px;margin:0 auto;padding:0 24px}
+        .topbar{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+        .brand small{display:block;color:var(--gold-soft);text-transform:uppercase;letter-spacing:.24em;font:600 .72rem "Cinzel",serif}
+        .brand h1{margin:4px 0 0;color:var(--gold);font:700 clamp(1.45rem,2vw,2rem) "Cinzel",serif;text-shadow:0 0 18px rgba(216,181,106,.22)}
+        nav{display:flex;flex-wrap:wrap;gap:10px}
+        nav a{
+            padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.03);color:var(--muted);
+            border:1px solid transparent;transition:var(--transition);font:600 .92rem "Cinzel",serif;
+        }
+        nav a:hover,nav a.is-active{transform:translateY(-1px);color:var(--gold-soft);border-color:var(--line);background:rgba(216,181,106,.08)}
+        main{position:relative;z-index:1;padding:38px 0 70px}
+        .hero,.layout{display:grid;gap:24px}
+        .hero{
+            grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);margin-bottom:24px;padding:34px;border-radius:34px;
+            border:1px solid rgba(216,181,106,.16);
+            background:
+                radial-gradient(circle at 16% 20%, rgba(109,213,255,.14), transparent 24%),
+                radial-gradient(circle at 86% 18%, rgba(255,158,87,.16), transparent 22%),
+                linear-gradient(135deg, rgba(9,18,34,.96), rgba(11,20,36,.92) 56%, rgba(45,27,18,.88) 100%);
+            box-shadow:0 30px 70px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05);
+            position:relative;overflow:hidden;
+        }
+        .hero::before{content:"";position:absolute;inset:16px;border-radius:26px;border:1px solid rgba(255,243,219,.08);pointer-events:none}
+        .eyebrow{
+            display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;
+            background:rgba(216,181,106,.08);border:1px solid var(--line);color:var(--gold-soft);
+            text-transform:uppercase;letter-spacing:.24em;font:600 .74rem "Cinzel",serif;
+        }
+        .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px rgba(216,181,106,.55)}
+        .hero-copy h2{margin:20px 0 14px;font:700 clamp(2.6rem,4vw,4.4rem) "Cinzel",serif;line-height:.98}
+        .hero-copy h2 span{display:block;color:var(--gold)}
+        .hero-copy p{margin:0;max-width:640px;color:var(--muted);font-size:1.18rem;line-height:1.5}
+        .hero-marks{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+        .hero-marks span{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:.9rem}
+        .hero-art{
+            position:relative;min-height:420px;border-radius:24px;border:1px solid rgba(255,255,255,.08);overflow:hidden;padding:22px;
+            background:
+                radial-gradient(circle at 50% 28%, rgba(109,213,255,.22), transparent 22%),
+                radial-gradient(circle at 20% 84%, rgba(255,158,87,.2), transparent 24%),
+                linear-gradient(180deg, rgba(8,13,24,.96), rgba(7,11,19,.98));
+        }
+        .hero-art::before{
+            content:"";position:absolute;inset:18px;border-radius:22px;border:1px solid rgba(255,255,255,.08);
+            background:linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+            background-size:42px 42px;
+        }
+        .dice-glyph{
+            position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160px;height:160px;border-radius:34px;
+            border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;background:linear-gradient(180deg, rgba(18,29,47,.92), rgba(8,14,25,.96));
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 40px rgba(0,0,0,.26);
+        }
+        .dice-glyph svg{width:96px;height:96px;color:var(--gold-soft);filter:drop-shadow(0 0 18px rgba(216,181,106,.18))}
+        .float-note{
+            position:absolute;max-width:170px;padding:12px 14px;border-radius:18px;background:rgba(8,13,24,.86);
+            border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 34px rgba(0,0,0,.24)
+        }
+        .float-note strong{display:block;margin-bottom:4px;color:var(--gold-soft);font:600 .88rem "Cinzel",serif}
+        .float-note span{display:block;color:var(--muted);font-size:.9rem;line-height:1.35}
+        .float-a{top:22px;left:20px}.float-b{top:56px;right:16px}.float-c{bottom:18px;left:34px}
+        .layout{grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr)}
+        .panel{
+            background:linear-gradient(180deg, rgba(12,19,30,.9), rgba(7,11,18,.95));border:1px solid var(--line);
+            border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+        }
+        .panel-inner{padding:28px}
+        .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+        .section-head h3{margin:0 0 6px;font:700 1.5rem "Cinzel",serif}
+        .section-head p,.hint{margin:0;color:var(--muted);font-size:1rem;line-height:1.45}
+        .badge{
+            padding:10px 14px;border-radius:999px;background:rgba(216,181,106,.08);border:1px solid var(--line);
+            color:var(--gold-soft);text-transform:uppercase;letter-spacing:.22em;font:600 .72rem "Cinzel",serif;white-space:nowrap
+        }
+        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+        .field{display:grid;gap:8px}.field.full{grid-column:1/-1}
+        label{color:var(--gold-soft);letter-spacing:.1em;text-transform:uppercase;font:600 .74rem "Cinzel",serif}
+        input[type="number"],input[type="text"]{
+            width:100%;min-height:56px;padding:14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);
+            background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));color:var(--text);outline:none;
+            font:600 1rem "Cormorant Garamond",serif;transition:var(--transition)
+        }
+        input::placeholder{color:rgba(190,200,215,.72)}
+        input:hover,input:focus{transform:translateY(-1px);border-color:rgba(216,181,106,.22);box-shadow:0 0 0 4px rgba(216,181,106,.06)}
+        .dice-preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:10px}
+        .dice-preset{
+            min-height:60px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            color:var(--muted);cursor:pointer;transition:var(--transition);font:700 1rem "Cinzel",serif
+        }
+        .dice-preset:hover,.dice-preset.is-active{
+            transform:translateY(-2px);color:var(--gold-soft);border-color:rgba(216,181,106,.26);
+            background:linear-gradient(180deg, rgba(216,181,106,.14), rgba(255,255,255,.04));box-shadow:0 18px 30px rgba(0,0,0,.18)
+        }
+        .mod-stack,.modifier-list,.history-list{display:grid;gap:12px}
+        .mod-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center}
+        .remove-btn,.ghost-btn,.action-btn{
+            min-height:54px;border-radius:16px;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:var(--transition);font-family:"Cinzel",serif
+        }
+        .remove-btn,.ghost-btn{background:rgba(255,255,255,.04);color:var(--muted)}
+        .remove-btn:hover,.ghost-btn:hover{transform:translateY(-2px);border-color:rgba(255,158,87,.28);background:rgba(255,158,87,.12);color:#fff1e7}
+        .action-btn{padding:12px 18px;border:0;background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#11141b;box-shadow:0 16px 34px rgba(216,181,106,.2)}
+        .action-btn:hover{transform:translateY(-2px)}
+        .stack-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+        .formula{
+            display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.08);color:var(--gold-soft);font:600 .82rem "Cinzel",serif;letter-spacing:.1em;text-transform:uppercase
+        }
+        .total{margin:18px 0 8px;font:700 clamp(3rem,6vw,5rem) "Cinzel",serif;line-height:1}
+        .total-sub{color:var(--muted);font-size:1.12rem;line-height:1.45;margin-bottom:22px}
+        .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}
+        .summary-box,.modifier-item,.history-item,.die-chip{
+            padding:14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)
+        }
+        .summary-box strong,.subsection h4{display:block;margin:0 0 6px;color:var(--gold-soft);font:600 .85rem "Cinzel",serif;letter-spacing:.08em;text-transform:uppercase}
+        .summary-box span{display:block;color:var(--text);font-size:1.06rem}
+        .subsection{margin-top:26px}
+        .breakdown{display:flex;flex-wrap:wrap;gap:10px}
+        .die-chip{min-width:68px;text-align:center}
+        .die-chip strong{display:block;color:var(--gold-soft);font:700 1.04rem "Cinzel",serif}
+        .die-chip span{display:block;margin-top:3px;color:var(--muted);font-size:.84rem}
+        .modifier-item,.history-item{display:flex;align-items:center;justify-content:space-between;gap:16px}
+        .modifier-item strong,.history-item strong{display:block;color:var(--text);font:600 .96rem "Cinzel",serif}
+        .modifier-item span,.history-item span,.empty{color:var(--muted);font-size:.97rem;line-height:1.4}
+        .history-item{align-items:flex-start}
+        .history-item em{color:var(--gold-soft);font-style:normal;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+        .history-value{color:var(--gold-soft);font:700 1.14rem "Cinzel",serif;white-space:nowrap}
+        @media (max-width:1020px){.hero,.layout{grid-template-columns:1fr}}
+        @media (max-width:760px){
+            .topbar,.wrap{padding-left:18px;padding-right:18px}.topbar{min-height:auto;padding-top:18px;padding-bottom:18px;flex-direction:column;align-items:flex-start}
+            .hero,.panel-inner{padding:24px}.grid,.summary-grid,.mod-row{grid-template-columns:1fr}.hero-art{min-height:360px}
+            .float-note{max-width:150px}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="topbar">
+            <div class="brand">
+                <small>Mesa Arcana</small>
+                <h1>Indomitus Fantasy</h1>
+            </div>
+            <nav>
+                <a href="menu.html">Inicio</a>
+                <a class="is-active" href="rolagens.html">Rolagens</a>
+                <a href="calculadora_rpg.html">Forja</a>
+                <a href="criador_pessoal.html">Criador Pessoal</a>
+                <a href="tradutores.html">Tradutores</a>
+            </nav>
+        </div>
+    </header>
+    <main class="wrap">
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Mesa de Rolagens</span>
+                <h2>Abra a <span>camada dos dados</span> da campanha.</h2>
+                <p>Escolha quantos dados rolar, defina o valor do dado como quiser e empilhe quantos modificadores precisar. A mesa resolve a fórmula e guarda um histórico curto para a sessão.</p>
+                <div class="hero-marks">
+                    <span>Dados preset e custom</span>
+                    <span>Multiplos modificadores</span>
+                    <span>Historico local</span>
+                </div>
+            </div>
+            <div class="hero-art">
+                <div class="dice-glyph">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10L50 22V42L32 54L14 42V22L32 10Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"></path><circle cx="32" cy="32" r="4" fill="currentColor"></circle><circle cx="24" cy="24" r="2.6" fill="currentColor" opacity="0.55"></circle><circle cx="40" cy="40" r="2.6" fill="currentColor" opacity="0.55"></circle></svg>
+                </div>
+                <div class="float-note float-a"><strong>Rolagem base</strong><span>Monte `3d12 + 5 - 2 + 4` sem precisar somar na mão.</span></div>
+                <div class="float-note float-b"><strong>Controle fino</strong><span>Use presets ou defina os lados customizados do jeito que quiser.</span></div>
+                <div class="float-note float-c"><strong>Leitura clara</strong><span>Veja cada dado, subtotal, bônus e total final da jogada.</span></div>
+            </div>
+        </section>
+        <section class="layout">
+            <section class="panel">
+                <div class="panel-inner">
+                    <div class="section-head">
+                        <div>
+                            <h3>Configurar Rolagem</h3>
+                            <p>Monte a fórmula do jeito que a mesa pedir e depois dispare a rolagem.</p>
+                        </div>
+                        <span class="badge">Formula viva</span>
+                    </div>
+                    <div class="grid">
+                        <div class="field full">
+                            <label for="rollLabel">Nome da rolagem</label>
+                            <input type="text" id="rollLabel" placeholder="Ex.: Ataque Longo, Teste de Furtividade, Dano de magia">
+                        </div>
+                        <div class="field">
+                            <label for="diceCount">Quantidade de dados</label>
+                            <input type="number" id="diceCount" min="1" max="50" value="1">
+                        </div>
+                        <div class="field">
+                            <label for="baseModifier">Modificador base</label>
+                            <input type="number" id="baseModifier" value="0">
+                        </div>
+                        <div class="field full">
+                            <label>Valor do dado</label>
+                            <div class="dice-preset-grid">
+                                <button type="button" class="dice-preset is-active" data-sides="20">d20</button>
+                                <button type="button" class="dice-preset" data-sides="4">d4</button>
+                                <button type="button" class="dice-preset" data-sides="6">d6</button>
+                                <button type="button" class="dice-preset" data-sides="8">d8</button>
+                                <button type="button" class="dice-preset" data-sides="10">d10</button>
+                                <button type="button" class="dice-preset" data-sides="12">d12</button>
+                                <button type="button" class="dice-preset" data-sides="100">d100</button>
+                                <button type="button" class="dice-preset" data-sides="custom">Custom</button>
+                            </div>
+                        </div>
+                        <div class="field full">
+                            <label for="customSides">Lados customizados</label>
+                            <input type="number" id="customSides" min="2" max="1000000000" value="20" disabled>
+                        </div>
+                    </div>
+                    <div class="subsection">
+                        <h4>Modificadores adicionais</h4>
+                        <div id="modifierList" class="mod-stack"></div>
+                        <div class="stack-actions">
+                            <button type="button" class="ghost-btn" id="addModifierBtn">Adicionar modificador</button>
+                            <button type="button" class="ghost-btn" id="resetBtn">Limpar tudo</button>
+                            <button type="button" class="action-btn" id="rollBtn">Rolar agora</button>
+                        </div>
+                        <p class="hint">Você pode empilhar bônus e penalidades quantas vezes quiser. Ex.: Força +3, arma +2, condição -1.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="panel">
+                <div class="panel-inner">
+                    <div class="section-head">
+                        <div>
+                            <h3>Resultado</h3>
+                            <p>A mesa mostra a fórmula, cada dado e o somatório final.</p>
+                        </div>
+                        <span class="badge">Resolucao</span>
+                    </div>
+                    <div class="formula" id="formulaPreview">1d20 + 0</div>
+                    <div class="total" id="totalResult">--</div>
+                    <div class="total-sub" id="totalSummary">Configure a rolagem e aperte o selo dourado para lançar os dados.</div>
+                    <div class="summary-grid">
+                        <div class="summary-box"><strong>Subtotal dos dados</strong><span id="diceSubtotal">--</span></div>
+                        <div class="summary-box"><strong>Total dos mods</strong><span id="modifierSubtotal">--</span></div>
+                        <div class="summary-box"><strong>Dado usado</strong><span id="diceDescriptor">d20</span></div>
+                    </div>
+                    <div class="subsection">
+                        <h4>Dados lancados</h4>
+                        <div class="breakdown" id="diceBreakdown"><div class="empty">Nenhuma rolagem feita ainda.</div></div>
+                    </div>
+                    <div class="subsection">
+                        <h4>Resumo de modificadores</h4>
+                        <div class="modifier-list" id="modifierSummary"><div class="empty">Os bonus e penalidades vao aparecer aqui.</div></div>
+                    </div>
+                </div>
+            </section>
+        </section>
+        <section class="panel" style="margin-top:24px;">
+            <div class="panel-inner">
+                <div class="section-head">
+                    <div>
+                        <h3>Historico Recente</h3>
+                        <p>As ultimas rolagens ficam registradas localmente para repetir o ritmo da sessão.</p>
+                    </div>
+                    <span class="badge">Memoria curta</span>
+                </div>
+                <div class="history-list" id="historyList"><div class="empty">Ainda nao ha rolagens registradas.</div></div>
+            </div>
+        </section>
+    </main>
+    <script>
+        const presetButtons = Array.from(document.querySelectorAll(".dice-preset"));
+        const diceCountInput = document.getElementById("diceCount");
+        const customSidesInput = document.getElementById("customSides");
+        const baseModifierInput = document.getElementById("baseModifier");
+        const rollLabelInput = document.getElementById("rollLabel");
+        const modifierListEl = document.getElementById("modifierList");
+        const modifierSummaryEl = document.getElementById("modifierSummary");
+        const formulaPreviewEl = document.getElementById("formulaPreview");
+        const totalResultEl = document.getElementById("totalResult");
+        const totalSummaryEl = document.getElementById("totalSummary");
+        const diceSubtotalEl = document.getElementById("diceSubtotal");
+        const modifierSubtotalEl = document.getElementById("modifierSubtotal");
+        const diceDescriptorEl = document.getElementById("diceDescriptor");
+        const diceBreakdownEl = document.getElementById("diceBreakdown");
+        const historyListEl = document.getElementById("historyList");
+        const HISTORY_KEY = "indomitus_roll_history_v1";
+        let selectedSides = 20;
+
+        function clamp(value, min, max, fallback) {
+            const parsed = Number(value);
+            if (!Number.isFinite(parsed)) return fallback;
+            return Math.min(max, Math.max(min, parsed));
+        }
+
+        function escapeHtml(value) {
+            return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+
+        function formatSigned(value) {
+            return value >= 0 ? `+${value}` : `${value}`;
+        }
+
+        function getSides() {
+            return selectedSides === "custom" ? clamp(customSidesInput.value, 2, 1000000000, 20) : Number(selectedSides);
+        }
+
+        function createModifierRow(label = "", value = 0) {
+            const row = document.createElement("div");
+            row.className = "mod-row";
+            row.innerHTML = `<input type="text" placeholder="Ex.: Forca, arma, estado..." value="${escapeHtml(label)}"><input type="number" value="${value}"><button type="button" class="remove-btn">×</button>`;
+            row.querySelectorAll("input").forEach((input) => input.addEventListener("input", updateFormulaPreview));
+            row.querySelector(".remove-btn").addEventListener("click", () => {
+                row.remove();
+                if (!modifierListEl.children.length) createModifierRow();
+                updateFormulaPreview();
+            });
+            modifierListEl.append(row);
+        }
+
+        function collectModifiers() {
+            const mods = [{ label: "Base", value: clamp(baseModifierInput.value, -9999, 9999, 0) }];
+            modifierListEl.querySelectorAll(".mod-row").forEach((row) => {
+                const inputs = row.querySelectorAll("input");
+                mods.push({
+                    label: (inputs[0].value || "").trim() || "Extra",
+                    value: clamp(inputs[1].value, -9999, 9999, 0)
+                });
+            });
+            return mods;
+        }
+
+        function buildFormula(mods) {
+            const parts = [`${clamp(diceCountInput.value, 1, 50, 1)}d${getSides()}`];
+            mods.forEach((mod) => { if (mod.value !== 0) parts.push(formatSigned(mod.value)); });
+            if (parts.length === 1) parts.push("+0");
+            return parts.join(" ");
+        }
+
+        function renderModifierSummary(mods) {
+            modifierSummaryEl.innerHTML = "";
+            const visible = mods.filter((mod) => mod.value !== 0);
+            if (!visible.length) {
+                modifierSummaryEl.innerHTML = '<div class="empty">Sem bonus nem penalidades ativos.</div>';
+                return;
+            }
+            visible.forEach((mod) => {
+                const item = document.createElement("div");
+                item.className = "modifier-item";
+                item.innerHTML = `<strong>${escapeHtml(mod.label)}</strong><span>${formatSigned(mod.value)}</span>`;
+                modifierSummaryEl.append(item);
+            });
+        }
+
+        function updateFormulaPreview() {
+            const mods = collectModifiers();
+            const modifierTotal = mods.reduce((sum, mod) => sum + mod.value, 0);
+            formulaPreviewEl.textContent = buildFormula(mods);
+            modifierSubtotalEl.textContent = formatSigned(modifierTotal);
+            diceDescriptorEl.textContent = `d${getSides()}`;
+            renderModifierSummary(mods);
+        }
+
+        function readHistory() {
+            try {
+                const raw = localStorage.getItem(HISTORY_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function renderHistory() {
+            const history = readHistory();
+            historyListEl.innerHTML = "";
+            if (!history.length) {
+                historyListEl.innerHTML = '<div class="empty">Ainda nao ha rolagens registradas.</div>';
+                return;
+            }
+            history.forEach((entry) => {
+                const item = document.createElement("div");
+                item.className = "history-item";
+                item.innerHTML = `<div><strong>${escapeHtml(entry.label)}</strong><span>${escapeHtml(entry.formula)}</span><br><em>${escapeHtml(entry.timestamp)}</em></div><div class="history-value">${entry.total}</div>`;
+                historyListEl.append(item);
+            });
+        }
+
+        function saveHistory(entry) {
+            const history = readHistory();
+            history.unshift(entry);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
+            renderHistory();
+        }
+
+        function rollDice() {
+            const mods = collectModifiers();
+            const count = clamp(diceCountInput.value, 1, 50, 1);
+            const sides = getSides();
+            const results = [];
+            for (let i = 0; i < count; i += 1) results.push(Math.floor(Math.random() * sides) + 1);
+            const diceSubtotal = results.reduce((sum, value) => sum + value, 0);
+            const modifierTotal = mods.reduce((sum, mod) => sum + mod.value, 0);
+            const total = diceSubtotal + modifierTotal;
+            const label = (rollLabelInput.value || "").trim() || "Rolagem sem nome";
+            totalResultEl.textContent = total;
+            totalSummaryEl.textContent = `${label} resolveu ${buildFormula(mods)} e fechou em ${total}.`;
+            diceSubtotalEl.textContent = diceSubtotal;
+            modifierSubtotalEl.textContent = formatSigned(modifierTotal);
+            diceDescriptorEl.textContent = `${count}x d${sides}`;
+            diceBreakdownEl.innerHTML = "";
+            results.forEach((value, index) => {
+                const chip = document.createElement("div");
+                chip.className = "die-chip";
+                chip.innerHTML = `<strong>${value}</strong><span>Dado ${index + 1}</span>`;
+                diceBreakdownEl.append(chip);
+            });
+            renderModifierSummary(mods);
+            saveHistory({ label, formula: buildFormula(mods), total, timestamp: new Date().toLocaleString("pt-BR") });
+        }
+
+        function resetForm() {
+            rollLabelInput.value = "";
+            diceCountInput.value = 1;
+            baseModifierInput.value = 0;
+            selectedSides = 20;
+            customSidesInput.value = 20;
+            customSidesInput.disabled = true;
+            presetButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.sides === "20"));
+            modifierListEl.innerHTML = "";
+            createModifierRow("Atributo", 0);
+            diceBreakdownEl.innerHTML = '<div class="empty">Nenhuma rolagem feita ainda.</div>';
+            totalResultEl.textContent = "--";
+            totalSummaryEl.textContent = "Configure a rolagem e aperte o selo dourado para lançar os dados.";
+            diceSubtotalEl.textContent = "--";
+            modifierSubtotalEl.textContent = "--";
+            diceDescriptorEl.textContent = "d20";
+            updateFormulaPreview();
+        }
+
+        presetButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                selectedSides = button.dataset.sides === "custom" ? "custom" : Number(button.dataset.sides);
+                presetButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+                customSidesInput.disabled = selectedSides !== "custom";
+                updateFormulaPreview();
+            });
+        });
+
+        [diceCountInput, customSidesInput, baseModifierInput, rollLabelInput].forEach((input) => input.addEventListener("input", updateFormulaPreview));
+        document.getElementById("addModifierBtn").addEventListener("click", () => { createModifierRow(); updateFormulaPreview(); });
+        document.getElementById("rollBtn").addEventListener("click", rollDice);
+        document.getElementById("resetBtn").addEventListener("click", resetForm);
+
+        createModifierRow("Atributo", 0);
+        updateFormulaPreview();
+        renderHistory();
+    </script>
+</body>
+</html>

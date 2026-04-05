@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Élfico Florialis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e8b57; /* Verde Floresta */
+            --primary-hover: #3cb371;
+            --primary-glow: rgba(46, 139, 87, 0.4);
+            --bg-dark: #050a05;
+            --bg-panel: rgba(10, 20, 10, 0.9);
+            --bg-input: rgba(5, 10, 5, 0.95);
+            --text-main: #f0fff0;
+            --text-muted: #8fb38f;
+            --transition: all 0.4s ease;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/natural-paper.png'),
+                radial-gradient(circle at 10% 20%, rgba(46, 139, 87, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to bottom, #000, rgba(0,20,0,0.9));
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.9);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 50px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
+
+        .forest-container {
+            background: var(--bg-panel);
+            border: 1px solid rgba(46, 139, 87, 0.3);
+            border-radius: 12px; padding: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .forest-header { text-align: center; margin-bottom: 30px; }
+        .forest-header h2 { color: var(--primary); font-size: 2.2em; margin: 0; font-family: 'MedievalSharp', serif; letter-spacing: 1px; }
+        .forest-header p { color: var(--text-muted); font-style: italic; margin-top: 10px; }
+
+        textarea {
+            width: 100%; min-height: 120px; padding: 20px; 
+            background: var(--bg-input); border: 1px solid #131; border-radius: 8px;
+            color: var(--text-main); font-family: 'Cinzel', serif; font-size: 1.1em;
+            resize: vertical; transition: var(--transition); box-sizing: border-box;
+        }
+        textarea:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); outline: none; }
+
+        .output-box {
+            background: rgba(0,0,0,0.6); border: 1px solid var(--primary);
+            border-radius: 10px; padding: 30px; margin-top: 30px;
+            min-height: 80px; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        .output-label {
+            position: absolute; top: -10px; left: 20px; background: #050a05;
+            padding: 0 10px; color: var(--primary); font-size: 0.8em; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        #transcription {
+            font-size: 1.8em; color: var(--primary-hover); text-align: center;
+            font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(46, 139, 87, 0.4);
+            word-wrap: break-word; white-space: pre-wrap;
+        }
+
+        .error-msg { color: #ff6666; font-size: 0.9em; text-align: center; margin-top: 15px; min-height: 1.2em; }
+
+        * { box-sizing: border-box; }
+        body { position:relative; overflow-x:hidden; font-family:'Cormorant Garamond',serif; background:radial-gradient(circle at 50% -10%, rgba(243, 213, 229, 0.18) 0%, transparent 28%), radial-gradient(circle at 18% 18%, rgba(60, 179, 113, 0.16) 0%, transparent 24%), radial-gradient(circle at 82% 16%, rgba(255, 208, 230, 0.1) 0%, transparent 20%), linear-gradient(180deg, #17301f 0%, #0d1d13 42%, #07110b 100%); }
+        body::before, body::after { content:""; position:fixed; inset:0; pointer-events:none; }
+        body::before { background:radial-gradient(circle at 12% 80%, rgba(255, 186, 213, 0.14) 0%, transparent 18%), radial-gradient(circle at 88% 84%, rgba(155, 224, 189, 0.12) 0%, transparent 18%), linear-gradient(135deg, transparent 16%, rgba(255,255,255,.03) 50%, transparent 84%); }
+        body::after { background:linear-gradient(180deg, transparent 70%, rgba(60, 179, 113, 0.08) 100%); }
+        header { background:linear-gradient(180deg, rgba(8, 19, 12, 0.96), rgba(16, 43, 26, 0.76)); border-bottom:1px solid rgba(155, 224, 189, 0.22); box-shadow:0 12px 34px rgba(4, 10, 6, 0.4); backdrop-filter:blur(12px); }
+        header h1 { font-family:'Cinzel Decorative',serif; letter-spacing:3px; color:#eafff0; text-shadow:0 0 14px rgba(255, 208, 230, 0.12); }
+        nav ul { flex-wrap:wrap; }
+        nav a:hover { color:#f7f5d0; text-shadow:0 0 10px rgba(243, 213, 229, 0.16); }
+        main { max-width:980px; margin:54px auto; padding:0 20px 36px; }
+        .forest-container { position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(15, 37, 22, 0.94), rgba(9, 19, 12, 0.9)); border:1px solid rgba(155, 224, 189, 0.18); border-radius:30px; padding:44px 38px; box-shadow:0 24px 58px rgba(4, 10, 6, 0.34); }
+        .forest-container::before { content:""; position:absolute; inset:16px; border:1px solid rgba(255, 228, 239, 0.08); border-radius:22px; pointer-events:none; }
+        .forest-container::after { content:""; position:absolute; inset:0; background:linear-gradient(135deg, transparent 14%, rgba(243, 213, 229, 0.05) 50%, transparent 86%); pointer-events:none; }
+        .forest-header h2 { font-family:'Cinzel Decorative',serif; font-size:2.26em; letter-spacing:.08em; color:#f3f9d7; }
+        .forest-header p { color:#c9dfcf; font-size:1.18em; margin-top:12px; }
+        textarea { min-height:130px; padding:18px 20px; background:linear-gradient(180deg, rgba(8, 19, 12, 0.96), rgba(6, 14, 9, 0.92)); border:1px solid rgba(155, 224, 189, 0.18); border-radius:18px; font-family:'Cormorant Garamond',serif; font-size:1.12em; box-shadow:inset 0 1px 0 rgba(255,255,255,.03); }
+        textarea::placeholder { color:rgba(201, 223, 207, 0.72); }
+        textarea:hover, textarea:focus { border-color:rgba(243, 213, 229, 0.34); box-shadow:0 0 0 4px rgba(60, 179, 113, 0.1), 0 0 18px rgba(243, 213, 229, 0.1); }
+        .output-box { background:linear-gradient(180deg, rgba(10, 24, 15, 0.96), rgba(7, 16, 10, 0.92)); border:1px solid rgba(155, 224, 189, 0.18); border-radius:22px; padding:30px 24px; box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 32px rgba(4, 10, 6, 0.28); }
+        .output-label { top:-12px; left:24px; background:#102514; border:1px solid rgba(243, 213, 229, 0.16); border-radius:999px; color:#ffe6ef; letter-spacing:.12em; }
+        #transcription { font-size:1.92em; font-family:'Cinzel Decorative',serif; color:#ecffd8; text-shadow:0 0 16px rgba(155, 224, 189, 0.14); }
+        .error-msg { color:#ffd5dc; text-shadow:none; }
+        @media (max-width:700px){ header h1{font-size:2em;} main{margin-top:30px; padding:0 14px 28px;} .forest-container{padding:28px 22px; border-radius:24px;} .forest-header h2{font-size:1.72em;} .forest-header p{font-size:1.06em;} textarea{padding:16px; font-size:1.02em;} #transcription{font-size:1.34em;} }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Linguística</a></li>
+                <li><a href="menu.html">Início</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forest-container">
+            <div class="forest-header">
+                <h2>Canto de Florialis (Élfico)</h2>
+                <p>Pétalas, pólen e brisas antigas. Florialis floresce em cada sílaba.</p>
+            </div>
+
+            <textarea id="inputWord" placeholder="Deixe as flores ouvirem suas palavras..." oninput="transcribe()"></textarea>
+
+            <div class="output-box">
+                <div class="output-label">Flor do Eco</div>
+                <div id="transcription">O vento aguarda em silêncio...</div>
+            </div>
+            <div id="error" class="error-msg"></div>
+        </div>
+    </main>
+
+    <script>
+        const MAP = {
+            a: "ae", b: "br", c: "ca", d: "do", e: "el", f: "fa", g: "ga", h: "ha",
+            i: "il", j: "jo", k: "ka", l: "ly", m: "ma", n: "na", o: "or", p: "ph",
+            q: "qu", r: "ra", s: "sy", t: "th", u: "ul", v: "va", w: "wy", x: "xi",
+            y: "ya", z: "zy"
+        };
+
+        function smooth(text) {
+            // Suavização Florialis: Mantém a melodia e reduz repetições de vogais
+            return text
+                .toLowerCase()
+                .replace(/([aeiou])\1+/g, '$1') // Funde vogais idênticas (ex: aa -> a)
+                .replace(/ae/g, 'ae') // Mantém ae (é clássico)
+                .replace(/ly/g, 'ly') 
+                .replace(/([bcdfghjklmnpqrstvwxyz])\1+/g, '$1') // Remove consoantes duplicadas
+                .replace(/([aeiou])l ([aeiou])/g, '$1l$2') // Une sílabas fluidas
+                .replace(/ma na/g, 'māna') // Contração comum de "m" e "n"
+                .replace(/sy/g, 'sh') // Sibilização melódica
+                .replace(/ra/g, 'ra');
+        }
+
+        function transcribe() {
+            const word = document.getElementById("inputWord").value.toLowerCase();
+            const out = document.getElementById("transcription");
+            const err = document.getElementById("error");
+
+            if(!word.trim()) {
+                out.textContent = "O vento aguarda em silêncio...";
+                err.textContent = "";
+                return;
+            }
+
+            let raw = "";
+            let hasError = false;
+
+            for (const char of word) {
+                if (char === " " || char === "\n") {
+                    raw += " ";
+                    continue;
+                }
+                if (MAP[char]) {
+                    raw += MAP[char];
+                } else if (/[.,!?;:]/.test(char)) {
+                    raw += char;
+                } else {
+                    hasError = true;
+                }
+            }
+
+            let final = smooth(raw);
+            // Capitaliza cada palavra
+            final = final.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+            err.textContent = hasError ? "Sinais maculados foram perdidos na névoa." : "";
+            out.textContent = final;
+        }
+    </script>
+</body>
+</html>

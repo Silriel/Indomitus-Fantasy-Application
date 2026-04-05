@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Forja de Equipamentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-hover: #f7c873;
+            --primary-glow: rgba(212, 175, 55, 0.6);
+            --bg-dark: #121214;
+            --bg-panel: rgba(30, 30, 35, 0.85);
+            --bg-input: rgba(15, 15, 20, 0.9);
+            --text-main: #f4f4f4;
+            --text-muted: #b0b0b0;
+            --border-glow: 0 0 15px rgba(212, 175, 55, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(to bottom, rgba(10,10,12,0.95), rgba(20,20,25,0.8));
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 20px var(--primary-glow);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1.1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 8px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; }
+
+        .forge-container {
+            background: var(--bg-panel);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px; padding: 30px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .forge-header h2 {
+            text-align: center; color: var(--primary); font-size: 2em; margin-bottom: 30px;
+            border-bottom: 1px solid rgba(212,175,55,0.3); padding-bottom: 15px;
+            font-family: 'MedievalSharp', serif;
+        }
+        
+        .forge-header p.subtitle {
+            text-align: center; color: var(--text-muted); font-size: 1.1em;
+            margin-top: -15px; margin-bottom: 30px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        .form-group label { display: block; margin-bottom: 8px; color: var(--primary); font-weight: bold; }
+        
+        select, input[type='number'], input[type='text'] {
+            width: 100%; padding: 12px 15px; font-size: 1em; font-family: 'Cinzel', serif;
+            color: var(--text-main); background-color: var(--bg-input);
+            border: 1px solid #444; border-radius: 6px; transition: var(--transition); box-sizing: border-box;
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); outline: none;
+        }
+
+        .action-btn {
+            background: linear-gradient(145deg, #111, #222); border: 2px solid var(--primary);
+            color: var(--primary); font-family: 'Cinzel', serif; font-size: 1.2em; font-weight: bold;
+            padding: 15px 30px; border-radius: 8px; cursor: pointer; display: block; margin: 30px auto;
+            transition: var(--transition); text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(212,175,55,0.2); width: 100%; max-width: 400px;
+            text-align: center; text-decoration: none;
+        }
+
+        .action-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        .btn-list {
+            display: flex; flex-direction: column; gap: 15px; padding: 20px 0;
+            max-width: 500px; margin: 0 auto;
+        }
+
+        .btn-list .action-btn {
+            margin: 0; max-width: 100%;
+        }
+
+        .output {
+            margin-top: 30px; padding: 20px; text-align: center;
+            font-size: 1.5em; font-weight: bold; color: var(--primary);
+            background: rgba(10,10,15,0.9); border: 1px solid var(--primary);
+            border-radius: 12px; box-shadow: 0 0 25px rgba(212,175,55,0.4);
+            word-wrap: break-word; white-space: pre-wrap; 
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
+        .error { color: #ff3333; text-align: center; margin-top: 10px; font-weight: bold; text-shadow: 0 0 5px #ff0000; }
+
+        /* --- NOVOS ESTILOS DO RESULTADO --- */
+        .result-container {
+            display: none;
+            margin-top: 40px;
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(40, 40, 50, 0.9));
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Ambient Glow by Rarity */
+        .rarity-comum { --glow: #888; }
+        .rarity-incomum { --glow: #1eff00; }
+        .rarity-raro { --glow: #0070dd; }
+        .rarity-epico { --glow: #a335ee; }
+        .rarity-magistral { --glow: #ff8000; }
+        .rarity-lendario { --glow: #ffcc00; }
+        .rarity-mitico { --glow: #ff4400; }
+        .rarity-unico { --glow: #e6cc80; }
+        .rarity-cosmico { --glow: #00ccff; }
+        .rarity-divino { --glow: #ffffff; }
+        .rarity-celestial { --glow: #ffeeaa; }
+        .rarity-tesouro { --glow: #ff00ff; }
+
+        .result-card.rarity-active {
+            border-color: var(--glow);
+            box-shadow: 0 0 40px var(--glow), inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .result-action-btn {
+            width: auto;
+            max-width: none;
+            margin: 0;
+            padding: 12px 20px;
+            font-size: 0.95em;
+            text-transform: none;
+            letter-spacing: 0.6px;
+        }
+
+        .result-title {
+            font-family: 'MedievalSharp', serif;
+            font-size: 2.2em;
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 15px var(--glow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .result-subtitle {
+            font-size: 1.1em;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .hl { color: var(--primary); font-weight: bold; }
+
+        .material-swatch {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            vertical-align: middle;
+            margin-right: 8px;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
+            flex-shrink: 0;
+        }
+
+        .material-inline {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+
+        .cor-do-mineral {
+            font-size: 0.92em;
+            color: var(--text-muted);
+            font-weight: normal;
+            margin-top: 6px;
+            line-height: 1.35;
+        }
+
+        .result-visual {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 28px;
+        }
+
+        .result-icon-wrap {
+            width: min(240px, 100%);
+        }
+
+        .result-icon-frame {
+            --material-color: var(--primary);
+            min-height: 180px;
+            padding: 20px;
+            border-radius: 28px;
+            border: 1px solid var(--glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at center, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 34%, rgba(255,255,255,0) 68%),
+                linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.35));
+            box-shadow:
+                0 0 26px var(--glow),
+                inset 0 0 24px rgba(255,255,255,0.04);
+        }
+
+        .result-icon-frame::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 0 28px rgba(0,0,0,0.45);
+            pointer-events: none;
+        }
+
+        .result-item-icon {
+            width: 132px;
+            height: 132px;
+            color: var(--material-color);
+            position: relative;
+            z-index: 1;
+            filter:
+                drop-shadow(0 0 10px var(--material-color))
+                drop-shadow(0 0 22px var(--glow));
+        }
+
+        .result-item-icon svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .result-icon-label {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.82em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .stat-box:hover {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .stat-point {
+            grid-column: 1 / -1;
+            background: linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,0.1), rgba(212,175,55,0));
+            border-left: none; border-right: none;
+            padding: 20px;
+        }
+
+        .stat-point .stat-value {
+            color: var(--primary);
+            font-size: 2em;
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Decorative Corners */
+        .result-card::before, .result-card::after {
+            content: "✦";
+            position: absolute;
+            color: var(--primary);
+            opacity: 0.5;
+            font-size: 1.5em;
+        }
+        .result-card::before { top: 10px; left: 10px; }
+        .result-card::after { bottom: 10px; right: 10px; }
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .forge-container,
+            .result-card {
+                padding: 20px;
+            }
+
+            .result-title {
+                font-size: 1.7em;
+            }
+
+            .result-icon-frame {
+                min-height: 150px;
+                padding: 16px;
+            }
+
+            .result-item-icon {
+                width: 104px;
+                height: 104px;
+            }
+        }
+
+        :root {
+            --page-max: 1260px;
+            --line-soft: rgba(191, 214, 255, 0.16);
+            --line-strong: rgba(243, 201, 132, 0.28);
+            --text-soft: #d6deeb;
+            --text-dim: #98a8c1;
+            --forge-fire: #f0bc73;
+            --forge-lava: #c67333;
+            --forge-steel: #bccde6;
+            --forge-smoke: #0b1220;
+            --arcane-sky: #081121;
+            --arcane-night: #040913;
+            --sun-amber: #f0c27b;
+            --dune-copper: #be7c3e;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background:
+                radial-gradient(circle at 18% 16%, rgba(184, 215, 255, 0.20), transparent 24%),
+                radial-gradient(circle at 82% 14%, rgba(255, 223, 173, 0.14), transparent 20%),
+                radial-gradient(circle at 50% 118%, rgba(203, 118, 51, 0.28), transparent 34%),
+                linear-gradient(180deg, #07101f 0%, #0a1322 34%, #151116 72%, #2a160c 100%);
+            position: relative;
+            color: #f7fbff;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            opacity: 0.72;
+            background:
+                radial-gradient(2px 2px at 8% 14%, rgba(255,255,255,0.82), transparent 55%),
+                radial-gradient(1.5px 1.5px at 18% 30%, rgba(192,221,255,0.62), transparent 55%),
+                radial-gradient(2px 2px at 31% 10%, rgba(255,243,212,0.7), transparent 55%),
+                radial-gradient(1.5px 1.5px at 56% 18%, rgba(255,255,255,0.74), transparent 55%),
+                radial-gradient(2px 2px at 72% 12%, rgba(255,221,170,0.7), transparent 55%),
+                radial-gradient(1.5px 1.5px at 84% 28%, rgba(184,215,255,0.6), transparent 55%),
+                linear-gradient(135deg, rgba(255,255,255,0.03), transparent 24%, transparent 72%, rgba(255,236,208,0.03));
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at 14% 78%, rgba(112, 161, 240, 0.10) 0%, transparent 24%),
+                radial-gradient(circle at 84% 86%, rgba(240, 194, 123, 0.16) 0%, transparent 24%),
+                linear-gradient(14deg, transparent 58%, rgba(255, 239, 214, 0.05) 70%, transparent 84%);
+            opacity: 0.9;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(5, 14, 29, 0.95), rgba(14, 23, 38, 0.76));
+            border-bottom: 1px solid rgba(191, 214, 255, 0.22);
+            box-shadow: 0 14px 34px rgba(3, 8, 18, 0.38);
+            backdrop-filter: blur(16px);
+        }
+
+        header h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.75em;
+            letter-spacing: 0.14em;
+            color: #f6deb0;
+            text-shadow: 0 0 16px rgba(184, 215, 255, 0.16);
+        }
+
+        nav ul {
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        nav a {
+            padding: 10px 17px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            color: var(--text-soft);
+            font-family: 'Cinzel', serif;
+            font-size: 0.98em;
+            letter-spacing: 0.06em;
+        }
+
+        nav a:hover {
+            border-color: rgba(240, 194, 123, 0.34);
+            background: linear-gradient(180deg, rgba(191, 214, 255, 0.08), rgba(240, 194, 123, 0.08));
+            color: #fff1d8;
+            text-shadow: none;
+        }
+
+        main {
+            max-width: var(--page-max);
+            margin: 46px auto 80px;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .forge-hero {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 28px;
+            padding: 32px;
+            border-radius: 34px;
+            border: 1px solid rgba(191, 214, 255, 0.18);
+            background:
+                radial-gradient(circle at 16% 18%, rgba(184, 215, 255, 0.18), transparent 24%),
+                radial-gradient(circle at 86% 22%, rgba(255, 223, 173, 0.16), transparent 22%),
+                linear-gradient(135deg, rgba(9, 18, 35, 0.97), rgba(14, 24, 42, 0.92) 54%, rgba(60, 31, 12, 0.88) 100%);
+            box-shadow:
+                0 30px 70px rgba(0, 0, 0, 0.34),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .forge-hero::before {
+            content: "";
+            position: absolute;
+            inset: 16px;
+            border-radius: 26px;
+            border: 1px solid rgba(255, 240, 214, 0.08);
+            pointer-events: none;
+        }
+
+        .forge-hero::after {
+            content: "";
+            position: absolute;
+            inset: auto -12% -30% 42%;
+            height: 280px;
+            background:
+                radial-gradient(circle, rgba(240, 194, 123, 0.18), transparent 66%),
+                radial-gradient(circle at 24% 24%, rgba(184, 215, 255, 0.14), transparent 34%);
+            filter: blur(8px);
+            pointer-events: none;
+        }
+
+        .forge-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.28fr) minmax(300px, 0.96fr);
+            gap: 24px;
+            align-items: stretch;
+            position: relative;
+            z-index: 1;
+        }
+
+        .forge-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 999px;
+            border: 1px solid rgba(240, 194, 123, 0.2);
+            background: linear-gradient(135deg, rgba(184, 215, 255, 0.08), rgba(240, 194, 123, 0.08));
+            color: #f8ddb2;
+            font-size: 0.79em;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+        }
+
+        .forge-hero h2 {
+            margin: 16px 0 12px;
+            color: #fff3d8;
+            font-size: clamp(2.1rem, 4vw, 3.55rem);
+            line-height: 1.04;
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 0.02em;
+        }
+
+        .forge-hero p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.72;
+            max-width: 760px;
+            font-size: 1.24em;
+        }
+
+        .forge-hero-marks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .forge-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            color: #dfe8f8;
+            font-size: 0.9em;
+            letter-spacing: 0.05em;
+        }
+
+        .forge-hero-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .forge-hero-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 19px;
+            border-radius: 999px;
+            border: 1px solid rgba(240, 194, 123, 0.24);
+            background: linear-gradient(135deg, rgba(184, 215, 255, 0.10), rgba(240, 194, 123, 0.12));
+            color: #fff0d1;
+            text-decoration: none;
+            transition: var(--transition);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+        }
+
+        .forge-hero-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(5, 13, 25, 0.28);
+        }
+
+        .forge-hero-link.ghost {
+            border-color: rgba(191, 214, 255, 0.24);
+            background: rgba(191, 214, 255, 0.08);
+            color: #dce9ff;
+        }
+
+        .forge-hero-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .forge-hero-card {
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top, rgba(184, 215, 255, 0.10), transparent 42%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forge-hero-card::before {
+            content: "";
+            position: absolute;
+            inset: auto -20% -42% 40%;
+            height: 120px;
+            background: radial-gradient(circle, rgba(240, 194, 123, 0.16), transparent 72%);
+            pointer-events: none;
+        }
+
+        .forge-hero-card span {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.76em;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+        }
+
+        .forge-hero-card strong {
+            display: block;
+            margin-top: 10px;
+            color: #fff3da;
+            font-size: 1.06em;
+            line-height: 1.42;
+        }
+
+        .forge-container {
+            margin-top: 0;
+            border-radius: 32px;
+            border: 1px solid rgba(191, 214, 255, 0.18);
+            padding: clamp(24px, 3vw, 34px);
+            background:
+                radial-gradient(circle at top left, rgba(184, 215, 255, 0.08), transparent 20%),
+                radial-gradient(circle at bottom right, rgba(240, 194, 123, 0.08), transparent 22%),
+                linear-gradient(180deg, rgba(9, 17, 31, 0.96), rgba(12, 19, 32, 0.93) 54%, rgba(34, 21, 13, 0.92) 100%);
+            box-shadow:
+                0 28px 70px rgba(0, 0, 0, 0.38),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forge-container::before {
+            content: "";
+            position: absolute;
+            inset: 16px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 240, 214, 0.08);
+            pointer-events: none;
+        }
+
+        .forge-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 0%, rgba(184, 215, 255, 0.06), transparent 24%),
+                linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.03) 50%, transparent 78%);
+            pointer-events: none;
+        }
+
+        .forge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--line-soft);
+            position: relative;
+            z-index: 1;
+        }
+
+        .forge-header h2 {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            text-align: left;
+            font-size: clamp(2.05rem, 3vw, 3rem);
+            color: #fff2d6;
+            line-height: 1.04;
+            font-family: 'Cinzel Decorative', serif;
+            text-shadow: 0 0 18px rgba(184, 215, 255, 0.12);
+        }
+
+        .forge-header p.subtitle {
+            margin: 10px 0 0;
+            text-align: left;
+            color: var(--text-soft);
+            font-size: 1.16em;
+            line-height: 1.64;
+            max-width: 760px;
+        }
+
+        .forge-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border-radius: 999px;
+            border: 1px solid rgba(240, 194, 123, 0.22);
+            background: linear-gradient(135deg, rgba(184, 215, 255, 0.08), rgba(240, 194, 123, 0.08));
+            color: #f6ddb0;
+            font-size: 0.8em;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+        }
+
+        .form-grid {
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            grid-column: span 6;
+            min-width: 0;
+            padding: 18px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)),
+                radial-gradient(circle at top right, rgba(184, 215, 255, 0.06), transparent 36%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            transition: var(--transition);
+        }
+
+        .form-group:hover {
+            transform: translateY(-2px);
+            border-color: rgba(240, 194, 123, 0.2);
+            box-shadow:
+                0 16px 28px rgba(4, 9, 18, 0.20),
+                inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #f2d29a;
+            letter-spacing: 0.04em;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95em;
+        }
+
+        select, input[type='number'], input[type='text'] {
+            background:
+                linear-gradient(180deg, rgba(6, 12, 23, 0.92), rgba(9, 15, 27, 0.90));
+            border: 1px solid rgba(191, 214, 255, 0.14);
+            border-radius: 14px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.18em;
+        }
+
+        select {
+            color: #f8fbff;
+        }
+
+        select option {
+            color: #111722;
+            background: #f3ead8;
+        }
+
+        select optgroup {
+            color: #20160e;
+            background: #e3c78f;
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: rgba(240, 194, 123, 0.34);
+            box-shadow: 0 0 0 4px rgba(240, 194, 123, 0.08), 0 0 18px rgba(184, 215, 255, 0.10);
+        }
+
+        .action-btn {
+            width: 100%;
+            max-width: 430px;
+            margin: 32px auto 0;
+            padding: 16px 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(240, 194, 123, 0.30);
+            background: linear-gradient(135deg, rgba(13, 23, 42, 0.98), rgba(34, 54, 92, 0.88) 48%, rgba(120, 70, 30, 0.92) 100%);
+            color: #fff0d2;
+            text-transform: none;
+            letter-spacing: 0.08em;
+            box-shadow:
+                0 16px 30px rgba(0, 0, 0, 0.26),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+            font-family: 'Cinzel', serif;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #dbe9ff, #f1c37b 58%, #ff9c49 100%);
+            color: #15100d;
+            box-shadow: 0 18px 30px rgba(240, 194, 123, 0.24);
+        }
+
+        .result-container {
+            margin-top: 36px;
+        }
+
+        .result-card {
+            background:
+                radial-gradient(circle at 14% 14%, rgba(184, 215, 255, 0.12), transparent 24%),
+                radial-gradient(circle at 88% 20%, rgba(255, 205, 132, 0.12), transparent 20%),
+                linear-gradient(180deg, rgba(8, 15, 28, 0.98), rgba(8, 13, 23, 0.96) 60%, rgba(28, 18, 12, 0.95));
+            border: 1px solid rgba(191, 214, 255, 0.18);
+            border-radius: 30px;
+            padding: 34px;
+            box-shadow:
+                0 28px 60px rgba(0, 0, 0, 0.38),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .result-card.rarity-active {
+            border-color: color-mix(in srgb, var(--glow) 62%, rgba(255,255,255,0.4));
+            box-shadow:
+                0 0 30px color-mix(in srgb, var(--glow) 44%, transparent),
+                0 28px 60px rgba(0, 0, 0, 0.38),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .result-card::before,
+        .result-card::after {
+            content: "";
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            filter: blur(28px);
+            opacity: 0.22;
+            pointer-events: none;
+        }
+
+        .result-card::before {
+            top: -36px;
+            left: -18px;
+            background: radial-gradient(circle, var(--glow), transparent 70%);
+        }
+
+        .result-card::after {
+            right: -16px;
+            bottom: -40px;
+            background: radial-gradient(circle, rgba(255, 148, 62, 0.8), transparent 72%);
+        }
+
+        .result-title {
+            color: #fff1d7;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            text-shadow: 0 0 20px color-mix(in srgb, var(--glow) 55%, transparent);
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 0.06em;
+        }
+
+        .result-subtitle {
+            color: var(--text-soft);
+            border-bottom-color: rgba(255,255,255,0.08);
+            font-size: 1.18em;
+            line-height: 1.62;
+        }
+
+        .result-ribbon-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0 6px;
+        }
+
+        .result-ribbon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.09);
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            color: #eef4ff;
+            font-size: 0.8em;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+        }
+
+        .result-visual {
+            margin: 18px 0 30px;
+        }
+
+        .result-icon-frame {
+            min-height: 230px;
+            padding: 28px 24px 32px;
+            border-radius: 34px;
+            border: 1px solid color-mix(in srgb, var(--glow) 64%, rgba(255,255,255,0.1));
+            background:
+                radial-gradient(circle at 24% 18%, rgba(184, 215, 255, 0.16), transparent 26%),
+                radial-gradient(circle at 76% 26%, rgba(255, 214, 152, 0.16), transparent 24%),
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.24) 52%, rgba(255, 168, 83, 0.08));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -18px 30px rgba(0,0,0,0.34),
+                0 0 28px color-mix(in srgb, var(--glow) 34%, transparent);
+            perspective: 1200px;
+        }
+
+        .result-icon-frame::before {
+            inset: 14px;
+            border-radius: 26px;
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .result-icon-frame::after {
+            content: "";
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 14px;
+            height: 30px;
+            border-radius: 999px;
+            background:
+                radial-gradient(circle at center, color-mix(in srgb, var(--glow) 45%, rgba(255,255,255,0.16)), transparent 72%),
+                radial-gradient(circle at center, rgba(0,0,0,0.55), transparent 78%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .result-icon-frame.visual-weapon-def,
+        .result-icon-frame.visual-armor-def {
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -18px 30px rgba(0,0,0,0.34),
+                0 0 34px color-mix(in srgb, var(--glow) 44%, rgba(255, 178, 83, 0.18));
+        }
+
+        .result-item-icon {
+            width: 156px;
+            height: 156px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .result-item-icon::before {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at center,
+                    color-mix(in srgb, var(--material-color) 24%, rgba(255,255,255,0.12)) 0%,
+                    color-mix(in srgb, var(--glow) 20%, transparent) 34%,
+                    transparent 72%);
+            filter: blur(12px);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        .result-item-art {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter:
+                drop-shadow(0 10px 14px rgba(0,0,0,0.5))
+                drop-shadow(0 0 12px color-mix(in srgb, var(--material-color) 44%, transparent))
+                drop-shadow(0 0 26px color-mix(in srgb, var(--glow) 54%, transparent));
+            transform-style: preserve-3d;
+        }
+
+        .result-item-art.visual-weapon {
+            transform: perspective(920px) rotateY(-18deg) rotateX(7deg) rotateZ(-7deg);
+        }
+
+        .result-item-art.visual-weapon-def {
+            transform: perspective(920px) rotateY(-20deg) rotateX(10deg) rotateZ(-8deg) scale(1.08);
+        }
+
+        .result-item-art.visual-armor {
+            transform: perspective(920px) rotateY(-14deg) rotateX(8deg) translateY(-4px);
+        }
+
+        .result-item-art.visual-armor-def {
+            transform: perspective(920px) rotateY(-15deg) rotateX(10deg) translateY(-6px) scale(1.08);
+        }
+
+        .result-item-art.visual-adorn {
+            transform: perspective(920px) rotateY(-10deg) rotateX(6deg) scale(0.96);
+        }
+
+        .result-icon-label {
+            margin-top: 14px;
+            color: #e7eefb;
+            letter-spacing: 0.14em;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-box {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.018)),
+                radial-gradient(circle at top right, rgba(184, 215, 255, 0.05), transparent 32%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 17px;
+        }
+
+        .stat-box:hover {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255, 164, 77, 0.04)),
+                radial-gradient(circle at top right, rgba(184, 215, 255, 0.06), transparent 34%);
+            border-color: rgba(240, 194, 123, 0.28);
+            transform: translateY(-4px);
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-family: 'Cinzel', serif;
+            font-size: 0.82em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: #f8fbff;
+            font-size: 1.15em;
+        }
+
+        .stat-point {
+            background: linear-gradient(90deg, rgba(255, 157, 64, 0.02), rgba(255, 157, 64, 0.12), rgba(255, 157, 64, 0.02));
+            border-color: rgba(255, 205, 132, 0.24);
+        }
+
+        .stat-point .stat-value {
+            color: #ffd189;
+            text-shadow: 0 0 12px rgba(255, 175, 88, 0.16);
+        }
+
+        .result-actions {
+            margin-top: 22px;
+        }
+
+        .result-action-btn {
+            max-width: none;
+        }
+
+        @media (max-width: 980px) {
+            main {
+                padding: 0 18px;
+            }
+
+            .forge-hero-grid,
+            .forge-hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .forge-hero,
+            .forge-container,
+            .result-card,
+            .form-group {
+                padding: 18px;
+            }
+
+            .forge-header {
+                align-items: flex-start;
+            }
+
+            .result-icon-frame {
+                min-height: 190px;
+                padding: 22px 18px 26px;
+            }
+
+            .result-item-icon {
+                width: 124px;
+                height: 124px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="menu.html">Início</a></li>
+                <li><a href="criador_personagem.html">Criador Personagem</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="forge-hero">
+            <div class="forge-hero-grid">
+                <div>
+                    <span class="forge-eyebrow">Forja Runica da Torre</span>
+                    <h2>A forja agora fala a mesma linguagem visual dos tradutores e da Torre das Linguagens.</h2>
+                    <p>Escolha a estrutura do item, combine material, essência e ritual, e veja o resultado surgir com presença mais forte, aura de raridade e um pedestal visual digno de equipamento lendário.</p>
+                    <div class="forge-hero-marks">
+                        <span class="forge-mark">Torre Arcana</span>
+                        <span class="forge-mark">Runas Celestiais</span>
+                        <span class="forge-mark">Areia Consagrada</span>
+                    </div>
+                    <div class="forge-hero-links">
+                        <a class="forge-hero-link" href="criador_pessoal.html">Levar itens para a ficha</a>
+                        <a class="forge-hero-link" href="tradutores.html">Abrir Torre das Linguagens</a>
+                        <a class="forge-hero-link ghost" href="menu.html">Voltar ao hub</a>
+                    </div>
+                </div>
+                <div class="forge-hero-stats">
+                    <div class="forge-hero-card">
+                        <span>Visual</span>
+                        <strong>Espadas e armaduras agora surgem com presença 3D e brilho de metal aquecido.</strong>
+                    </div>
+                    <div class="forge-hero-card">
+                        <span>Tipos</span>
+                        <strong>Equipamento, equipamento definitivo, armadura e armadura definitiva ganharam leitura própria.</strong>
+                    </div>
+                    <div class="forge-hero-card">
+                        <span>Material</span>
+                        <strong>A cor do mineral continua mandando no corpo do item, não só no texto.</strong>
+                    </div>
+                    <div class="forge-hero-card">
+                        <span>Raridade</span>
+                        <strong>A aura ao redor do pedestal continua puxando o brilho da raridade escolhida.</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="forge-container">
+            <div class="forge-header">
+                <div>
+                    <h2>Forja de Equipamentos</h2>
+                    <p class="subtitle">Entre no cadinho, selecione a base do item e deixe a forja montar a silhueta final com mais presença visual.</p>
+                </div>
+                <div class="forge-badge">Forja viva, aço em brasa e aura de raridade</div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="equipamento">Tipo de Equipamento</label>
+                    <select id="equipamento" onchange="toggleCampos()">
+                        <optgroup label="Armaduras">
+                            <option value="armadura_definitiva">Armadura Definitiva (100% CA)</option>
+                            <option value="armadura_poder">Armadura de Poder (100% CA)</option>
+                            <option value="armadura_pesada">Armadura Pesada (100% CA)</option>
+                            <option value="armadura_media">Armadura Média (80% CA)</option>
+                            <option value="armadura_leve">Armadura Leve (70% CA)</option>
+                            <option value="roupas">Roupas (40% CA)</option>
+                            <option value="escudo">Escudo (10% CA)</option>
+                        </optgroup>
+                        <optgroup label="Adornos">
+                            <option value="anel">Anel (10% CA)</option>
+                            <option value="colar">Colar (25% CA)</option>
+                        </optgroup>
+                        <optgroup label="Equipamentos">
+                            <option value="equip_pequeno">Equipamento Pequeno (1d6)</option>
+                            <option value="equip_misto">Equipamento Misto (1d8 / 1d10)</option>
+                            <option value="equip_grande">Equipamento Grande (1d12)</option>
+                            <option value="equip_magico">Equipamento Mágico (1d8)</option>
+                            <option value="equip_definitivo">Equipamento Definitivo (1d8 / 1d10)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group" id="group-forca" style="display: none;">
+                    <label for="modificador-forca">Modificador de Força</label>
+                    <input type="number" id="modificador-forca" min="0" value="0" placeholder="0">
+                </div>
+
+                <div class="form-group full-width" id="group-tecido" style="display: none;">
+                    <label for="tecido">Tecido Base / Couro (Armadura de Poder)</label>
+                    <select id="tecido">
+                        <option value="0">Nenhum</option>
+<option value="1">Couro Arcano - Nível 1 (+1 de CA) - Magia</option>
+<option value="2">Couro Arcano - Nível 2 (+3 de CA) - Magia</option>
+<option value="3">Couro Arcano - Nível 3 (+6 de CA) - Magia</option>
+
+<option value="4">Couro de Dragão - Nível 1 (+2 de CA) - Resistência ao Fogo</option>
+<option value="5">Couro de Dragão - Nível 2 (+4 de CA) - Resistência ao Fogo</option>
+<option value="6">Couro de Dragão - Nível 3 (+7 de CA) - Resistência ao Fogo</option>
+
+<option value="7">Couro Emplumado - Nível 1 (+2 de CA) - Destreza</option>
+<option value="8">Couro Emplumado - Nível 2 (+4 de CA) - Destreza</option>
+<option value="9">Couro Emplumado - Nível 3 (+8 de CA) - Destreza</option>
+
+<option value="10">Couro Escamoso - Nível 1 (+3 de CA) - Defesa</option>
+<option value="11">Couro Escamoso - Nível 2 (+5 de CA) - Defesa</option>
+<option value="12">Couro Escamoso - Nível 3 (+10 de CA) - Defesa</option>
+
+<option value="13">Couro Espinhoso - Nível 1 (+2 de CA) - Dano adicional (1d6)</option>
+<option value="14">Couro Espinhoso - Nível 2 (+4 de CA) - Dano adicional (1d6)</option>
+<option value="15">Couro Espinhoso - Nível 3 (+8 de CA) - Dano adicional (1d6)</option>
+
+<option value="16">Couro Fino - Nível 1 (+1 de CA) - Proteção contra Calor</option>
+<option value="17">Couro Fino - Nível 2 (+2 de CA) - Proteção contra Calor</option>
+<option value="18">Couro Fino - Nível 3 (+5 de CA) - Proteção contra Calor</option>
+
+<option value="19">Couro Lanudo - Nível 1 (+1 de CA) - Proteção contra Frio</option>
+<option value="20">Couro Lanudo - Nível 2 (+3 de CA) - Proteção contra Frio</option>
+<option value="21">Couro Lanudo - Nível 3 (+7 de CA) - Proteção contra Frio</option>
+
+<option value="22">Couro Impermeável - Nível 1 (+2 de CA) - Resistência à Água</option>
+<option value="23">Couro Impermeável - Nível 2 (+5 de CA) - Resistência à Água</option>
+<option value="24">Couro Impermeável - Nível 3 (+8 de CA) - Resistência à Água</option>
+
+<option value="25">Couro Mágico - Nível 1 (+3 de CA) - Amplifica Magia</option>
+<option value="26">Couro Mágico - Nível 2 (+6 de CA) - Amplifica Magia</option>
+<option value="27">Couro Mágico - Nível 3 (+10 de CA) - Amplifica Magia</option>
+
+<option value="28">Couro Reforçado - Nível 1 (+6 de CA) - Alta resistência</option>
+<option value="29">Couro Reforçado - Nível 2 (+10 de CA) - Alta resistência</option>
+<option value="30">Couro Reforçado - Nível 3 (+12 de CA) - Alta resistência</option>
+
+<option value="31">Couro Sombrio - Nível 1 (+2 de CA) - Invisibilidade parcial</option>
+<option value="32">Couro Sombrio - Nível 2 (+4 de CA) - Invisibilidade parcial</option>
+<option value="33">Couro Sombrio - Nível 3 (+8 de CA) - Invisibilidade parcial</option>
+
+<option value="34">Tecido Comum - Nível 1 (+1 de CA) - Nada</option>
+<option value="35">Tecido Comum - Nível 2 (+2 de CA) - Nada</option>
+<option value="36">Tecido Comum - Nível 3 (+3 de CA) - Nada</option>
+
+<option value="37">Tecido de Fogo Eterno - Nível 1 (+2 de CA) - Resistência ao Fogo</option>
+<option value="38">Tecido de Fogo Eterno - Nível 2 (+4 de CA) - Resistência ao Fogo</option>
+<option value="39">Tecido de Fogo Eterno - Nível 3 (+7 de CA) - Resistência ao Fogo</option>
+
+<option value="40">Tecido de Linho - Nível 1 (+1 de CA) - Resistência a venenos</option>
+<option value="41">Tecido de Linho - Nível 2 (+2 de CA) - Resistência a venenos</option>
+<option value="42">Tecido de Linho - Nível 3 (+4 de CA) - Resistência a venenos</option>
+
+<option value="43">Tecido de Nobre - Nível 1 (+1 de CA) - Carisma</option>
+<option value="44">Tecido de Nobre - Nível 2 (+3 de CA) - Carisma</option>
+<option value="45">Tecido de Nobre - Nível 3 (+5 de CA) - Carisma</option>
+
+<option value="46">Tecido de Seda - Nível 1 (+2 de CA) - Aumenta Carisma</option>
+<option value="47">Tecido de Seda - Nível 2 (+4 de CA) - Aumenta Carisma</option>
+<option value="48">Tecido de Seda - Nível 3 (+6 de CA) - Aumenta Carisma</option>
+
+<option value="49">Tecido de Seda Lunar - Nível 1 (+3 de CA) - Resistência a Magias da Noite</option>
+<option value="50">Tecido de Seda Lunar - Nível 2 (+5 de CA) - Resistência a Magias da Noite</option>
+<option value="51">Tecido de Seda Lunar - Nível 3 (+8 de CA) - Resistência a Magias da Noite</option>
+
+<option value="52">Tecido de Ossos - Nível 1 (+3 de CA) - Resistência a ataques contundentes</option>
+<option value="53">Tecido de Ossos - Nível 2 (+5 de CA) - Resistência a ataques contundentes</option>
+<option value="54">Tecido de Ossos - Nível 3 (+9 de CA) - Resistência a ataques contundentes</option>
+
+<option value="55">Tecido Selvagem - Nível 1 (+2 de CA) - Resistência a ataques de animais</option>
+<option value="56">Tecido Selvagem - Nível 2 (+4 de CA) - Resistência a ataques de animais</option>
+<option value="57">Tecido Selvagem - Nível 3 (+6 de CA) - Resistência a ataques de animais</option>
+
+<option value="58">Tecido de Sombra - Nível 1 (+1 de CA) - Aumenta a evasão</option>
+<option value="59">Tecido de Sombra - Nível 2 (+3 de CA) - Aumenta a evasão</option>
+<option value="60">Tecido de Sombra - Nível 3 (+5 de CA) - Aumenta a evasão</option>
+
+<option value="61">Tecido Viscoso - Nível 1 (+2 de CA) - Resistência a venenos e ácidos</option>
+<option value="62">Tecido Viscoso - Nível 2 (+4 de CA) - Resistência a venenos e ácidos</option>
+<option value="63">Tecido Viscoso - Nível 3 (+6 de CA) - Resistência a venenos e ácidos</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="material">Material (Metal / Minério Principal)</label>
+                    <select id="material">
+                        <option value="1">1. Cobre</option>
+                        <option value="2">2. Latão</option>
+                        <option value="3">3. Bronze</option>
+                        <option value="4">4. Níquel</option>
+                        <option value="5">5. Ferrotite</option>
+                        <option value="6">6. Estanho</option>
+                        <option value="7">7. Ferro</option>
+                        <option value="8">8. Alumínio</option>
+                        <option value="9">9. Chumbo</option>
+                        <option value="10">10. Ferro Cinza</option>
+                        <option value="11">11. Granito de Ferro</option>
+                        <option value="12">12. Ferro Fundido</option>
+                        <option value="13">13. Alumite</option>
+                        <option value="14">14. Irídio</option>
+                        <option value="15">15. Forgotius</option>
+                        <option value="16">16. Vanadio</option>
+                        <option value="17">17. Ferro forjado</option>
+                        <option value="18">18. Cobalita</option>
+                        <option value="19">19. Aço Bruto</option>
+                        <option value="20">20. Latão Vermelho</option>
+                        <option value="21">21. Ferro Galvanizado</option>
+                        <option value="22">22. Obsidiana</option>
+                        <option value="23">23. Níquel Prateado</option>
+                        <option value="24">24. Prata</option>
+                        <option value="25">25. Ouro</option>
+                        <option value="26">26. Cobalto</option>
+                        <option value="27">27. Obsidianita (Elfos negros)</option>
+                        <option value="28">28. Ferro Sangrento</option>
+                        <option value="29">29. Electrum</option>
+                        <option value="30">30. Silvaril (Elfos)</option>
+                        <option value="31">31. Aço</option>
+                        <option value="32">32. Seregrite</option>
+                        <option value="33">33. Silvarium (Elfos)</option>
+                        <option value="34">34. Electrum Gnômico</option>
+                        <option value="35">35. Titânio</option>
+                        <option value="36">36. Tungstênio</option>
+                        <option value="37">37. Aço Imperial (Humanos)</option>
+                        <option value="38">38. Aquarion (Elfos do mar)</option>
+                        <option value="39">39. Sombraformium (Elfos negros)</option>
+                        <option value="40">40. Pyronite (Elfos Vulcânicos)</option>
+                        <option value="41">41. Folgarium</option>
+                        <option value="42">42. Aço Vulcânico</option>
+                        <option value="43">43. Aço de Damasco</option>
+                        <option value="44">44. Aço Endurecido (Anões Profundos)</option>
+                        <option value="45">45. Verdelita (Elfos da Floresta)</option>
+                        <option value="46">46. Paládio</option>
+                        <option value="47">47. Adamantina</option>
+                        <option value="48">48. Aço Rúnico (Anões)</option>
+                        <option value="49">49. Aço Negro</option>
+                        <option value="50">50. Deserterium (Elfos das areias)</option>
+                        <option value="51">51. Ébano</option>
+                        <option value="52">52. Uradium (Altum Unmo)</option>
+                        <option value="53">53. Paladril</option>
+                        <option value="54">54. Mithril</option>
+                        <option value="55">55. Aço Sombrio (Anões profundos)</option>
+                        <option value="56">56. Aço Infernal (Demônios)</option>
+                        <option value="57">57. Ebonite Anã</option>
+                        <option value="58">58. Adamantina Anã</option>
+                        <option value="59">59. Dolomita Anã</option>
+                        <option value="60">60. Mithril Élfico</option>
+                        <option value="61">61. Aquilurite</option>
+                        <option value="62">62. Aelduro (Elfyed)</option>
+                        <option value="63">63. Oricalco</option>
+                        <option value="64">64. Mithril Ananico</option>
+                        <option value="65">65. Terramite</option>
+                        <option value="66">66. Eldarium (Elfae)</option>
+                        <option value="67">67. Aço de Sangue</option>
+                        <option value="68">68. Aurumvár (Elfyed)</option>
+                        <option value="69">69. Aço Dwever</option>
+                        <option value="70">70. Draconium (Draconatos)</option>
+                        <option value="71">71. Lumithril (Elfos da luz)</option>
+                        <option value="72">72. Arkanium</option>
+                        <option value="73">73. Ceramitium</option>
+                        <option value="74">74. Runádium (Anões antigos)</option>
+                        <option value="75">75. Plastidium</option>
+                        <option value="76">76. Soléther (Elfae)</option>
+                        <option value="77">77. Aço Celestial (Anjos)</option>
+                        <option value="78">78. Aurium</option>
+                        <option value="79">79. Thundrium</option>
+                        <option value="80">80. Luminarite (Elandres)</option>
+                        <option value="81">81. Aetherium</option>
+                        <option value="82">82. Lunargem</option>
+                        <option value="83">83. Solarite</option>
+                        <option value="84">84. Aço Estelar (Divinos)</option>
+                        <option value="85">85. Aço do Caos (Demônios)</option>
+                        <option value="86">86. Adamantium</option>
+                        <option value="87">87. Voidium</option>
+                        <option value="88">88. Asmeridium (1 Indivíduo)</option>
+                        <option value="89">89. Stellarium</option>
+                        <option value="90">90. Celestium (Divinos)</option>
+                        <option value="91">91. Chronium</option>
+                        <option value="92">92. Éterium</option>
+                        <option value="93">93. Astralite (Elandres)</option>
+                        <option value="94">94. Astrolite (Elandres)</option>
+                        <option value="95">95. Eldarium Estelar (Elandres)</option>
+                        <option value="96">96. Estarlite</option>
+                        <option value="97">97. Nebularia</option>
+                        <option value="98">98. Marprafita</option>
+                        <option value="99">99. Augieteritia</option>
+                        <option value="100">100. Celestiarius (Divinos)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="raridade">Raridade da Forja</label>
+                    <select id="raridade">
+                        <option value="comum">Comum</option>
+            <option value="incomum">Incomum</option>
+            <option value="raro">Raro</option>
+            <option value="epico">Épico</option>
+            <option value="magistral">Magistral</option>
+            <option value="lendario">Lendário</option>
+ <option value="mitico">Mítico</option>
+ <option value="unico">Único</option>
+<option value="cosmico">Cósmico</option>
+<option value="divino">Divino</option>
+<option value="celestial">Celestial</option>
+<option value="tesouro">Tesouro de Toviliem-Tur</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cristal">Cristal de Essência</label>
+                    <select id="cristal">
+                        <option value="0">0. Nenhum</option>
+                        <option value="1">1. Transparente</option>
+                        <option value="2">2. Branco</option>
+                        <option value="3">3. Marrom</option>
+                        <option value="4">4. Amarelo</option>
+                        <option value="5">5. Rosa</option>
+                        <option value="6">6. Cinza</option>
+                        <option value="7">7. Verde</option>
+                        <option value="8">8. Violeta</option>
+                        <option value="9">9. Malva</option>
+                        <option value="10">10. Lilás</option>
+                        <option value="11">11. Laranja</option>
+                        <option value="12">12. Azul</option>
+                        <option value="13">13. Índigo</option>
+                        <option value="14">14. Fúcsia</option>
+                        <option value="15">15. Verde</option>
+                        <option value="16">16. Jade</option>
+                        <option value="17">17. Turquesa</option>
+                        <option value="18">18. Ardósia</option>
+                        <option value="19">19. Cobre</option>
+                        <option value="20">20. Borgonha</option>
+                        <option value="21">21. Vermelho</option>
+                        <option value="22">22. Alizarina</option>
+                        <option value="23">23. Esmeralda</option>
+                        <option value="24">24. Ciano</option>
+                        <option value="25">25. Magenta</option>
+                        <option value="26">26. Bordo</option>
+                        <option value="27">27. Safira</option>
+                        <option value="28">28. Roxo</option>
+                        <option value="29">29. Citrino</option>
+                        <option value="30">30. Cardo</option>
+                        <option value="31">31. Âmbar</option>
+                        <option value="32">32. Púrpura</option>
+                        <option value="33">33. Rubi</option>
+                        <option value="34">34. Carmesim</option>
+                        <option value="35">35. Fogo</option>
+                        <option value="36">36. Rútilo</option>
+                        <option value="37">37. </option>
+                        <option value="38">38. Aquamarina</option>
+                        <option value="39">39. Ametista</option>
+                        <option value="40">40. Arco-Íris</option>
+                        <option value="41">41. Sangue</option>
+                        <option value="42">42. Cobreado</option>
+                        <option value="43">43. Prateado</option>
+                        <option value="44">44. Dourado</option>
+                        <option value="45">45. Erythion</option>
+                        <option value="46">46. Sylvarius</option>
+                        <option value="47">47. Cryonix</option>
+                        <option value="48">48. Noctisfera</option>
+                        <option value="49">49. Luminaris</option>
+                        <option value="50">50. Aetherium</option>
+                        <option value="51">51. Lunar</option>
+                        <option value="52">52. Solar</option>
+                        <option value="53">53. Estelar</option>
+                        <option value="54">54. Nebular</option>
+                        <option value="55">55. Cósmico</option>
+                        <option value="56">56. Galático</option>
+                        <option value="57">57. Universal</option>
+                        <option value="58">58. Multiversal</option>
+                                        </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="encantamento_grau">Grau de Encantamento</label>
+                    <select id="encantamento_grau">
+                        <option value="nenhum">Nenhum</option>
+                        <option value="basico">Básico</option>
+                        <option value="intermediario">Intermediário</option>
+                        <option value="avancado">Avançado</option>
+                        <option value="superior">Superior</option>
+                        <option value="mestre">Mestre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="encantamento_tipo">Tipo do Encantamento</label>
+                    <select id="encantamento_tipo">
+                        <option value="dano_fisico">Dano Físico</option>
+                        <option value="dano_magico">Dano Mágico</option>
+                        <option value="dano_elemental">Dano Elemental (à escolha)</option>
+                        <option value="ca">Classe de Armadura (CA)</option>
+                        <option value="resistencia">Resistência Elemental (à escolha)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="action-btn" onclick="forjarEquipamento()">Calcular e Forjar</button>
+
+            <div class="result-container" id="resultado-container">
+                <div class="result-card" id="resultado">
+                    <!-- Preenchido via Javascript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // DADOS DO SISTEMA DE JOGO (Preservados)
+        // ==========================================
+        const tecidos = {
+    0: { nome: "Nenhum", bonusCa: 0, pontos: 0 },
+
+    1: { nome: "Couro Arcano 1", bonusCa: 1, pontos: 1 },
+    2: { nome: "Couro Arcano 2", bonusCa: 3, pontos: 2 },
+    3: { nome: "Couro Arcano 3", bonusCa: 6, pontos: 3 },
+
+    4: { nome: "Couro de Dragão 1", bonusCa: 2, pontos: 1 },
+    5: { nome: "Couro de Dragão 2", bonusCa: 4, pontos: 2 },
+    6: { nome: "Couro de Dragão 3", bonusCa: 7, pontos: 3 },
+
+    7: { nome: "Couro Emplumado 1", bonusCa: 2, pontos: 1 },
+    8: { nome: "Couro Emplumado 2", bonusCa: 4, pontos: 2 },
+    9: { nome: "Couro Emplumado 3", bonusCa: 8, pontos: 3 },
+
+    10: { nome: "Couro Escamoso 1", bonusCa: 3, pontos: 1 },
+    11: { nome: "Couro Escamoso 2", bonusCa: 5, pontos: 2 },
+    12: { nome: "Couro Escamoso 3", bonusCa: 10, pontos: 3 },
+
+    13: { nome: "Couro Espinhoso 1", bonusCa: 2, pontos: 1 },
+    14: { nome: "Couro Espinhoso 2", bonusCa: 4, pontos: 2 },
+    15: { nome: "Couro Espinhoso 3", bonusCa: 8, pontos: 3 },
+
+    16: { nome: "Couro Fino 1", bonusCa: 1, pontos: 1 },
+    17: { nome: "Couro Fino 2", bonusCa: 2, pontos: 2 },
+    18: { nome: "Couro Fino 3", bonusCa: 5, pontos: 3 },
+
+    19: { nome: "Couro Lanudo 1", bonusCa: 1, pontos: 1 },
+    20: { nome: "Couro Lanudo 2", bonusCa: 3, pontos: 2 },
+    21: { nome: "Couro Lanudo 3", bonusCa: 7, pontos: 3 },
+
+    22: { nome: "Couro Impermeável 1", bonusCa: 2, pontos: 1 },
+    23: { nome: "Couro Impermeável 2", bonusCa: 5, pontos: 2 },
+    24: { nome: "Couro Impermeável 3", bonusCa: 8, pontos: 3 },
+
+    25: { nome: "Couro Mágico 1", bonusCa: 3, pontos: 1 },
+    26: { nome: "Couro Mágico 2", bonusCa: 6, pontos: 2 },
+    27: { nome: "Couro Mágico 3", bonusCa: 10, pontos: 3 },
+
+    28: { nome: "Couro Reforçado 1", bonusCa: 6, pontos: 1 },
+    29: { nome: "Couro Reforçado 2", bonusCa: 10, pontos: 2 },
+    30: { nome: "Couro Reforçado 3", bonusCa: 12, pontos: 3 },
+
+    31: { nome: "Couro Sombrio 1", bonusCa: 2, pontos: 1 },
+    32: { nome: "Couro Sombrio 2", bonusCa: 4, pontos: 2 },
+    33: { nome: "Couro Sombrio 3", bonusCa: 8, pontos: 3 },
+
+    34: { nome: "Tecido Comum 1", bonusCa: 1, pontos: 1 },
+    35: { nome: "Tecido Comum 2", bonusCa: 2, pontos: 2 },
+    36: { nome: "Tecido Comum 3", bonusCa: 3, pontos: 3 },
+
+    37: { nome: "Tecido de Fogo Eterno 1", bonusCa: 2, pontos: 1 },
+    38: { nome: "Tecido de Fogo Eterno 2", bonusCa: 4, pontos: 2 },
+    39: { nome: "Tecido de Fogo Eterno 3", bonusCa: 7, pontos: 3 },
+
+    40: { nome: "Tecido de Linho 1", bonusCa: 1, pontos: 1 },
+    41: { nome: "Tecido de Linho 2", bonusCa: 2, pontos: 2 },
+    42: { nome: "Tecido de Linho 3", bonusCa: 4, pontos: 3 },
+
+    43: { nome: "Tecido de Nobre 1", bonusCa: 1, pontos: 1 },
+    44: { nome: "Tecido de Nobre 2", bonusCa: 3, pontos: 2 },
+    45: { nome: "Tecido de Nobre 3", bonusCa: 5, pontos: 3 },
+
+    46: { nome: "Tecido de Seda 1", bonusCa: 2, pontos: 1 },
+    47: { nome: "Tecido de Seda 2", bonusCa: 4, pontos: 2 },
+    48: { nome: "Tecido de Seda 3", bonusCa: 6, pontos: 3 },
+
+    49: { nome: "Tecido de Seda Lunar 1", bonusCa: 3, pontos: 1 },
+    50: { nome: "Tecido de Seda Lunar 2", bonusCa: 5, pontos: 2 },
+    51: { nome: "Tecido de Seda Lunar 3", bonusCa: 8, pontos: 3 },
+
+    52: { nome: "Tecido de Ossos 1", bonusCa: 3, pontos: 1 },
+    53: { nome: "Tecido de Ossos 2", bonusCa: 5, pontos: 2 },
+    54: { nome: "Tecido de Ossos 3", bonusCa: 9, pontos: 3 },
+
+    55: { nome: "Tecido Selvagem 1", bonusCa: 2, pontos: 1 },
+    56: { nome: "Tecido Selvagem 2", bonusCa: 4, pontos: 2 },
+    57: { nome: "Tecido Selvagem 3", bonusCa: 6, pontos: 3 },
+
+    58: { nome: "Tecido de Sombra 1", bonusCa: 1, pontos: 1 },
+    59: { nome: "Tecido de Sombra 2", bonusCa: 3, pontos: 2 },
+    60: { nome: "Tecido de Sombra 3", bonusCa: 5, pontos: 3 },
+
+    61: { nome: "Tecido Viscoso 1", bonusCa: 2, pontos: 1 },
+    62: { nome: "Tecido Viscoso 2", bonusCa: 4, pontos: 2 },
+    63: { nome: "Tecido Viscoso 3", bonusCa: 6, pontos: 3 }
+};
+
+
+    const materiais = {
+        1: { nome: "Cobre", cor: "Avermelhado ou alaranjado brilhante", corHex: "#c45c26", bonusFisico: 1, bonusMagico: 0, bonusCa: 1, pontos: 1 },
+        2: { nome: "Latão", cor: "Cor dourada clara com um brilho metálico", corHex: "#d4af37", bonusFisico: 0, bonusMagico: 1, bonusCa: 1, pontos: 1 },
+        3: { nome: "Bronze", cor: "Marrom dourado profundo", corHex: "#8b6914", bonusFisico: 1, bonusMagico: 0, bonusCa: 1, pontos: 1 },
+        4: { nome: "Níquel", cor: "Prateada metálica", corHex: "#a8a8a8", bonusFisico: 1, bonusMagico: 1, bonusCa: 1, pontos: 1 },
+        5: { nome: "Ferrotite", cor: "Cinza metálico escuro", corHex: "#4a4a4e", bonusFisico: 2, bonusMagico: 1, bonusCa: 1, pontos: 1 },
+        6: { nome: "Estanho", cor: "Prata opaca", corHex: "#b8b8b8", bonusFisico: 1, bonusMagico: 2, bonusCa: 1, pontos: 1 },
+        7: { nome: "Ferro", cor: "Cinza metálico escuro", corHex: "#43464b", bonusFisico: 2, bonusMagico: 1, bonusCa: 1, pontos: 1 },
+        8: { nome: "Alumínio", cor: "Prateado brilhante", corHex: "#d0d4dc", bonusFisico: 2, bonusMagico: 2, bonusCa: 1, pontos: 1 },
+        9: { nome: "Chumbo", cor: "Cinza-azulado opaco", corHex: "#6b7b8c", bonusFisico: 3, bonusMagico: 2, bonusCa: 2, pontos: 1 },
+        10: { nome: "Ferro Cinza", cor: "Cinza fosco", corHex: "#6e6e6e", bonusFisico: 2, bonusMagico: 3, bonusCa: 2, pontos: 1 },
+        11: { nome: "Granito de Ferro", cor: "Cinza escuro", corHex: "#3d3d3d", bonusFisico: 3, bonusMagico: 2, bonusCa: 2, pontos: 1 },
+        12: { nome: "Ferro Fundido", cor: "Cinza fosco", corHex: "#5c5c5c", bonusFisico: 3, bonusMagico: 3, bonusCa: 2, pontos: 1 },
+        13: { nome: "Alumite", cor: "Prata claro", corHex: "#c8c8d0", bonusFisico: 2, bonusMagico: 4, bonusCa: 3, pontos: 1 },
+        14: { nome: "Irídio", cor: "Prateado metálico brilhante", corHex: "#e8e8f0", bonusFisico: 4, bonusMagico: 2, bonusCa: 3, pontos: 1 },
+        15: { nome: "Forgotius", cor: "Prata esverdeada", corHex: "#9aa8a0", bonusFisico: 4, bonusMagico: 4, bonusCa: 3, pontos: 1 },
+        16: { nome: "Vanadio", cor: "Cinza metálico com brilho verde azulado", corHex: "#5f7a78", bonusFisico: 3, bonusMagico: 5, bonusCa: 4, pontos: 2 },
+        17: { nome: "Ferro forjado", cor: "Cinza fosco escuro", corHex: "#2f2f32", bonusFisico: 5, bonusMagico: 2, bonusCa: 4, pontos: 2 },
+        18: { nome: "Cobalita", cor: "Azul metálico profundo", corHex: "#1e3a5f", bonusFisico: 5, bonusMagico: 5, bonusCa: 4, pontos: 2 },
+        19: { nome: "Aço Bruto", cor: "Cinza metálico escuro", corHex: "#4a4a50", bonusFisico: 6, bonusMagico: 4, bonusCa: 4, pontos: 2 },
+        20: { nome: "Latão Vermelho", cor: "Dourado avermelhado", corHex: "#c85c3c", bonusFisico: 4, bonusMagico: 6, bonusCa: 5, pontos: 2 },
+        21: { nome: "Ferro Galvanizado", cor: "Prata metálico com tons de cinza claro", corHex: "#a8a8b0", bonusFisico: 6, bonusMagico: 5, bonusCa: 5, pontos: 2 },
+        22: { nome: "Obsidiana", cor: "Preto profundo e brilhante, vítreo", corHex: "#0d0d12", bonusFisico: 7, bonusMagico: 5, bonusCa: 6, pontos: 2 },
+        23: { nome: "Níquel Prateado", cor: "Prateado brilhante claro", corHex: "#e0e8e8", bonusFisico: 5, bonusMagico: 7, bonusCa: 6, pontos: 2 },
+        24: { nome: "Prata", cor: "Brilhante e prateada", corHex: "#c0c0c0", bonusFisico: 7, bonusMagico: 5, bonusCa: 6, pontos: 2 },
+        25: { nome: "Ouro", cor: "Dourado brilhante", corHex: "#ffd700", bonusFisico: 5, bonusMagico: 7, bonusCa: 6, pontos: 2 },
+        26: { nome: "Cobalto", cor: "Azul metálico intenso", corHex: "#0047ab", bonusFisico: 7, bonusMagico: 7, bonusCa: 6, pontos: 2 },
+        27: { nome: "Obsidianita (Elfos negros)", cor: "Preto com reflexos azulados ou arroxeado", corHex: "#1a1a2e", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
+        28: { nome: "Ferro Sangrento", cor: "Vermelho escuro, quase rubro", corHex: "#5c1010", bonusFisico: 6, bonusMagico: 8, bonusCa: 7, pontos: 2 },
+        29: { nome: "Electrum", cor: "Dourado claro", corHex: "#e8d060", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
+        30: { nome: "Silvaril (Elfos)", cor: "Prateado brilhante com brilho leve de azulado", corHex: "#c0d0e8", bonusFisico: 8, bonusMagico: 8, bonusCa: 7, pontos: 2 },
+        31: { nome: "Aço", cor: "Cinza metálico claro", corHex: "#a8a8b0", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
+        32: { nome: "Seregrite", cor: "Prateado luminoso, com um brilho etéreo", corHex: "#d0e0f0", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
+        33: { nome: "Silvarium (Elfos)", cor: "Prata pura com um leve brilho esverdeado", corHex: "#b8c8c0", bonusFisico: 6, bonusMagico: 9, bonusCa: 8, pontos: 2 },
+        34: { nome: "Electrum Gnômico", cor: "Dourado claro", corHex: "#e8d060", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
+        35: { nome: "Titânio", cor: "Cinza prateado", corHex: "#878681", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
+        36: { nome: "Tungstênio", cor: "Cinza metálico escuro", corHex: "#4a4a4e", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
+        37: { nome: "Aço Imperial (Humanos)", cor: "Prateado com tons azulados", corHex: "#708090", bonusFisico: 9, bonusMagico: 9, bonusCa: 8, pontos: 2 },
+        38: { nome: "Aquarion (Elfos do mar)", cor: "Transparente ou azul cristalino", corHex: "#87ceeb", bonusFisico: 7, bonusMagico: 10, bonusCa: 9, pontos: 3 },
+        39: { nome: "Sombraformium (Elfos negros)", cor: "Preto metálico com reflexos roxos", corHex: "#2d1a3d", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
+        40: { nome: "Pyronite (Elfos Vulcânicos)", cor: "Vermelho-alaranjado brilhante", corHex: "#ff4500", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
+        41: { nome: "Folgarium", cor: "Amarelo metálico intenso", corHex: "#e6c200", bonusFisico: 10, bonusMagico: 10, bonusCa: 9, pontos: 3 },
+        42: { nome: "Aço Vulcânico", cor: "Cinza escuro com reflexos vermelho e laranja", corHex: "#3d2a28", bonusFisico: 7, bonusMagico: 11, bonusCa: 10, pontos: 3 },
+        43: { nome: "Aço de Damasco", cor: "Cinza prateado com padrões ondulado", corHex: "#8b8b9e", bonusFisico: 11, bonusMagico: 7, bonusCa: 10, pontos: 3 },
+        44: { nome: "Aço Endurecido (Anões Profundos)", cor: "Cinza metálico opaco", corHex: "#696969", bonusFisico: 11, bonusMagico: 11, bonusCa: 10, pontos: 3 },
+        45: { nome: "Verdelita (Elfos da Floresta)", cor: "Verde metálico", corHex: "#228b22", bonusFisico: 8, bonusMagico: 12, bonusCa: 11, pontos: 3 },
+        46: { nome: "Paládio", cor: "Prateado brilhante com tom esbranquiçado", corHex: "#e8e8e8", bonusFisico: 12, bonusMagico: 8, bonusCa: 11, pontos: 3 },
+        47: { nome: "Adamantina", cor: "Vermelho claro e metálico", corHex: "#e07070", bonusFisico: 12, bonusMagico: 12, bonusCa: 11, pontos: 3 },
+        48: { nome: "Aço Rúnico (Anões)", cor: "Cinza escuro com runas brilhando", corHex: "#4a4a55", bonusFisico: 13, bonusMagico: 8, bonusCa: 12, pontos: 3 },
+        49: { nome: "Aço Negro", cor: "Preto profundo e fosco", corHex: "#0a0a0a", bonusFisico: 8, bonusMagico: 13, bonusCa: 12, pontos: 3 },
+        50: { nome: "Deserterium (Elfos das areias)", cor: "Dourado esbranquiçado", corHex: "#d4c4a8", bonusFisico: 13, bonusMagico: 13, bonusCa: 12, pontos: 3 },
+        51: { nome: "Ébano", cor: "Preto intenso e sólido", corHex: "#1c1c1c", bonusFisico: 14, bonusMagico: 9, bonusCa: 13, pontos: 3 },
+        52: { nome: "Uradium (Altum Unmo)", cor: "Azul-claro cintilante com brilho branco", corHex: "#b0e0e6", bonusFisico: 9, bonusMagico: 14, bonusCa: 13, pontos: 3 },
+        53: { nome: "Paladril", cor: "Branco-prateado com reflexos bordo", corHex: "#e8e0e4", bonusFisico: 14, bonusMagico: 14, bonusCa: 13, pontos: 3 },
+        54: { nome: "Mithril", cor: "Prateado brilhante com brilho azulado", corHex: "#c0e0ff", bonusFisico: 15, bonusMagico: 9, bonusCa: 14, pontos: 3 },
+        55: { nome: "Aço Sombrio (Anões profundos)", cor: "Preto com reflexos roxos e azulados", corHex: "#2a1a35", bonusFisico: 9, bonusMagico: 15, bonusCa: 14, pontos: 4 },
+        56: { nome: "Aço Infernal (Demônios)", cor: "Vermelho escuro e metálico", corHex: "#8b0000", bonusFisico: 15, bonusMagico: 15, bonusCa: 14, pontos: 4 },
+        57: { nome: "Ebonite Anã", cor: "Preto metálico com um brilho prateado", corHex: "#2a2a30", bonusFisico: 10, bonusMagico: 16, bonusCa: 15, pontos: 4 },
+        58: { nome: "Adamantina Anã", cor: "Vermelho metálico com um tom mais escuro", corHex: "#a03030", bonusFisico: 16, bonusMagico: 10, bonusCa: 15, pontos: 4 },
+        59: { nome: "Dolomita Anã", cor: "Cinza claro com veios brancos", corHex: "#d3d3c8", bonusFisico: 16, bonusMagico: 16, bonusCa: 15, pontos: 4 },
+        60: { nome: "Mithril Élfico", cor: "Prateado brilhante com tom esverdeado sutil", corHex: "#b8d8c8", bonusFisico: 20, bonusMagico: 12, bonusCa: 17, pontos: 4 },
+        61: { nome: "Aquilurite", cor: "Azul meia-noite opaco com brilhos cintilantes", corHex: "#191970", bonusFisico: 12, bonusMagico: 20, bonusCa: 17, pontos: 4 },
+        62: { nome: "Aelduro (Elfyed)", cor: "Esmeralda com veios de luz dourada-azul", corHex: "#50c878", bonusFisico: 20, bonusMagico: 20, bonusCa: 17, pontos: 4 },
+        63: { nome: "Oricalco", cor: "Dourado avermelhado", corHex: "#d4a574", bonusFisico: 13, bonusMagico: 22, bonusCa: 18, pontos: 4 },
+        64: { nome: "Mithril Ananico", cor: "Prateado escuro fosco", corHex: "#8899aa", bonusFisico: 22, bonusMagico: 13, bonusCa: 18, pontos: 4 },
+        65: { nome: "Terramite", cor: "Marrom terroso com veios dourados", corHex: "#8b7355", bonusFisico: 22, bonusMagico: 22, bonusCa: 18, pontos: 5 },
+        66: { nome: "Eldarium (Elfae)", cor: "Verde metálico com dourado", corHex: "#6b8e23", bonusFisico: 24, bonusMagico: 14, bonusCa: 19, pontos: 4 },
+        67: { nome: "Aço de Sangue", cor: "Vermelho escuro com veios pretos", corHex: "#4a0808", bonusFisico: 14, bonusMagico: 24, bonusCa: 19, pontos: 4 },
+        68: { nome: "Aurumvár (Elfyed)", cor: "Dourado com esverdeado", corHex: "#daa520", bonusFisico: 24, bonusMagico: 24, bonusCa: 19, pontos: 5 },
+        69: { nome: "Aço Dwever", cor: "Dourado profundo com reflexos azulados", corHex: "#6b8eb5", bonusFisico: 26, bonusMagico: 15, bonusCa: 20, pontos: 5 },
+        70: { nome: "Draconium (Draconatos)", cor: "Verde-escuro com reflexos dourado", corHex: "#2f4f2f", bonusFisico: 15, bonusMagico: 26, bonusCa: 20, pontos: 5 },
+        71: { nome: "Lumithril (Elfos da luz)", cor: "Prateado com brilho dourado-azul", corHex: "#e0e8ff", bonusFisico: 26, bonusMagico: 26, bonusCa: 20, pontos: 4 },
+        72: { nome: "Arkanium", cor: "Prateado com brilho arroxeado", corHex: "#9370db", bonusFisico: 17, bonusMagico: 30, bonusCa: 23, pontos: 5 },
+        73: { nome: "Ceramitium", cor: "Branco fosco", corHex: "#f5f5f0", bonusFisico: 30, bonusMagico: 17, bonusCa: 23, pontos: 5 },
+        74: { nome: "Runádium (Anões antigos)", cor: "Prateado reluzente com runas pulsantes", corHex: "#c0c0e0", bonusFisico: 30, bonusMagico: 30, bonusCa: 23, pontos: 5 },
+        75: { nome: "Plastidium", cor: "Cinza metálico", corHex: "#808080", bonusFisico: 34, bonusMagico: 19, bonusCa: 24, pontos: 5 },
+        76: { nome: "Soléther (Elfae)", cor: "Ouro líquido com filamentos azul-leitoso", corHex: "#ffd700", bonusFisico: 19, bonusMagico: 34, bonusCa: 24, pontos: 5 },
+        77: { nome: "Aço Celestial (Anjos)", cor: "Prateado com reflexos dourados e azuis", corHex: "#e6f0ff", bonusFisico: 34, bonusMagico: 34, bonusCa: 24, pontos: 5 },
+        78: { nome: "Aurium", cor: "Ouro brilhante", corHex: "#ffd700", bonusFisico: 38, bonusMagico: 21, bonusCa: 25, pontos: 5 },
+        79: { nome: "Thundrium", cor: "Azul metálico com traços elétricos", corHex: "#4169e1", bonusFisico: 21, bonusMagico: 38, bonusCa: 25, pontos: 5 },
+        80: { nome: "Luminarite (Elandres)", cor: "Prateado luminescente", corHex: "#f0f8ff", bonusFisico: 38, bonusMagico: 38, bonusCa: 25, pontos: 6 },
+        81: { nome: "Aetherium", cor: "Azul-claro translúcido", corHex: "#b0e0ff", bonusFisico: 42, bonusMagico: 23, bonusCa: 26, pontos: 6 },
+        82: { nome: "Lunargem", cor: "Prateado com brilho azulado", corHex: "#c0d0e8", bonusFisico: 23, bonusMagico: 42, bonusCa: 26, pontos: 6 },
+        83: { nome: "Solarite", cor: "Dourado com reflexos laranja", corHex: "#ffa500", bonusFisico: 42, bonusMagico: 42, bonusCa: 26, pontos: 6 },
+        84: { nome: "Aço Estelar (Divinos)", cor: "Preto com brilhos prateados", corHex: "#1a1a2e", bonusFisico: 60, bonusMagico: 32, bonusCa: 40, pontos: 6 },
+        85: { nome: "Aço do Caos (Demônios)", cor: "Preto com reflexos vermelhos e púrpura", corHex: "#2d0a2d", bonusFisico: 27, bonusMagico: 50, bonusCa: 30, pontos: 5 },
+        86: { nome: "Adamantium", cor: "Verde metálico escuro", corHex: "#2f4f4f", bonusFisico: 50, bonusMagico: 27, bonusCa: 30, pontos: 5 },
+        87: { nome: "Voidium", cor: "Preto absoluto", corHex: "#000000", bonusFisico: 32, bonusMagico: 60, bonusCa: 40, pontos: 5 },
+        88: { nome: "Asmeridium (1 Indivíduo)", cor: "Dourado brilhante com brilho luminoso", corHex: "#ffd700", bonusFisico: 50, bonusMagico: 50, bonusCa: 30, pontos: 5 },
+        89: { nome: "Stellarium", cor: "Prateado com brilho estelar", corHex: "#e8e8ff", bonusFisico: 60, bonusMagico: 60, bonusCa: 40, pontos: 5 },
+        90: { nome: "Celestium (Divinos)", cor: "Dourado com reflexos celestiais azulados", corHex: "#fffacd", bonusFisico: 70, bonusMagico: 47, bonusCa: 50, pontos: 7 },
+        91: { nome: "Chronium", cor: "Prateado com brilho dourado e azulado", corHex: "#c9b037", bonusFisico: 47, bonusMagico: 70, bonusCa: 50, pontos: 7 },
+        92: { nome: "Éterium", cor: "Azul-claro translúcido com brilho etéreo", corHex: "#87ceeb", bonusFisico: 70, bonusMagico: 70, bonusCa: 50, pontos: 7 },
+        93: { nome: "Astralite (Elandres)", cor: "Prateado com brilho estelar azulado", corHex: "#6495ed", bonusFisico: 800, bonusMagico: 1000, bonusCa: 150, pontos: 7 },
+        94: { nome: "Astrolite (Elandres)", cor: "Dourado com reflexos prateados", corHex: "#daa520", bonusFisico: 1000, bonusMagico: 800, bonusCa: 150, pontos: 7 },
+        95: { nome: "Eldarium Estelar (Elandres)", cor: "Prateado com brilhos estelares e azulados", corHex: "#e0f0ff", bonusFisico: 10000, bonusMagico: 10000, bonusCa: 1000, pontos: 7 },
+        96: { nome: "Estarlite", cor: "Prateado com brilhos de estrelas cintilantes", corHex: "#fff8dc", bonusFisico: 20000, bonusMagico: 10000, bonusCa: 5000, pontos: 7 },
+        97: { nome: "Nebularia", cor: "Roxo escuro com reflexos cósmicos", corHex: "#4b0082", bonusFisico: 40000, bonusMagico: 40000, bonusCa: 20000, pontos: 7 },
+        98: { nome: "Marprafita", cor: "Prata branco intenso com brilho divino", corHex: "#f8f8ff", bonusFisico: 50000, bonusMagico: 40000, bonusCa: 25000, pontos: 5000 },
+        99: { nome: "Augieteritia", cor: "Dourado intenso com brilho divino", corHex: "#ffd700", bonusFisico: 75000, bonusMagico: 75000, bonusCa: 50000, pontos: 10000 },
+        100: { nome: "Celestiarius (Divinos)", cor: "Branco brilhante com reflexo dourado e azul", corHex: "#fffaf0", bonusFisico: 99999, bonusMagico: 99999, bonusCa: 99999, pontos: 999999 },
+    };
+
+    const raridades = {
+        comum: {bonusEquipamento: " (+0)", bonusCa: 0, pontos: 1},
+        incomum: {bonusEquipamento: " (+1 a 2 d2)", bonusCa: 1, pontos: 2},
+        raro: {bonusEquipamento: " (+3 a 4 d2)", bonusCa: 2, pontos: 3},
+        epico: {bonusEquipamento: " (+5 a 6 d2)", bonusCa: 3, pontos: 4},
+        magistral: {bonusEquipamento: " (+7 a 8 d2)", bonusCa: 4, pontos: 5},
+        lendario: {bonusEquipamento: " (+9 a 10 d2)", bonusCa: 5, pontos: 6},
+        mitico: {bonusEquipamento: " (+11 a 16 d6)", bonusCa: 6, pontos: 7},
+        unico: {bonusEquipamento: " (+17 a 25 d9)", bonusCa: 8, pontos: 8},
+        cosmico: {bonusEquipamento: " (+26 a 50 d25)", bonusCa: 16, pontos: 9},
+        divino: {bonusEquipamento: " (+50 a 1000 d951)", bonusCa: 20, pontos: 10},
+        celestial: {bonusEquipamento: " (+1001 a 2000 d1000)", bonusCa: 28, pontos: 0},
+        tesouro: {bonusEquipamento: " (+2001 a Infinito)", bonusCa: "Sim", pontos: 0},
+    };
+
+    const cristais = {
+        0: {nome: "Nenhum", bonusMagico: 0, pontos: 0},
+        1: {nome: "Transparente", bonusMagico: 1, pontos: 1},
+        2: {nome: "Branco", bonusMagico: 1, pontos: 1},
+        3: {nome: "Marrom", bonusMagico: 2, pontos: 1},
+        4: {nome: "Amarelo", bonusMagico: 2, pontos: 1},
+        5: {nome: "Rosa", bonusMagico: 2, pontos: 1},
+        6: {nome: "Cinza", bonusMagico: 2, pontos: 1},
+        7: {nome: "Verde", bonusMagico: 2, pontos: 1},
+        8: {nome: "Violeta", bonusMagico: 3, pontos: 1},
+        9: {nome: "Malva", bonusMagico: 3, pontos: 1},
+        10: {nome: "Lilás", bonusMagico: 3, pontos: 1},
+        11: {nome: "Laranja", bonusMagico: 4, pontos: 1},
+        12: {nome: "Azul", bonusMagico: 4, pontos: 1},
+        13: {nome: "Índigo", bonusMagico: 4, pontos: 1},
+        14: {nome: "Fúcsia", bonusMagico: 4, pontos: 1},
+        15: {nome: "Verde", bonusMagico: 5, pontos: 1},
+        16: {nome: "Jade", bonusMagico: 5, pontos: 1},
+        17: {nome: "Turquesa", bonusMagico: 5, pontos: 1},
+        18: {nome: "Ardósia", bonusMagico: 5, pontos: 1},
+        19: {nome: "Cobre", bonusMagico: 6, pontos: 1},
+        20: {nome: "Borgonha", bonusMagico: 6, pontos: 1},
+        21: {nome: "Vermelho", bonusMagico: 7, pontos: 2},
+        22: {nome: "Alizarina", bonusMagico: 7, pontos: 2},
+        23: {nome: "Esmeralda", bonusMagico: 7, pontos: 2},
+        24: {nome: "Ciano", bonusMagico: 8, pontos: 2},
+        25: {nome: "Magenta", bonusMagico: 8, pontos: 2},
+        26: {nome: "Bordo", bonusMagico: 9, pontos: 2},
+        27: {nome: "Safira", bonusMagico: 9, pontos: 2},
+        28: {nome: "Roxo", bonusMagico: 10, pontos: 2},
+        29: {nome: "Citrino", bonusMagico: 10, pontos: 2},
+        30: {nome: "Cardo", bonusMagico: 11, pontos: 2},
+        31: {nome: "Âmbar", bonusMagico: 12, pontos: 2},
+        32: {nome: "Púrpura", bonusMagico: 12, pontos: 2},
+        33: {nome: "Rubi", bonusMagico: 12, pontos: 2},
+        34: {nome: "Carmesim", bonusMagico: 13, pontos: 2},
+        35: {nome: "Fogo", bonusMagico: 13, pontos: 2},
+        36: {nome: "Rútilo", bonusMagico: 13, pontos: 2},
+        37: {nome: "", bonusMagico: 14, pontos: 2},
+        38: {nome: "Aquamarina", bonusMagico: 14, pontos: 2},
+        39: {nome: "Ametista", bonusMagico: 15, pontos: 2},
+        40: {nome: "Arco-Íris", bonusMagico: 16, pontos: 2},
+        41: {nome: "Sangue", bonusMagico: 17, pontos: 2},
+        42: {nome: "Cobreado", bonusMagico: 18, pontos: 2},
+        43: {nome: "Prateado", bonusMagico: 19, pontos: 2},
+        44: {nome: "Dourado", bonusMagico: 20, pontos: 2},
+        45: {nome: "Erythion", bonusMagico: 22, pontos: 3},
+        46: {nome: "Sylvarius", bonusMagico: 22, pontos: 3},
+        47: {nome: "Cryonix", bonusMagico: 22, pontos: 3},
+        48: {nome: "Noctisfera", bonusMagico: 25, pontos: 3},
+        49: {nome: "Luminaris", bonusMagico: 27, pontos: 3},
+        50: {nome: "Aetherium", bonusMagico: 30, pontos: 3},
+        51: {nome: "Lunar", bonusMagico: 35, pontos: 4},
+        52: {nome: "Solar", bonusMagico: 40, pontos: 4},
+        53: {nome: "Estelar", bonusMagico: 45, pontos: 4},
+        54: {nome: "Nebular", bonusMagico: 50, pontos: 4},
+        55: {nome: "Cósmico", bonusMagico: 70, pontos: 4},
+        56: {nome: "Galático", bonusMagico: 100, pontos: 4},
+        57: {nome: "Universal", bonusMagico: 150, pontos: 4},
+        58: {nome: "Multiversal", bonusMagico: 200, pontos: 4},
+    };
+
+    const encGraus = {
+        "nenhum": { nome: "Nenhum", sucesso: "", pontos: 0, multPct: 0, bonusCa: 0, reves: 0, prof: "" },
+        "basico": { nome: "Básico", sucesso: "< 65 (d100)", pontos: 1, multPct: 0.5, bonusCa: 3, reves: 2, prof: "Iniciante" },
+        "intermediario": { nome: "Intermediário", sucesso: "< 70 (d100)", pontos: 3, multPct: 1, bonusCa: 6, reves: 4, prof: "Avançado" },
+        "avancado": { nome: "Avançado", sucesso: "< 700 (d1000)", pontos: 5, multPct: 1.5, bonusCa: 12, reves: 6, prof: "Superior" },
+        "superior": { nome: "Superior", sucesso: "< 800 (d1000)", pontos: 7, multPct: 3, bonusCa: 24, reves: 9, prof: "Mestre" },
+        "mestre": { nome: "Mestre", sucesso: "< 8500 (d10000)", pontos: 10, multPct: 5, bonusCa: 48, reves: 12, prof: "Grão-Mestre" }
+    };
+
+    const encTipos = {
+        "dano_fisico": { nome: "Bônus de dano físico", isCa: false },
+        "dano_magico": { nome: "Bônus de dano mágico", isCa: false },
+        "dano_elemental": { nome: "Bônus de dano elemental", isCa: false },
+        "ca": { nome: "Bônus classe de armadura", isCa: true },
+        "resistencia": { nome: "Resistência elemental", isCa: false }
+    };
+
+    const tiposConfig = {
+        armadura_definitiva:{ categoria: 'armadura', multCA: 1.00, peso: 22,   usaTecido: true,  label: 'Armadura Definitiva' },
+        armadura_poder:  { categoria: 'armadura', multCA: 1.00, peso: 25,   usaTecido: true,  label: 'Armadura de Poder' },
+        armadura_pesada: { categoria: 'armadura', multCA: 1.00, peso: 16,   usaTecido: false, label: 'Armadura Pesada' },
+        armadura_media:  { categoria: 'armadura', multCA: 0.80, peso: 12,   usaTecido: false, label: 'Armadura Média' },
+        armadura_leve:   { categoria: 'armadura', multCA: 0.70, peso: 7,    usaTecido: false, label: 'Armadura Leve' },
+        roupas:          { categoria: 'armadura', multCA: 0.40, peso: 3,    usaTecido: false, label: 'Roupas' },
+        escudo:          { categoria: 'armadura', multCA: 0.10, peso: 3,    usaTecido: false, label: 'Escudo' },
+        anel:            { categoria: 'adorno',   multCA: 0.10, peso: 0.5,  usaTecido: false, label: 'Anel' },
+        colar:           { categoria: 'adorno',   multCA: 0.25, peso: 0.5,  usaTecido: false, label: 'Colar' },
+        equip_pequeno:   { categoria: 'arma', dado: '1d6',  peso: 1, usaForca: false, label: 'Equipamento Pequeno' },
+        equip_misto:     { categoria: 'arma', dado: '1d8 (1 mão) / 1d10 (2 mãos)', peso: 2, usaForca: false, label: 'Equipamento Misto' },
+        equip_grande:    { categoria: 'arma', dado: '1d12', peso: 4, usaForca: true,  label: 'Equipamento Grande' },
+        equip_magico:    { categoria: 'arma', dado: '1d8',  peso: 5, usaForca: false, label: 'Equipamento Mágico', somenteMAG: true },
+        equip_definitivo:{ categoria: 'arma', dado: '1d8 (1 mão) / 1d10 (2 mãos)', peso: 4, usaForca: false, label: 'Equipamento Definitivo' },
+    };
+    const FORGED_ITEM_STORAGE_KEY = "INDOMITUS_FORGED_ITEMS_V1";
+    let ultimoItemForjado = null;
+
+    function lerItensForjadosCompartilhados() {
+        try {
+            const bruto = window.localStorage.getItem(FORGED_ITEM_STORAGE_KEY);
+            if (!bruto) return [];
+            const dados = JSON.parse(bruto);
+            return Array.isArray(dados) ? dados : [];
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    function salvarItensForjadosCompartilhados(lista) {
+        window.localStorage.setItem(FORGED_ITEM_STORAGE_KEY, JSON.stringify(Array.isArray(lista) ? lista : []));
+    }
+
+    function exportarUltimoItemForjado() {
+        if (!ultimoItemForjado) {
+            alert('Forje um item antes de enviar para o criador pessoal.');
+            return;
+        }
+
+        const atuais = lerItensForjadosCompartilhados();
+        if (!atuais.some((item) => item && item.id === ultimoItemForjado.id)) {
+            atuais.push(ultimoItemForjado);
+            salvarItensForjadosCompartilhados(atuais.slice(-100));
+        }
+
+        alert(`"${ultimoItemForjado.nome}" foi enviado para o inventario do Criador Pessoal.`);
+    }
+
+    function toggleCampos() {
+        const tipo = document.getElementById('equipamento').value;
+        const cfg = tiposConfig[tipo];
+        const groupTecido = document.getElementById('group-tecido');
+        const groupForca = document.getElementById('group-forca');
+
+        if (groupTecido) groupTecido.style.display = (cfg && cfg.usaTecido) ? 'flex' : 'none';
+        if (groupForca) groupForca.style.display = (cfg && cfg.usaForca) ? 'flex' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', toggleCampos);
+
+    function escHtml(s) {
+        return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function obterRotuloIcone(tipo, cfg) {
+        if (!cfg) return "Item Forjado";
+        if (tipo === 'armadura_definitiva') return "Armadura Definitiva";
+        if (tipo === 'equip_definitivo') return "Lamina Definitiva";
+        if (cfg.categoria === 'armadura') return "Armadura Forjada";
+        if (cfg.categoria === 'arma') return "Espada Forjada";
+        return "Adorno Forjado";
+    }
+
+    function obterClasseVisualIcone(tipo, cfg) {
+        if (!cfg) return 'visual-adorn';
+        if (tipo === 'armadura_definitiva') return 'visual-armor-def';
+        if (tipo === 'equip_definitivo') return 'visual-weapon-def';
+        if (cfg.categoria === 'armadura') return 'visual-armor';
+        if (cfg.categoria === 'arma') return 'visual-weapon';
+        return 'visual-adorn';
+    }
+
+    function obterIconeEquipamento(tipo, cfg) {
+        if (!cfg) return '';
+
+        if (tipo === 'armadura_definitiva') {
+            return `
+                <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+                    <path d="M46 24L80 10L114 24L132 38L126 66L110 82V136H50V82L34 66L28 38L46 24Z" fill="#05070a" opacity="0.32"></path>
+                    <path d="M46 24L80 10L114 24L132 38L126 66L110 82V136H50V82L34 66L28 38L46 24Z" fill="currentColor" opacity="0.2"></path>
+                    <path d="M58 24L80 16L102 24L118 34L113 61L100 74V132H60V74L47 61L42 34L58 24Z" fill="currentColor" opacity="0.82"></path>
+                    <path d="M80 16L96 21L92 56L84 68V132" fill="none" stroke="#fff" stroke-opacity="0.34" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M58 32L46 52L57 61L73 48L80 54L87 48L103 61L114 52L102 32" fill="currentColor" opacity="0.55"></path>
+                    <path d="M58 32L46 52L57 61L73 48L80 54L87 48L103 61L114 52L102 32" fill="none" stroke="#05070a" stroke-opacity="0.42" stroke-width="5" stroke-linejoin="round"></path>
+                    <path d="M66 72H94" fill="none" stroke="#fff" stroke-opacity="0.24" stroke-width="5" stroke-linecap="round"></path>
+                    <path d="M61 88H99" fill="none" stroke="#05070a" stroke-opacity="0.35" stroke-width="7" stroke-linecap="round"></path>
+                    <path d="M80 36L90 44L80 52L70 44Z" fill="#fff" opacity="0.44"></path>
+                    <path d="M80 36L90 44L80 52L70 44Z" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="3"></path>
+                </svg>
+            `;
+        }
+
+        if (cfg.categoria === 'armadura') {
+            return `
+                <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+                    <path d="M50 24L80 12L110 24L126 36L121 63L106 78V136H54V78L39 63L34 36L50 24Z" fill="#05070a" opacity="0.3"></path>
+                    <path d="M50 24L80 12L110 24L126 36L121 63L106 78V136H54V78L39 63L34 36L50 24Z" fill="currentColor" opacity="0.18"></path>
+                    <path d="M61 24L80 17L99 24L112 33L108 59L97 71V132H63V71L52 59L48 33L61 24Z" fill="currentColor" opacity="0.8"></path>
+                    <path d="M80 18L93 22L89 53L82 64V132" fill="none" stroke="#fff" stroke-opacity="0.32" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M61 31L52 48L61 56L74 46L80 51L86 46L99 56L108 48L99 31" fill="currentColor" opacity="0.55"></path>
+                    <path d="M61 31L52 48L61 56L74 46L80 51L86 46L99 56L108 48L99 31" fill="none" stroke="#05070a" stroke-opacity="0.42" stroke-width="5" stroke-linejoin="round"></path>
+                    <path d="M66 76H94" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="5" stroke-linecap="round"></path>
+                    <path d="M66 92H94" fill="none" stroke="#05070a" stroke-opacity="0.34" stroke-width="7" stroke-linecap="round"></path>
+                </svg>
+            `;
+        }
+
+        if (tipo === 'equip_definitivo') {
+            return `
+                <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+                    <path d="M82 10L114 66L80 102L46 66L78 10Z" fill="#05070a" opacity="0.28"></path>
+                    <path d="M82 10L114 66L80 102L46 66L78 10Z" fill="currentColor" opacity="0.84"></path>
+                    <path d="M80 18L101 62L80 84L60 62L80 18Z" fill="#fff" opacity="0.24"></path>
+                    <path d="M32 88L58 74L80 84L102 74L128 88L110 102H50Z" fill="currentColor" opacity="0.72"></path>
+                    <path d="M32 88L58 74L80 84L102 74L128 88L110 102H50Z" fill="none" stroke="#05070a" stroke-opacity="0.42" stroke-width="6" stroke-linejoin="round"></path>
+                    <path d="M80 84V124" fill="none" stroke="#05070a" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round"></path>
+                    <path d="M80 86V124" fill="none" stroke="currentColor" stroke-opacity="0.84" stroke-width="5" stroke-linecap="round"></path>
+                    <path d="M80 94L94 112L80 132L66 112L80 94Z" fill="currentColor" opacity="0.86"></path>
+                    <path d="M80 100L88 112L80 121L72 112L80 100Z" fill="#fff" opacity="0.34"></path>
+                    <path d="M80 74L92 82L80 90L68 82Z" fill="#fff" opacity="0.42"></path>
+                </svg>
+            `;
+        }
+
+        if (cfg.categoria === 'arma') {
+            return `
+                <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+                    <path d="M82 14L106 60L80 87L54 60L78 14Z" fill="#05070a" opacity="0.28"></path>
+                    <path d="M82 14L106 60L80 87L54 60L78 14Z" fill="currentColor" opacity="0.82"></path>
+                    <path d="M80 20L96 58L80 75L65 58L80 20Z" fill="#fff" opacity="0.22"></path>
+                    <path d="M48 84H112L101 96H59Z" fill="currentColor" opacity="0.7"></path>
+                    <path d="M48 84H112L101 96H59Z" fill="none" stroke="#05070a" stroke-opacity="0.4" stroke-width="6" stroke-linejoin="round"></path>
+                    <path d="M80 87V123" fill="none" stroke="#05070a" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round"></path>
+                    <path d="M80 88V123" fill="none" stroke="currentColor" stroke-opacity="0.86" stroke-width="5" stroke-linecap="round"></path>
+                    <path d="M80 104L90 118L80 131L70 118L80 104Z" fill="currentColor" opacity="0.82"></path>
+                    <path d="M80 108L86 118L80 125L74 118L80 108Z" fill="#fff" opacity="0.28"></path>
+                </svg>
+            `;
+        }
+
+        return `
+            <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+                <path d="M80 20L114 52L80 138L46 52L80 20Z" fill="currentColor" opacity="0.2"></path>
+                <path d="M80 20L114 52L80 138L46 52L80 20Z" fill="none" stroke="#05070a" stroke-opacity="0.42" stroke-width="8" stroke-linejoin="round"></path>
+                <path d="M80 30L100 54L80 112L60 54L80 30Z" fill="currentColor" opacity="0.82"></path>
+                <path d="M80 38L92 54L80 92L68 54L80 38Z" fill="#fff" opacity="0.28"></path>
+                <path d="M46 52H114" fill="none" stroke="#fff" stroke-opacity="0.2" stroke-width="5" stroke-linecap="round"></path>
+            </svg>
+        `;
+    }
+
+    function obterMascaraEquipamento(tipo, cfg) {
+        if (!cfg) return '';
+        if (tipo === 'armadura_definitiva') return 'assets/forja/armadura-definitiva-mask.png';
+        if (tipo === 'equip_definitivo') return 'assets/forja/espada-definitiva-mask.png';
+        if (cfg.categoria === 'armadura') return 'assets/forja/armadura-mask.png';
+        if (cfg.categoria === 'arma') return 'assets/forja/espada-mask.png';
+        return 'assets/forja/adorno-mask.png';
+    }
+
+    function obterArteEquipamento(tipo, cfg, materialId) {
+        if (!cfg) return '';
+        const materialKey = String(materialId || '1').trim();
+        const safeId = /^\d+$/.test(materialKey) ? String(Number(materialKey)).padStart(2, '0') : '01';
+
+        if (tipo === 'armadura_definitiva') return `assets/forja/generated/armor-def-m${safeId}.png`;
+        if (tipo === 'equip_definitivo') return `assets/forja/generated/weapon-def-m${safeId}.png`;
+        if (cfg.categoria === 'armadura') return `assets/forja/generated/armor-m${safeId}.png`;
+        if (cfg.categoria === 'arma') return `assets/forja/generated/weapon-m${safeId}.png`;
+        return `assets/forja/generated/adorn-m${safeId}.png`;
+    }
+
+    function forjarEquipamento() {
+        const tipo = document.getElementById('equipamento').value;
+        const cfg = tiposConfig[tipo];
+        if (!cfg) return;
+
+        const materialVal = document.getElementById('material').value;
+        const raridadeVal = document.getElementById('raridade').value;
+        const cristalVal = document.getElementById('cristal').value;
+        const tecidoVal = document.getElementById('tecido').value;
+        const encGrauVal = document.getElementById('encantamento_grau').value;
+        const encTipoVal = document.getElementById('encantamento_tipo').value;
+
+        const sel = {
+            material: materiais[materialVal],
+            raridade: raridades[raridadeVal],
+            cristal:  cristais[cristalVal] || cristais[0],
+            tecido:   tecidos[tecidoVal] || tecidos[0],
+            encGrau:  encGraus[encGrauVal],
+            encTipo:  encTipos[encTipoVal]
+        };
+
+        if (!sel.material || !sel.raridade) return;
+
+        const pontos = (Number(sel.material.pontos) || 0)
+                     + (Number(sel.raridade.pontos) || 0)
+                     + (Number(sel.cristal.pontos) || 0)
+                     + (Number(sel.tecido.pontos) || 0)
+                     + (Number(sel.encGrau.pontos) || 0);
+
+        let bFisico = sel.material.bonusFisico || 0;
+        let bMagico = (sel.material.bonusMagico || 0) + (sel.cristal.bonusMagico || 0);
+        let bCa = sel.material.bonusCa || 0;
+        
+        if (cfg.usaTecido) bCa += sel.tecido.bonusCa;
+        
+        let rariCa = sel.raridade.bonusCa;
+        let isEspecialRari = (rariCa === "Sim");
+        if (!isEspecialRari) bCa += Number(rariCa);
+
+        let extraCaEncanto = 0;
+        let extraDanoPct = 0;
+        if (sel.encGrau.pontos > 0) {
+            if (sel.encTipo.isCa) {
+                extraCaEncanto = sel.encGrau.bonusCa;
+            } else {
+                extraDanoPct = sel.encGrau.multPct;
+            }
+        }
+
+        const resDiv = document.getElementById('resultado');
+        const resCont = document.getElementById('resultado-container');
+        
+        resDiv.className = "result-card rarity-active rarity-" + raridadeVal;
+        
+        const m = sel.material;
+        const corHex = m.corHex || "#888888";
+        const corTxt = m.cor || "";
+        const iconLabel = obterRotuloIcone(tipo, cfg);
+        const iconClass = obterClasseVisualIcone(tipo, cfg);
+        const iconArt = obterArteEquipamento(tipo, cfg, materialVal);
+        const raridadeNome = obterTextoSelecionado('raridade');
+        const caFinalNumero = Number((((bCa + extraCaEncanto) * cfg.multCA)).toFixed(2));
+        const totalBonusFixo = bFisico + bMagico;
+        let danoFinalTxt = cfg.categoria === 'arma' ? `${cfg.dado} + ${totalBonusFixo}` : '';
+        if (cfg.categoria === 'arma' && extraDanoPct > 0) danoFinalTxt += ` (+${extraDanoPct}%)`;
+
+        let html = `<h3 class="result-title">${cfg.label}</h3>`;
+        html += `<p class="result-subtitle">
+            <span class="hl">Material:</span>
+            <span class="material-inline" title="${escHtml(corTxt)}">
+                <span class="material-swatch" style="background-color:${escHtml(corHex)}"></span>
+                ${escHtml(m.nome)}
+            </span>
+            <span class="cor-do-mineral"><br><span class="hl">Cor do metal:</span> ${escHtml(corTxt)}</span>
+            <br><br>
+            <span class="hl">Raridade:</span> ${raridadeNome} <br>
+            <span class="hl">Essência:</span> ${sel.cristal.nome} 
+            ${cfg.usaTecido ? `| <span class="hl">Tecido:</span> ${sel.tecido.nome}` : ''}
+        </p>`;
+
+        html += `<div class="result-ribbon-row">
+            <span class="result-ribbon">${escHtml(iconLabel)}</span>
+            <span class="result-ribbon">${escHtml(raridadeNome)}</span>
+            <span class="result-ribbon">${escHtml(m.nome)}</span>
+        </div>`;
+
+        html += `<div class="result-visual">
+            <div class="result-icon-wrap">
+                <div class="result-icon-frame ${iconClass}" style="--material-color:${escHtml(corHex)}">
+                    <div class="result-item-icon" aria-hidden="true">
+                        <img class="result-item-art ${iconClass}" src="${escHtml(iconArt)}" alt="">
+                    </div>
+                </div>
+                <div class="result-icon-label">${iconLabel}</div>
+            </div>
+        </div>`;
+
+        html += `<div class="stats-grid">`;
+
+        html += criarBox(
+            'Aparência (minério)',
+            `<span class="material-inline"><span class="material-swatch" style="background-color:${escHtml(corHex)}"></span><span style="font-size:0.85em;font-weight:normal">${escHtml(corTxt)}</span></span>`
+        );
+
+        if (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') {
+            let caFinalVal = caFinalNumero.toFixed(2);
+            let caDisplay = isEspecialRari ? `${caFinalVal} + Especial` : caFinalVal;
+            html += criarBox('Defesa Social/CA', caDisplay);
+            html += criarBox('Bônus Material', `+${sel.material.bonusCa}`);
+            if (cfg.usaTecido) html += criarBox('Bônus Tecido', `+${sel.tecido.bonusCa}`);
+            if (extraCaEncanto > 0) html += criarBox('Encanto (CA)', `+${extraCaEncanto}`);
+        } else {
+            html += criarBox('Dano Base', cfg.dado);
+            html += criarBox('Bônus Fixo', `+${totalBonusFixo}`);
+            
+            html += criarBox('Dano Total Estimado', danoFinalTxt, true);
+        }
+
+        html += criarBox('Bônus Físico', `+${bFisico}`);
+        html += criarBox('Bônus Mágico', `+${bMagico}`);
+        html += criarBox('Mod. Raridade', sel.raridade.bonusEquipamento);
+        html += criarBox('Peso Final', `${cfg.peso} kg`);
+
+        if (sel.encGrau.pontos > 0) {
+            html += criarBox('Ritual Magnânimo', sel.encGrau.nome);
+            html += criarBox('Efeito do Ritual', sel.encTipo.nome);
+            html += criarBox('Chance Sucesso', sel.encGrau.sucesso);
+            html += criarBox('Revés (Falha)', `-${sel.encGrau.reves}%`);
+        }
+
+        html += criarBox('Pontuação de Forja', pontos, true);
+        html += `</div>`;
+        html += `<div class="result-actions"><button class="action-btn result-action-btn" type="button" onclick="exportarUltimoItemForjado()">Enviar ao Criador Pessoal</button></div>`;
+
+        ultimoItemForjado = {
+            id: `forja_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            origem: "calculadora",
+            nome: cfg.label,
+            tipo: cfg.categoria === 'armadura' ? 'armadura' : (cfg.categoria === 'arma' ? 'arma' : 'acessorio'),
+            categoria: cfg.categoria,
+            categoriaLabel: iconLabel,
+            resumo: `${cfg.label} forjado`,
+            descricao: `Material: ${m.nome} | Raridade: ${raridadeNome} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Tecido: ${sel.tecido.nome}` : ''}`,
+            caBonus: (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') ? caFinalNumero : 0,
+            equipado: false,
+            materialNome: m.nome,
+            materialCorHex: corHex,
+            materialCor: corTxt,
+            raridadeId: raridadeVal,
+            raridadeNome,
+            peso: `${cfg.peso} kg`,
+            danoResumo: cfg.categoria === 'arma' ? danoFinalTxt : '',
+            fonte: "Calculadora RPG"
+        };
+
+        resDiv.innerHTML = html;
+        resCont.style.display = 'block';
+        resCont.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function obterTextoSelecionado(id) {
+        const el = document.getElementById(id);
+        return el.options[el.selectedIndex].text;
+    }
+
+    function criarBox(label, value, destaque) {
+        const cls = destaque ? 'stat-box stat-point' : 'stat-box';
+        return `<div class="${cls}"><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
+    }
+    </script>
+</body>
+</html>

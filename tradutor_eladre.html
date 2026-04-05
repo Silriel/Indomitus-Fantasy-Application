@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Alfabeto Elandris</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f7e3b5;
+            --primary-hover: #fff4dd;
+            --secondary: #b8d7ff;
+            --primary-glow: rgba(184, 215, 255, 0.5);
+            --bg-dark: #040914;
+            --bg-panel: rgba(10, 20, 39, 0.78);
+            --bg-input: rgba(6, 13, 28, 0.84);
+            --text-main: #f6fbff;
+            --text-muted: #b8c7dd;
+            --border-glow: 0 24px 60px rgba(76, 119, 182, 0.22);
+            --transition: all 0.32s ease;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-main);
+            font-family: 'Cormorant Garamond', serif;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(184, 215, 255, 0.22) 0%, transparent 32%),
+                radial-gradient(circle at 18% 22%, rgba(255, 241, 204, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 82% 18%, rgba(170, 210, 255, 0.12) 0%, transparent 24%),
+                linear-gradient(180deg, #081326 0%, #06101f 48%, #030711 100%);
+            min-height: 100vh;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            background:
+                radial-gradient(2px 2px at 8% 16%, rgba(255,255,255,0.8), transparent 55%),
+                radial-gradient(1.5px 1.5px at 15% 34%, rgba(203,224,255,0.7), transparent 55%),
+                radial-gradient(2px 2px at 28% 12%, rgba(255,248,221,0.85), transparent 55%),
+                radial-gradient(1.5px 1.5px at 42% 28%, rgba(255,255,255,0.6), transparent 55%),
+                radial-gradient(2px 2px at 58% 10%, rgba(188,218,255,0.9), transparent 55%),
+                radial-gradient(1.5px 1.5px at 68% 24%, rgba(255,250,230,0.7), transparent 55%),
+                radial-gradient(2px 2px at 76% 14%, rgba(255,255,255,0.8), transparent 55%),
+                radial-gradient(1.5px 1.5px at 88% 30%, rgba(184,215,255,0.75), transparent 55%),
+                radial-gradient(2px 2px at 21% 72%, rgba(255,248,221,0.35), transparent 55%),
+                radial-gradient(1.5px 1.5px at 70% 78%, rgba(184,215,255,0.3), transparent 55%);
+            opacity: 0.85;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at 50% -10%, rgba(255, 244, 220, 0.22), transparent 32%),
+                radial-gradient(circle at 50% 110%, rgba(119, 168, 255, 0.12), transparent 30%);
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(5, 14, 29, 0.95), rgba(7, 16, 33, 0.72));
+            border-bottom: 1px solid rgba(184, 215, 255, 0.28);
+            padding: 20px 0 18px;
+            text-align: center;
+            box-shadow: 0 10px 36px rgba(4, 10, 23, 0.58);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.7em;
+            color: var(--primary);
+            text-shadow: 0 0 14px rgba(184, 215, 255, 0.32);
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 3px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.04em;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            transform: scaleX(0.2);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        nav a:hover {
+            color: var(--primary-hover);
+            text-shadow: 0 0 10px rgba(184, 215, 255, 0.28);
+        }
+
+        nav a:hover::after {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+
+        main {
+            max-width: 980px;
+            margin: 54px auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .forge-container {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(12, 24, 45, 0.9), rgba(8, 17, 34, 0.82)),
+                radial-gradient(circle at top, rgba(184, 215, 255, 0.08), transparent 40%);
+            border: 1px solid rgba(184, 215, 255, 0.22);
+            border-radius: 28px;
+            padding: 42px 38px;
+            box-shadow: var(--border-glow);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .forge-container::before {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 1px solid rgba(255, 246, 220, 0.12);
+            border-radius: 22px;
+            pointer-events: none;
+        }
+
+        .forge-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255, 243, 214, 0.1), transparent 35%),
+                linear-gradient(120deg, transparent 18%, rgba(184, 215, 255, 0.06) 50%, transparent 82%);
+            pointer-events: none;
+        }
+
+        .forge-header h2 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.35em;
+            margin-bottom: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(184, 215, 255, 0.2);
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 0.08em;
+            position: relative;
+        }
+        
+        .forge-header p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.28em;
+            max-width: 640px;
+            margin: 0 auto 34px;
+            line-height: 1.5;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: 1 / -1; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        
+        select, input[type='number'], input[type='text'] {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 1.15em;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--text-main);
+            background:
+                linear-gradient(180deg, rgba(10, 20, 38, 0.92), rgba(5, 11, 24, 0.9));
+            border: 1px solid rgba(169, 198, 238, 0.24);
+            border-radius: 18px;
+            transition: var(--transition);
+            box-sizing: border-box;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        input::placeholder {
+            color: rgba(184, 199, 221, 0.68);
+        }
+
+        select:hover, input:hover, select:focus, input:focus {
+            border-color: rgba(247, 227, 181, 0.55);
+            box-shadow: 0 0 0 4px rgba(184, 215, 255, 0.12), 0 0 18px rgba(184, 215, 255, 0.18);
+            outline: none;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, rgba(255, 243, 214, 0.16), rgba(184, 215, 255, 0.12));
+            border: 1px solid rgba(247, 227, 181, 0.42);
+            color: var(--primary);
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.02em;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            box-shadow: 0 16px 30px rgba(8, 16, 34, 0.35);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 245, 224, 0.25), rgba(184, 215, 255, 0.22));
+            color: var(--primary-hover);
+            box-shadow: 0 18px 38px rgba(11, 22, 45, 0.48), 0 0 26px rgba(184, 215, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px 0;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .btn-list .action-btn {
+            margin: 0;
+            max-width: 100%;
+        }
+
+        .output {
+            margin-top: 28px;
+            padding: 24px 22px;
+            text-align: center;
+            font-size: 1.62em;
+            font-weight: 600;
+            color: var(--primary);
+            background:
+                linear-gradient(180deg, rgba(13, 25, 45, 0.94), rgba(8, 15, 30, 0.92));
+            border: 1px solid rgba(190, 219, 255, 0.24);
+            border-radius: 22px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 18px 34px rgba(4, 11, 24, 0.42);
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            text-shadow: 0 0 16px rgba(184, 215, 255, 0.16);
+            line-height: 1.35;
+        }
+
+        .error {
+            color: #ffd7ae;
+            text-align: center;
+            margin-top: 14px;
+            font-weight: 600;
+            font-size: 1em;
+            letter-spacing: 0.03em;
+            text-shadow: none;
+        }
+
+        @media (max-width: 700px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container {
+                padding: 28px 22px;
+                border-radius: 22px;
+            }
+
+            .forge-container::before {
+                inset: 12px;
+            }
+
+            .forge-header h2 {
+                font-size: 1.7em;
+            }
+
+            .forge-header p.subtitle {
+                font-size: 1.12em;
+            }
+
+            select, input[type='number'], input[type='text'] {
+                padding: 14px 16px;
+                font-size: 1.05em;
+            }
+
+            .output {
+                font-size: 1.28em;
+                padding: 20px 18px;
+            }
+        }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Voltar aos Costumes (Idiomas)</a></li>
+                <li><a href="menu.html">Hub Principal</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forge-container">
+            <div class="forge-header">
+                <h2>Alfabeto Elandris</h2>
+                <p class="subtitle">Entoe palavras do idioma comum sob a claridade das constelações. O céu responde em Elandre.</p>
+            </div>
+            
+            <div class="form-group full-width">
+                <input type="text" id="inputWord" placeholder="Escreva sob o céu estrelado..." oninput="transcribeWord()" autocomplete="off">
+                <div id="error" class="error"></div>
+            </div>
+
+            <div id="transcription" class="output">A guardiã descansa...</div>
+        </div>
+    </main>
+
+    <script>
+        function transcribeWord() {
+            const inputElement = document.getElementById("inputWord");
+            const transcriptionElement = document.getElementById("transcription");
+            const errorElement = document.getElementById("error");
+
+            const transcriptionMap = {
+      // ===== Palavras simples (substantivos, adjetivos, etc.) =====
+      "a": "Lïe",
+"adoração": "Toviliniel",
+"agua": "Kwenin",
+"alegria": "Sidrilin",
+"amanhã": "Atareriel", 
+"amanhecer": "Atarer",
+"amiga": "Lothérianah", 
+"amigo": "Lothérian", 
+"amizade": "Lothemin",
+"amor": "Lothehena", 
+"amor": "Lothehiel",
+"amparo": "Ataridril", 
+"amparo": "Herilithar",
+"aquela": "Lothirah",
+"aquele": "Lothir",
+"arco": "Lienherimel", 
+"árvore": "Lienelith", 
+"avô": "Lotheatarim",
+"avó": "Lotheatarimah",
+"azul": "Erdrinie",
+"bela": "Lienorielah",
+"belo": "Lienoriel",
+"bonita": "Kwenilotharah",
+"bonito": "Kwenilothar",
+"caminho (da vida)": "Kweniniel",
+"caminho": "Kwenliriel", 
+"caminho": "Kwenlirien", 
+"céu": "Ahetim",
+"chão": "Kweninir", 
+"chave": "Kwenithiel", 
+"chave": "Lothelen",
+"choro (som de choro)": "Lienril",
+"choro": "Lienherim", 
+"chuva": "Kwenindril", 
+"ciclo": "Lotheniel",
+"conflito": "Herinindril",
+"conseguir": "Inion",
+"conquista": "Heterinion", 
+"conhecimento": "Indorielith", 
+"coração (figurado)": "Erindriniel", 
+"coração": "Ahetindrim",
+"coragem": "Heterilith", 
+"correr": "Herindri", 
+"cura": "Lienherilith", 
+"da": "Alithah",
+"de": "Alith",
+"despertar onírico": "Ingundë",
+"destino": "Ahniedrilien", 
+"destreza": "Lienherimor",
+"derrota": "Soerindril",
+"deus": "Toviliem-tur",
+"deus, deusa, deidade": "Inieulym",
+"dia": "Lienulim",
+"do": "Alitar",
+"dor física": "Soerindri", 
+"dor": "Irniedri",
+"e": "Nie",
+"é": "Niere",
+"ela": "Ïrsdosinah",
+"ele": "Ïrsdosin",
+"elegante": "Lothelianor", 
+"Erguer": "Lienothil",
+"escudo": "Heridril", 
+"escuro": "Ahlienul",
+"espada": "Ahetimel", 
+"em": "Enir", 
+"esperança (em tempos difíceis)": "Ahniedrilith", 
+"esperança": "Ahniloth",
+"espírito": "Toviliem", 
+"estranho": "Soerelithar", 
+"estrela": "Erdriniel", 
+"familia": "Lotheatarindorin",
+"fé": "Lothevily", 
+"felicidade": "Sidriëniel", 
+"feliz": "Sidriën", 
+"filha": "Lienah",
+"filho": "Liensindrie",
+"finito": "Ahetindri",
+"flor": "Tovihier", 
+"floresta": "Ahlienfiriel", 
+"fogo": "Heterim",
+"força": "Heter", 
+"fruto": "Kwenelith", 
+"futuro": "Ahniedrithiel", 
+"grande": "Lothemunim",
+"guerra": "Ahniedril", 
+"homem": "Liasindrie",
+"ilusão": "Ahlierimith", 
+"imperador": "Indoriel",
+"império": "Indorielothien",
+"infinito": "Ahnierim",
+"irmã": "Sinmirilah",
+"irmão": "Sinmiril",
+"justiça": "Indorien", 
+"lágrima": "Lienherimiel", 
+"lágrimas": "Lienherimith", 
+"liberdade": "Ahetindriel",
+"liberdade": "Lothethir",
+"linda": "Lienathorah",
+"lindo": "Lienathor", 
+"lua cheia": "Salpirionelith", 
+"lua de mienduë": "Salpirion",
+"lua": "Salpirionel",
+"luz": "lienul",
+"mãe": "Atarimah",
+"majestosa": "Indorielfirathah",
+"majestoso": "Indorielfirath",
+"medo": "Soerelith", 
+"mente": "Soerimel", 
+"mentira": "Heterindriel", 
+"mistério": "Kweninirilith", 
+"mistura": "Kwenilithar", 
+"montanha": "Erdrinel", 
+"morte": "Aheterindri",
+"mulher": "Driulienah",
+"mundo": "Kweninhiel", 
+"não": "Soerel", 
+"neve": "Ahlienim",
+"noite": "Ahlienulim",
+"nosso": "Lothenir",
+"nossa": "Lothenirah",
+"nuvem": "muhniedrilith",
+"o": "Elin",
+"ontem": "Ahlierim", 
+"os outros": "Elinlotheïr", 
+"outros": "Lotheïr",
+"pai": "Atarim",
+"passado": "Ahlienith", 
+"paz": "Ahetindril", 
+"paz": "Ahlienën",
+"pedra": "ïrnierim", 
+"pequeno": "Lienmunim",
+"perder": "Hetindri",
+"pesadelo": "Ahlienindril",
+"planeta natal": "Mienduë",
+"poder": "Erdiriel", 
+"porta": "Sinlidri", 
+"povo": "Lotheïrsdosin", 
+"prima": "Kwensinmirilah",
+"primo": "Kwensinmiril",
+"primopueri": "Elandres", 
+"principe feminino": "Lienindorielah",
+"principe": "Lienindoriel",
+"prisão": "Soerelithar",
+"rainha": "Indorielah",
+"raiz": "Herilith",
+"real": "Indorielien",
+"realeza": "Indorielien",
+"realidade": "Indorieliel", 
+"rei": "Indoriel",
+"reinado": "Indorielfirion",
+"revolução": "Ahniedrilithar",
+"riqueza": "Indorielan", 
+"riso": "Sidrilithiel", 
+"sabedoria": "Indorielir",
+"semente": "Lothelith", 
+"seu": "Lothen",
+"sim": "Sidri", 
+"sistema de mienduë": "Primondë",
+"sobrinha": "Kwenlienah",
+"sobrinho": "Kwenliensindrie",
+"sol de elandria": "Tenperionel", 
+"sol de primondë": "Tenperion",
+"sol": "Tenperilith",
+"solidão": "Lienahim",
+"som": "Lothethim", 
+"sombra (contorno)": "Ahlienulrin",
+"sombra": "Ahlienhiel", 
+"sonho": "Ingundril",
+"sorriso": "Sidrilim",
+"sua": "Lothenah",
+"Subir": "Kweniril",
+"tempestade": "Ahniedriloth", 
+"tempo": "Ahniedri",
+"terra": "Kweninir", 
+"Território": "Kwenilothien",
+"tia": "Kwenatarimah",
+"tio": "Kwenatarim",
+"traição": "Soerilindri",
+"triste": "Soerelin", 
+"união": "Lothemenil", 
+"vento": "Erdrilith",
+"vento": "Heriloth", 
+"verdade": "Lothedrinel",
+"vida eterna": "Aheterimor",
+"vida": "Aheterim",
+"vitória": "Sidrilion",
+"voz": "Erindrin",
+    "um": "Lothen",
+    "uma": "Lothenah",
+    "dois": "Kwenin",
+    "três": "Herilith",
+    "quatro": "Lienir",
+    "cinco": "Ahetim",
+    "seis": "Sinmiril",
+    "sete": "Atarim",
+    "oito": "Lothemun",
+    "nove": "Indoriel",
+    "dez": "Kwenithir",
+    "onze": "Lothenel",
+    "doze": "Kweniniel",
+    "treze": "Herilithiel",
+    "quatorze": "Lieniriel",
+    "quinze": "Ahetimel",
+    "dezesseis": "Sinmiriliel",
+    "dezessete": "Atarimel",
+    "dezoito": "Lothemuniel",
+    "dezenove": "Indorieliel",
+    "vinte": "Kwenithirel",
+    "vinte e um": "Kwenithirel Lothen",
+    "vinte e dois": "Kwenithirel Kwenin",
+    "vinte e três": "Kwenithirel Herilith",
+    "vinte e quatro": "Kwenithirel Lienir",
+    "vinte e cinco": "Kwenithirel Ahetim",
+    "vinte e seis": "Kwenithirel Sinmiril",
+    "vinte e sete": "Kwenithirel Atarim",
+    "vinte e oito": "Kwenithirel Lothemun",
+    "vinte e nove": "Kwenithirel Indoriel",
+    "trinta": "Herilithrim",
+    "trinta e um": "Herilithrim Lothen",
+    "trinta e dois": "Herilithrim Kwenin",
+    "trinta e três": "Herilithrim Herilith",
+    "trinta e quatro": "Herilithrim Lienir",
+    "trinta e cinco": "Herilithrim Ahetim",
+    "trinta e seis": "Herilithrim Sinmiril",
+    "trinta e sete": "Herilithrim Atarim",
+    "trinta e oito": "Herilithrim Lothemun",
+    "trinta e nove": "Herilithrim Indoriel",
+    "quarenta": "Lienirrim",
+    "quarenta e um": "Lienirrim Lothen",
+    "quarenta e dois": "Lienirrim Kwenin",
+    "quarenta e três": "Lienirrim Herilith",
+    "quarenta e quatro": "Lienirrim Lienir",
+    "quarenta e cinco": "Lienirrim Ahetim",
+    "quarenta e seis": "Lienirrim Sinmiril",
+    "quarenta e sete": "Lienirrim Atarim",
+    "quarenta e oito": "Lienirrim Lothemun",
+    "quarenta e nove": "Lienirrim Indoriel",
+    "cinquenta": "Ahetimrim",
+    "cinquenta e um": "Ahetimrim Lothen",
+    "cinquenta e dois": "Ahetimrim Kwenin",
+    "cinquenta e três": "Ahetimrim Herilith",
+    "cinquenta e quatro": "Ahetimrim Lienir",
+    "cinquenta e cinco": "Ahetimrim Ahetim",
+    "cinquenta e seis": "Ahetimrim Sinmiril",
+    "cinquenta e sete": "Ahetimrim Atarim",
+    "cinquenta e oito": "Ahetimrim Lothemun",
+    "cinquenta e nove": "Ahetimrim Indoriel",
+    "sessenta": "Sinmirilrim",
+    "sessenta e um": "Sinmirilrim Lothen",
+    "sessenta e dois": "Sinmirilrim Kwenin",
+    "sessenta e três": "Sinmirilrim Herilith",
+    "sessenta e quatro": "Sinmirilrim Lienir",
+    "sessenta e cinco": "Sinmirilrim Ahetim",
+    "sessenta e seis": "Sinmirilrim Sinmiril",
+    "sessenta e sete": "Sinmirilrim Atarim",
+    "sessenta e oito": "Sinmirilrim Lothemun",
+    "sessenta e nove": "Sinmirilrim Indoriel",
+    "setenta": "Atarimrim",
+    "setenta e um": "Atarimrim Lothen",
+    "setenta e dois": "Atarimrim Kwenin",
+    "setenta e três": "Atarimrim Herilith",
+    "setenta e quatro": "Atarimrim Lienir",
+    "setenta e cinco": "Atarimrim Ahetim",
+    "setenta e seis": "Atarimrim Sinmiril",
+    "setenta e sete": "Atarimrim Atarim",
+    "setenta e oito": "Atarimrim Lothemun",
+    "setenta e nove": "Atarimrim Indoriel",
+    "oitenta": "Lothemunrim",
+    "oitenta e um": "Lothemunrim Lothen",
+    "oitenta e dois": "Lothemunrim Kwenin",
+    "oitenta e três": "Lothemunrim Herilith",
+    "oitenta e quatro": "Lothemunrim Lienir",
+    "oitenta e cinco": "Lothemunrim Ahetim",
+    "oitenta e seis": "Lothemunrim Sinmiril",
+    "oitenta e sete": "Lothemunrim Atarim",
+    "oitenta e oito": "Lothemunrim Lothemun",
+    "oitenta e nove": "Lothemunrim Indoriel",
+    "noventa": "Indorielrim",
+    "noventa e um": "Indorielrim Lothen",
+    "noventa e dois": "Indorielrim Kwenin",
+    "noventa e três": "Indorielrim Herilith",
+    "noventa e quatro": "Indorielrim Lienir",
+    "noventa e cinco": "Indorielrim Ahetim",
+    "noventa e seis": "Indorielrim Sinmiril",
+    "noventa e sete": "Indorielrim Atarim",
+    "noventa e oito": "Indorielrim Lothemun",
+    "noventa e nove": "Indorielrim Indoriel",
+    "cem": "Lothenrim",
+    "mil": "Kweninrim",
+    "dez mil": "Herilithrim",
+    "cem mil": "Lienirgrim",
+    "um milhão": "Ahetimrim",
+    };
+
+            function stripEdgePunct(t) {
+                return t.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+            }
+
+            function escapeHtml(s) {
+                return String(s)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
+
+            function norm(value) {
+                return String(value || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+            }
+
+            const normalizedTranscriptionMap = {};
+            Object.keys(transcriptionMap).forEach(function (key) {
+                const normalizedKey = norm(key);
+                if (!Object.prototype.hasOwnProperty.call(normalizedTranscriptionMap, normalizedKey)) {
+                    normalizedTranscriptionMap[normalizedKey] = transcriptionMap[key];
+                }
+            });
+
+            const letterTranscriptionMap = {
+                a: "im", b: "el", c: "atar", d: "in", e: "nie", f: "het", g: "il", h: "lia",
+                i: "si", j: "lothe", k: "nha", l: "lien", m: "dri", n: "er", o: "sin", p: "ïr",
+                q: "kwen", r: "mir", s: "ym", t: "ah", u: "ul", v: "do", w: "so", x: "lo", y: "ri", z: "mun"
+            };
+
+            function createWordFromLetters(word) {
+                let result = "";
+                for (const ch of norm(word)) {
+                    result += (letterTranscriptionMap[ch] || ch);
+                }
+                return result;
+            }
+
+            function morphFromPortuguese(pt) {
+                const w = norm(pt);
+                const rules = [
+                    { re: /(coes)$/i, cut: 4, suf: "thion", plural: true },
+                    { re: /(cao)$/i, cut: 3, suf: "thion" },
+                    { re: /(dades)$/i, cut: 5, suf: "driel", plural: true },
+                    { re: /(dade)$/i, cut: 4, suf: "driel" },
+                    { re: /(mentes)$/i, cut: 6, suf: "vë", plural: true },
+                    { re: /(mente)$/i, cut: 5, suf: "vë" },
+                    { re: /(osos)$/i, cut: 4, suf: "ath", plural: true },
+                    { re: /(oso)$/i, cut: 3, suf: "ath" },
+                    { re: /(osas)$/i, cut: 4, suf: "athah", plural: true },
+                    { re: /(osa)$/i, cut: 3, suf: "athah" },
+                    { re: /(eiros)$/i, cut: 5, suf: "irion", plural: true },
+                    { re: /(eiro)$/i, cut: 4, suf: "irion" },
+                    { re: /(eiras)$/i, cut: 5, suf: "irionah", plural: true },
+                    { re: /(eira)$/i, cut: 4, suf: "irionah" },
+                    { re: /(veis)$/i, cut: 4, suf: "vël", plural: true },
+                    { re: /(vel)$/i, cut: 3, suf: "vël" }
+                ];
+
+                for (const rule of rules) {
+                    if (rule.re.test(w)) {
+                        const stem = w.slice(0, -rule.cut);
+                        return {
+                            form: createWordFromLetters(stem) + rule.suf,
+                            morphPlural: !!rule.plural
+                        };
+                    }
+                }
+                return null;
+            }
+
+            function verbForms(lemma) {
+                const v = norm(lemma);
+                if (!/(ar|er|ir)$/.test(v)) return [];
+
+                const stem = v.slice(0, -2);
+                const vt = v.slice(-2);
+                const endings = vt === "ar" ? {
+                    pres: ["o", "as", "a", "amos", "ais", "am"],
+                    pret: ["ei", "aste", "ou", "amos", "astes", "aram"],
+                    impf: ["ava", "avas", "ava", "avamos", "aveis", "avam"],
+                    fut: ["arei", "aras", "ara", "aremos", "areis", "arao"],
+                    ger: "ando",
+                    part: "ado"
+                } : vt === "er" ? {
+                    pres: ["o", "es", "e", "emos", "eis", "em"],
+                    pret: ["i", "este", "eu", "emos", "estes", "eram"],
+                    impf: ["ia", "ias", "ia", "iamos", "ieis", "iam"],
+                    fut: ["erei", "eras", "era", "eremos", "ereis", "erao"],
+                    ger: "endo",
+                    part: "ido"
+                } : {
+                    pres: ["o", "es", "e", "imos", "is", "em"],
+                    pret: ["i", "iste", "iu", "imos", "istes", "iram"],
+                    impf: ["ia", "ias", "ia", "iamos", "ieis", "iam"],
+                    fut: ["irei", "iras", "ira", "iremos", "ireis", "irao"],
+                    ger: "indo",
+                    part: "ido"
+                };
+
+                const forms = new Set([v, stem + endings.ger, stem + endings.part]);
+                endings.pres.forEach(function (ending) { forms.add(stem + ending); });
+                endings.pret.forEach(function (ending) { forms.add(stem + ending); });
+                endings.impf.forEach(function (ending) { forms.add(stem + ending); });
+                endings.fut.forEach(function (ending) { forms.add(stem + ending); });
+                return Array.from(forms);
+            }
+
+            function elandreify(value) {
+                let w = String(value || "").normalize("NFC").replace(/\s+/g, " ").trim();
+
+                const compact = [
+                    [/lothe/gi, "loth"], [/atar/gi, "târ"], [/lien/gi, "lîn"],
+                    [/kwen/gi, "quen"], [/mir/gi, "mîr"], [/dri/gi, "drî"],
+                    [/nie/gi, "nïe"], [/lia/gi, "lya"], [/ïr/gi, "îr"]
+                ];
+
+                compact.forEach(function (pair) {
+                    w = w.replace(pair[0], pair[1]);
+                });
+
+                w = w.replace(/aa/gi, "á")
+                    .replace(/ee/gi, "ë")
+                    .replace(/ii/gi, "î")
+                    .replace(/oo/gi, "ô")
+                    .replace(/uu/gi, "û")
+                    .replace(/ae/gi, "á")
+                    .replace(/oe/gi, "ô")
+                    .replace(/ie/gi, "î")
+                    .replace(/ue/gi, "û");
+
+                const vowels = "aáeëiîoôuû";
+                w = w.replace(new RegExp("([" + vowels + "])r([" + vowels + "])", "gi"), "$1rh$2")
+                    .replace(new RegExp("([" + vowels + "])l([" + vowels + "])", "gi"), "$1lh$2")
+                    .replace(new RegExp("([" + vowels + "])t([" + vowels + "])", "gi"), "$1th$2")
+                    .replace(new RegExp("([" + vowels + "])d([" + vowels + "])", "gi"), "$1dh$2")
+                    .replace(new RegExp("([" + vowels + "])g([" + vowels + "])", "gi"), "$1gh$2");
+
+                w = w.replace(/([bcdfghjklmnpqrstvwxyz])e(?=([bcdfghjklmnpqrstvwxyz])(?!h))/gi, "$1")
+                    .replace(/ss/gi, "s")
+                    .replace(/rr/gi, "rh")
+                    .replace(/nn/gi, "n")
+                    .replace(/hh+/gi, "h")
+                    .replace(/(rh|lh|th|dh|gh)h/gi, "$1")
+                    .replace(/([aáeëiîoôuû])\1+/gi, "$1")
+                    .replace(/e\b/gi, "ë")
+                    .replace(/o\b/gi, "ô")
+                    .replace(/u\b/gi, "û");
+
+                return w;
+            }
+
+            function getLexiconValue(word) {
+                if (Object.prototype.hasOwnProperty.call(transcriptionMap, word)) {
+                    return transcriptionMap[word];
+                }
+
+                const normalizedWord = norm(word);
+                if (Object.prototype.hasOwnProperty.call(normalizedTranscriptionMap, normalizedWord)) {
+                    return normalizedTranscriptionMap[normalizedWord];
+                }
+
+                return null;
+            }
+
+            function resolveLexiconEntry(word) {
+                const entry = getLexiconValue(word);
+                if (entry == null) return null;
+
+                if (typeof entry === "string") {
+                    return entry;
+                }
+
+                if (Array.isArray(entry)) {
+                    return entry.length ? entry.join(" / ") : "";
+                }
+
+                if (typeof entry === "object" && entry.type === "verb") {
+                    const lemma = entry.lemma || word;
+                    const base = entry.transcription || entry.form || createWordFromLetters(lemma);
+                    const forms = verbForms(lemma);
+                    return forms.length
+                        ? base + " [" + forms.join(", ") + "]"
+                        : base;
+                }
+
+                return String(entry);
+            }
+
+            function getTranscription(word) {
+                const lexicon = resolveLexiconEntry(word);
+                if (lexicon) return lexicon;
+
+                const morph = morphFromPortuguese(word);
+                if (morph) {
+                    const isPlural = /s$/i.test(norm(word)) || morph.morphPlural;
+                    const base = elandreify(morph.form);
+                    return isPlural ? base + "rim" : base;
+                }
+
+                if (/s$/i.test(word)) {
+                    const singularLexicon = resolveLexiconEntry(word.slice(0, -1));
+                    if (singularLexicon) {
+                        return singularLexicon + "rim";
+                    }
+                }
+
+                return elandreify(createWordFromLetters(word));
+            }
+
+            const raw = inputElement.value.trim();
+
+            if (raw.length === 0) {
+                transcriptionElement.textContent = "A guardiã descansa...";
+                errorElement.textContent = "";
+                errorElement.style.color = "";
+                errorElement.style.textShadow = "";
+                errorElement.style.color = "";
+                errorElement.style.textShadow = "";
+                return;
+            }
+
+            const tokens = raw
+                .toLowerCase()
+                .split(/\s+/)
+                .map(stripEdgePunct)
+                .filter(function (t) { return t.length > 0; });
+
+            const translated = [];
+            const generated = [];
+            let i = 0;
+
+            while (i < tokens.length) {
+                const maxLen = Math.min(24, tokens.length - i);
+                let matched = false;
+                for (let len = maxLen; len >= 1; len--) {
+                    const phrase = tokens.slice(i, i + len).join(" ");
+                    const resolvedPhrase = resolveLexiconEntry(phrase);
+                    if (resolvedPhrase) {
+                        translated.push(resolvedPhrase);
+                        i += len;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    translated.push(getTranscription(tokens[i]));
+                    generated.push(tokens[i]);
+                    i += 1;
+                }
+            }
+
+            const transcription = translated.join(" ");
+            const hasGenerated = generated.length > 0;
+            const hasError = false;
+
+            if (hasGenerated) {
+                errorElement.textContent =
+                    "Palavra(s) não encontrada(s) no léxico: " +
+                    generated.map(function (w) { return '"' + w + '"'; }).join(", ");
+                errorElement.textContent =
+                    "Palavra(s) fora do lexico, moldada(s) automaticamente: " +
+                    generated.map(function (w) { return '"' + w + '"'; }).join(", ");
+                errorElement.style.color = "var(--text-muted)";
+                errorElement.style.textShadow = "none";
+            } else {
+                errorElement.textContent = "";
+                errorElement.style.color = "";
+                errorElement.style.textShadow = "";
+            }
+
+            const body = translated.length
+                ? escapeHtml(transcription)
+                : escapeHtml(hasError ? "—" : transcription);
+
+            transcriptionElement.innerHTML =
+                '<span style="color:var(--text-muted); font-size:0.6em; display:block; margin-bottom:10px;">TRADUÇÃO FONÉTICA:</span>' +
+                body;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indomitus Fantasy - Alfabeto Dracônico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Alegreya:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a; /* Vermelho Dragão */
+            --primary-hover: #ff4d4d;
+            --primary-glow: rgba(196, 30, 58, 0.4);
+            --bg-dark: #0a0505;
+            --bg-panel: rgba(30, 10, 10, 0.9);
+            --bg-input: rgba(15, 5, 5, 0.95);
+            --text-main: #f4f4f4;
+            --text-muted: #b08080;
+            --transition: all 0.4s ease;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cinzel', serif;
+            background-image: 
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png'),
+                radial-gradient(circle at 50% 50%, rgba(196, 30, 58, 0.05) 0%, transparent 80%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(to bottom, #000, rgba(20,0,0,0.9));
+            border-bottom: 2px solid var(--primary);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.9);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        header h1 {
+            margin: 0; font-size: 2.5em; color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+            font-family: 'MedievalSharp', serif;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            list-style: none; padding: 0; margin: 15px 0 0 0;
+            display: flex; justify-content: center; gap: 30px;
+        }
+
+        nav a {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 1em; font-weight: bold; transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+
+        main { max-width: 900px; margin: 50px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
+
+        .translator-container {
+            background: var(--bg-panel);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 12px; padding: 40px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .translator-header { text-align: center; margin-bottom: 30px; }
+        .translator-header h2 { color: var(--primary); font-size: 2.2em; margin: 0; font-family: 'MedievalSharp', serif; }
+        .translator-header p { color: var(--text-muted); font-style: italic; }
+
+        textarea {
+            width: 100%; min-height: 120px; padding: 20px; 
+            background: var(--bg-input); border: 1px solid #422; border-radius: 8px;
+            color: var(--text-main); font-family: 'Cinzel', serif; font-size: 1.1em;
+            resize: vertical; transition: var(--transition); box-sizing: border-box;
+        }
+        textarea:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); outline: none; }
+
+        .output-box {
+            background: rgba(0,0,0,0.7); border: 1px solid var(--primary);
+            border-radius: 10px; padding: 30px; margin-top: 30px;
+            min-height: 80px; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+
+        .output-label {
+            position: absolute; top: -10px; left: 20px; background: var(--bg-dark);
+            padding: 0 10px; color: var(--primary); font-size: 0.8em; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        #transcription {
+            font-size: 1.8em; color: var(--primary); text-align: center;
+            font-family: 'MedievalSharp', serif; text-shadow: 0 0 10px rgba(196, 30, 58, 0.4);
+            word-wrap: break-word; white-space: pre-wrap;
+        }
+
+        .error-msg { color: #ff4444; font-size: 0.9em; text-align: center; margin-top: 15px; min-height: 1.2em; }
+
+        * { box-sizing: border-box; }
+        body { position:relative; overflow-x:hidden; font-family:'Alegreya',serif; background:radial-gradient(circle at 50% -6%, rgba(255, 117, 63, 0.22) 0%, transparent 30%), radial-gradient(circle at 15% 18%, rgba(196, 30, 58, 0.1) 0%, transparent 24%), linear-gradient(180deg, #250707 0%, #130404 42%, #070202 100%); }
+        body::before, body::after { content:""; position:fixed; inset:0; pointer-events:none; }
+        body::before { background:radial-gradient(2px 2px at 16% 16%, rgba(255, 190, 125, 0.4), transparent 60%), radial-gradient(2px 2px at 76% 18%, rgba(255, 93, 93, 0.3), transparent 60%), radial-gradient(2px 2px at 88% 32%, rgba(255, 154, 92, 0.24), transparent 60%); opacity:.9; }
+        body::after { background:linear-gradient(180deg, transparent 70%, rgba(196,30,58,.08) 100%); }
+        header { background:linear-gradient(180deg, rgba(14, 3, 3, 0.96), rgba(34, 7, 7, 0.76)); border-bottom:1px solid rgba(255, 120, 72, 0.22); box-shadow:0 12px 34px rgba(6, 1, 1, 0.55); backdrop-filter:blur(10px); }
+        header h1 { font-family:'Cinzel Decorative',serif; letter-spacing:3px; }
+        nav ul { flex-wrap:wrap; }
+        nav a:hover { color:#ffd0a6; text-shadow:0 0 10px rgba(255, 126, 71, 0.18); }
+        main { max-width:980px; margin:54px auto; padding:0 20px 36px; }
+        .translator-container { position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(36, 10, 10, 0.94), rgba(18, 5, 5, 0.9)); border:1px solid rgba(255, 110, 70, 0.18); border-radius:30px; padding:44px 38px; box-shadow:0 24px 58px rgba(6, 1, 1, 0.42); }
+        .translator-container::before { content:""; position:absolute; inset:16px; border:1px solid rgba(255, 175, 116, 0.08); border-radius:22px; pointer-events:none; }
+        .translator-container::after { content:""; position:absolute; inset:0; background:linear-gradient(135deg, transparent 14%, rgba(255, 117, 63, 0.06) 50%, transparent 86%); pointer-events:none; }
+        .translator-header h2 { font-family:'Cinzel Decorative',serif; font-size:2.3em; letter-spacing:.08em; }
+        .translator-header p { color:#d0a39a; font-size:1.18em; margin-top:12px; }
+        textarea { min-height:130px; padding:18px 20px; background:linear-gradient(180deg, rgba(18, 5, 5, 0.96), rgba(11, 3, 3, 0.92)); border:1px solid rgba(255, 110, 70, 0.16); border-radius:18px; font-family:'Alegreya',serif; font-size:1.12em; box-shadow:inset 0 1px 0 rgba(255,255,255,.03); }
+        textarea::placeholder { color:rgba(208, 163, 154, 0.7); }
+        textarea:hover, textarea:focus { border-color:rgba(255, 154, 92, 0.42); box-shadow:0 0 0 4px rgba(255, 110, 70, 0.1), 0 0 18px rgba(255, 110, 70, 0.12); }
+        .output-box { background:linear-gradient(180deg, rgba(17, 5, 5, 0.96), rgba(10, 3, 3, 0.92)); border:1px solid rgba(255, 110, 70, 0.18); border-radius:22px; padding:32px 24px; box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 18px 32px rgba(6, 1, 1, 0.34); }
+        .output-label { top:-12px; left:24px; background:#140404; border:1px solid rgba(255, 117, 63, 0.16); border-radius:999px; padding:4px 14px; color:#ffd0a6; letter-spacing:.12em; }
+        #transcription { font-size:1.92em; font-family:'Cinzel Decorative',serif; text-shadow:0 0 16px rgba(255, 110, 70, 0.16); }
+        .error-msg { color:#ffd0be; margin-top:14px; text-shadow:none; }
+        @media (max-width:700px){ header h1{font-size:2em;} main{margin-top:30px; padding:0 14px 28px;} .translator-container{padding:28px 22px; border-radius:24px;} .translator-header h2{font-size:1.76em;} .translator-header p{font-size:1.05em;} textarea{padding:16px; font-size:1.02em;} #transcription{font-size:1.34em;} }
+    
+        /* Shared translator polish */
+        main {
+            max-width: 1120px;
+            margin: 44px auto 48px;
+            padding: 0 18px 38px;
+            display: grid;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        main::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 120px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 56%);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        header {
+            backdrop-filter: blur(14px);
+        }
+
+        nav ul {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
+        nav a:hover {
+            border-color: rgba(255,255,255,0.14);
+            transform: translateY(-1px);
+        }
+
+        .forge-container,
+        .translator-container,
+        .forest-container {
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            border-radius: 34px;
+            padding: 46px 40px;
+            box-shadow: var(--border-glow), 0 22px 52px rgba(0,0,0,0.28);
+            backdrop-filter: blur(14px);
+        }
+
+        .forge-container::before,
+        .translator-container::before,
+        .forest-container::before {
+            inset: 16px;
+            border-radius: 24px;
+        }
+
+        .forge-container::after,
+        .translator-container::after,
+        .forest-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, transparent 16%, rgba(255,255,255,0.04) 50%, transparent 84%);
+            pointer-events: none;
+        }
+
+        .forge-header,
+        .translator-header,
+        .forest-header {
+            position: relative;
+            margin-bottom: 34px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+
+        .forge-header::after,
+        .translator-header::after,
+        .forest-header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -1px;
+            width: 126px;
+            height: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.82;
+        }
+
+        .forge-header h2,
+        .translator-header h2,
+        .forest-header h2 {
+            font-size: clamp(2rem, 4vw, 2.85rem);
+            margin: 0;
+        }
+
+        .forge-header p.subtitle,
+        .translator-header p,
+        .forest-header p {
+            max-width: 700px;
+            margin: 14px auto 0;
+            line-height: 1.62;
+            font-size: 1.18em;
+            font-style: normal;
+        }
+
+        textarea,
+        input[type='text'],
+        input[type='number'],
+        select {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        textarea:hover,
+        textarea:focus,
+        input[type='text']:hover,
+        input[type='text']:focus,
+        input[type='number']:hover,
+        input[type='number']:focus,
+        select:hover,
+        select:focus {
+            transform: translateY(-1px);
+        }
+
+        .output,
+        .output-box {
+            border-radius: 24px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.24);
+        }
+
+        .output-label {
+            top: -12px;
+            left: 24px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 4px 14px;
+            letter-spacing: 0.12em;
+        }
+
+        #transcription,
+        .translation-text,
+        .output {
+            line-height: 1.36;
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 30px;
+                padding: 0 14px 28px;
+            }
+
+            .forge-container,
+            .translator-container,
+            .forest-container {
+                padding: 30px 22px;
+                border-radius: 24px;
+            }
+
+            .forge-header,
+            .translator-header,
+            .forest-header {
+                margin-bottom: 26px;
+                padding-bottom: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="tradutores_tabs.css">
+    <script defer src="tradutores_tabs.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Indomitus Fantasy</h1>
+        <nav>
+            <ul>
+                <li><a href="tradutores.html">Linguística</a></li>
+                <li><a href="menu.html">Hub Principal</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="translator-container">
+            <div class="translator-header">
+                <h2>Voz de Bahamut (Dracônico)</h2>
+                <p>Escamas, magma e juramentos antigos. O Dracônico se ergue como fogo vivo.</p>
+            </div>
+
+            <textarea id="inputWord" placeholder="Escreva no calor da garganta dracônica..." oninput="transcribeWord()"></textarea>
+
+            <div class="output-box">
+                <div class="output-label">Sopro Ígneo</div>
+                <div id="transcription">A guardiã descansa no fogo...</div>
+            </div>
+            <div id="error" class="error-msg"></div>
+        </div>
+    </main>
+
+    <script>
+        const transcriptionMap = {
+            a: "dra", b: "zyr", c: "ylt", d: "vork", e: "nix", f: "thr", g: "xyz", h: "quor",
+            i: "jarn", j: "klex", k: "wyrn", l: "zenth", m: "drak", n: "nyr", o: "vlorn", p: "pthor",
+            q: "zyx", r: "rylth", s: "skarn", t: "torm", u: "uth", v: "vrith", w: "xylok", x: "xyrth",
+            y: "ythra", z: "zarnath"
+        };
+
+        function smooth(text) {
+            // Suavização Dracônica: Reduz clusters de consoantes impossíveis
+            return text
+                .replace(/([bcdfghjklmnpqrstvwxyz])\1+/g, '$1') // Remove consoantes triplas ou dobradas (ex: ddd -> d)
+                .replace(/([aeiou])\1+/g, '$1') // Remove vogais dobradas (ex: aaa -> a)
+                .replace(/rthl/g, 'rth') // Simplifica rylth + outros
+                .replace(/xyz/g, 'xy') // Suaviza o som de 'g'
+                .replace(/skarn/g, 'skn') // Contração comum draconiana
+                .replace(/vork/g, 'vok') // Simplifica 'd'
+                .replace(/zenth/g, 'zen') // Simplifica 'l'
+                .replace(/pthor/g, 'pth') // Simplifica 'p'
+                .replace(/([a-z]{3})([a-z]{3})/g, (match, p1, p2) => {
+                    // Se uma palavra tem muitas sílabas de 3 letras seguidas, tenta contrair
+                    if(p1.endsWith(p2.charAt(0))) return p1 + p2.substring(1);
+                    return p1 + p2.charAt(0); // Força contração agressiva para "ficar falável"
+                })
+                .toLowerCase();
+        }
+
+        function transcribeWord() {
+            const word = document.getElementById("inputWord").value.toLowerCase();
+            const resultEl = document.getElementById("transcription");
+            const errorEl = document.getElementById("error");
+
+            if(!word.trim()) {
+                resultEl.textContent = "A guardiã descansa no fogo...";
+                errorEl.textContent = "";
+                return;
+            }
+
+            let raw = "";
+            let error = false;
+
+            for (const char of word) {
+                if (char === " " || char === "\n") {
+                    raw += " ";
+                    continue;
+                }
+                if (transcriptionMap[char]) {
+                    raw += transcriptionMap[char];
+                } else if (/[.,!?;:]/.test(char)) {
+                    raw += char;
+                } else {
+                    error = true;
+                }
+            }
+
+            // Aplica a suavização agressiva para reduzir o tamanho
+            let final = smooth(raw);
+            
+            // Garante que a primeira letra da palavra seja maiúscula para estética
+            final = final.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+            errorEl.textContent = error ? "O rugido falhou frente a sinais profanos." : "";
+            resultEl.textContent = final;
+        }
+    </script>
+</body>
+</html>
