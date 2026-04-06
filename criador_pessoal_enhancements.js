@@ -23,7 +23,7 @@
         inventory: { search: "", type: "todos", rarity: "todas", status: "todos" }
     };
     const DEFAULT_STATE = {
-        autosaveDraftVersion: 2,
+        autosaveDraftVersion: 3,
         skillQuickActions: {},
         combatActionHistory: [],
         equipmentSlots: { arma: "", armadura: "", anel: "", colar: "", acessorio: "" },
@@ -32,7 +32,7 @@
     };
 
     const state = {
-        autosaveDraftVersion: 2,
+        autosaveDraftVersion: 3,
         skillQuickActions: {},
         combatActionHistory: [],
         equipmentSlots: { arma: "", armadura: "", anel: "", colar: "", acessorio: "" },
@@ -74,7 +74,7 @@
 
     function obterEstadoSerializado() {
         return {
-            autosaveDraftVersion: 2,
+            autosaveDraftVersion: 3,
             skillQuickActions: clone(state.skillQuickActions),
             combatActionHistory: clone(state.combatActionHistory),
             equipmentSlots: clone(state.equipmentSlots),
@@ -85,7 +85,7 @@
 
     function aplicarEstadoExtra(extra) {
         const dados = extra && typeof extra === "object" ? extra : {};
-        state.autosaveDraftVersion = 2;
+        state.autosaveDraftVersion = 3;
         state.skillQuickActions = sanitizarQuickActions(dados.skillQuickActions);
         state.combatActionHistory = sanitizarHistorico(dados.combatActionHistory);
         state.equipmentSlots = sanitizarEquipmentSlots(dados.equipmentSlots);
@@ -849,7 +849,7 @@
 
         window.coletarDadosFicha = function () {
             const payload = original.coletarDadosFicha ? original.coletarDadosFicha() : { version: 1, exportedAt: new Date().toISOString(), dados: {} };
-            payload.dados.autosaveDraftVersion = 2;
+            payload.dados.autosaveDraftVersion = 3;
             payload.dados.skillQuickActions = clone(state.skillQuickActions);
             payload.dados.combatActionHistory = clone(state.combatActionHistory);
             payload.dados.equipmentSlots = clone(state.equipmentSlots);

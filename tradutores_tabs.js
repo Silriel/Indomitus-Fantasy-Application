@@ -58,7 +58,7 @@
 
     const setText = (selector, text) => {
         const node = document.querySelector(selector);
-        if (node) {
+        if (node && node.textContent !== text) {
             node.textContent = text;
         }
     };
@@ -302,12 +302,15 @@
         if (label) {
             const labelText = normalizeAscii(label.textContent);
             if (labelText.includes("traducao") || labelText.includes("resultado") || labelText.includes("fonetica")) {
-                label.textContent = "Resultado";
+                if (label.textContent !== "Resultado") {
+                    label.textContent = "Resultado";
+                }
             }
         }
 
         const rawText = output.textContent || "";
         const normalized = normalizeAscii(rawText).trim();
+        const targetPlaceholder = "O resultado vai aparecer aqui.";
 
         const isPlaceholder =
             normalized.includes("guardia descansa") ||
@@ -316,8 +319,8 @@
             normalized.includes("silencio") ||
             normalized.includes("aguarda em silencio");
 
-        if (isPlaceholder) {
-            output.textContent = "O resultado vai aparecer aqui.";
+        if (isPlaceholder && rawText !== targetPlaceholder) {
+            output.textContent = targetPlaceholder;
         }
     };
 
@@ -335,7 +338,10 @@
         if (normalized.includes("simbolo profano")) {
             const match = text.match(/"(.+?)"/);
             const detail = match ? `: "${match[1]}"` : ".";
-            errorBox.textContent = `Caractere nao suportado${detail}`;
+            const nextText = `Caractere nao suportado${detail}`;
+            if (errorBox.textContent !== nextText) {
+                errorBox.textContent = nextText;
+            }
         }
     };
 

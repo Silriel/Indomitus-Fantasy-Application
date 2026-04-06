@@ -749,7 +749,7 @@
 
                 <div class="form-group full-width">
                     <label for="race">Raca</label>
-                    <select id="race">
+                    <select id="race" onchange="atualizarInterfaceRacaHibridaAuto()">
                         <option value="1">Altos Elfos</option>
                         <option value="2">Anoes</option>
                         <option value="3">Automatos</option>
@@ -810,9 +810,26 @@
                         <option value="58">Unmo Superioris</option>
                         <option value="59">Vampiro</option>
                         <option value="60">Vampyr</option>
-                        <option value="61">Vampyr'rein</option>
+                        <option value="61">Vampyr’rein</option>
+                        <option value="hybrid">Hibrido</option>
                     </select>
                     <small class="field-help">A raca aplica modificadores e passivas raciais na ficha gerada.</small>
+                    <input type="hidden" id="hybridRaceIdsAuto" value="[]">
+                    <input type="hidden" id="hybridPassiveKeyAuto" value="">
+                </div>
+
+                <div class="form-group full-width" id="hybridRaceBlockAuto" style="display:none;">
+                    <label>Origem hibrida</label>
+                    <small class="field-help">Escolha 2 ou mais racas diferentes. Os bonus raciais serao a media entre elas, arredondando para baixo. Depois escolha 1 passiva racial individual.</small>
+                    <div id="hybridRaceListAuto" style="display:grid; gap:12px; margin-top:12px;"></div>
+                    <div style="margin-top:12px;">
+                        <button class="action-btn" type="button" onclick="adicionarRacaHibridaAuto()">Adicionar raca</button>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <label for="hybridPassiveSelectAuto">Passiva racial do hibrido</label>
+                        <select id="hybridPassiveSelectAuto" onchange="sincronizarPassivaHibridaAuto(this.value)"></select>
+                    </div>
+                    <small class="field-help" id="hybridRaceSummaryAuto"></small>
                 </div>
             </div>
 
@@ -890,6 +907,247 @@
         "60": { "nome": "Vampyr", "modificadores": { "força": 6, "inteligência": 2, "forçaVontade": 2, "agilidade": 6, "resistência": 6, "carisma": 1 }, "passivas": ["Sangue Roubado Ancestral", "Controle mental servos."] },
         "61": { "nome": "Vampyr’rein", "modificadores": { "força": 6, "inteligência": 7, "forçaVontade": 4, "agilidade": 5, "resistência": 5, "carisma": 5 }, "passivas": ["Status absolutos por drenagem", "Fragilidade solar extrema."] }
     };
+    const HYBRID_RACE_VALUE = "hybrid";
+    const RACE_ATTR_KEYS = ["força", "inteligência", "forçaVontade", "agilidade", "resistência", "carisma"];
+
+    function escapeHtml(text) {
+        return String(text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function createEmptyRaceData(name) {
+        return {
+            nome: name || "Raca sem dados",
+            modificadores: {
+                "força": 0,
+                "inteligência": 0,
+                "forçaVontade": 0,
+                "agilidade": 0,
+                "resistência": 0,
+                "carisma": 0
+            },
+            passivas: []
+        };
+    }
+
+    function getRaceOptionsAuto() {
+        const select = document.getElementById("race");
+        if (!select) return [];
+        return [...select.options]
+            .filter((option) => option.value && option.value !== HYBRID_RACE_VALUE)
+            .map((option) => ({
+                id: String(option.value),
+                nome: String(option.textContent || option.innerText || option.value).trim()
+            }));
+    }
+
+    function getRaceDataAuto(raceId) {
+        const option = getRaceOptionsAuto().find((item) => item.id === String(raceId));
+        const empty = createEmptyRaceData(option ? option.nome : `Raca ${raceId}`);
+        const base = racialModifiers[String(raceId)];
+        if (!base || typeof base !== "object") return empty;
+        return {
+            nome: base.nome || empty.nome,
+            modificadores: {
+                ...empty.modificadores,
+                ...(base.modificadores || {})
+            },
+            passivas: Array.isArray(base.passivas) ? base.passivas.slice() : []
+        };
+    }
+
+    function normalizeHybridIdsAuto(raceIds) {
+        const validIds = new Set(getRaceOptionsAuto().map((item) => item.id));
+        const seen = new Set();
+        return (Array.isArray(raceIds) ? raceIds : [])
+            .map((item) => String(item || ""))
+            .filter((item) => item && item !== HYBRID_RACE_VALUE && validIds.has(item))
+            .filter((item) => {
+                if (seen.has(item)) return false;
+                seen.add(item);
+                return true;
+            });
+    }
+
+    function readHybridIdsAuto() {
+        const hidden = document.getElementById("hybridRaceIdsAuto");
+        if (!hidden) return [];
+        try {
+            return normalizeHybridIdsAuto(JSON.parse(hidden.value || "[]"));
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    function writeHybridIdsAuto(raceIds) {
+        const hidden = document.getElementById("hybridRaceIdsAuto");
+        if (!hidden) return [];
+        const ids = normalizeHybridIdsAuto(raceIds);
+        hidden.value = JSON.stringify(ids);
+        return ids;
+    }
+
+    function getHybridPassivesAuto(raceIds) {
+        return normalizeHybridIdsAuto(raceIds).flatMap((raceId) => {
+            const raceData = getRaceDataAuto(raceId);
+            return (raceData.passivas || []).map((passiva, index) => ({
+                key: `${raceId}::${index}`,
+                raceId,
+                raceName: raceData.nome,
+                passiva: String(passiva || "")
+            }));
+        });
+    }
+
+    function sincronizarPassivaHibridaAuto(value) {
+        const hidden = document.getElementById("hybridPassiveKeyAuto");
+        if (hidden) hidden.value = String(value || "");
+        atualizarInterfaceRacaHibridaAuto();
+    }
+
+    function atualizarRacaHibridaAuto(index, raceId) {
+        const ids = readHybridIdsAuto();
+        if (!raceId || raceId === HYBRID_RACE_VALUE) return;
+        if (ids.some((item, itemIndex) => item === raceId && itemIndex !== index)) {
+            alert("Cada raca do hibrido precisa ser diferente.");
+            atualizarInterfaceRacaHibridaAuto();
+            return;
+        }
+        ids[index] = String(raceId);
+        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
+        if (passiveHidden) passiveHidden.value = "";
+        writeHybridIdsAuto(ids);
+        atualizarInterfaceRacaHibridaAuto();
+    }
+
+    function adicionarRacaHibridaAuto() {
+        const ids = readHybridIdsAuto();
+        const nextRace = getRaceOptionsAuto().find((item) => !ids.includes(item.id));
+        if (!nextRace) {
+            alert("Nao ha mais racas disponiveis para adicionar ao hibrido.");
+            return;
+        }
+        ids.push(nextRace.id);
+        writeHybridIdsAuto(ids);
+        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
+        if (passiveHidden) passiveHidden.value = "";
+        atualizarInterfaceRacaHibridaAuto();
+    }
+
+    function removerRacaHibridaAuto(index) {
+        const ids = readHybridIdsAuto();
+        if (ids.length <= 2) {
+            alert("O hibrido precisa ter pelo menos 2 racas.");
+            return;
+        }
+        ids.splice(index, 1);
+        writeHybridIdsAuto(ids);
+        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
+        if (passiveHidden) passiveHidden.value = "";
+        atualizarInterfaceRacaHibridaAuto();
+    }
+
+    function atualizarInterfaceRacaHibridaAuto() {
+        const raceSelect = document.getElementById("race");
+        const block = document.getElementById("hybridRaceBlockAuto");
+        const list = document.getElementById("hybridRaceListAuto");
+        const passiveSelect = document.getElementById("hybridPassiveSelectAuto");
+        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
+        const summary = document.getElementById("hybridRaceSummaryAuto");
+        if (!raceSelect || !block || !list || !passiveSelect || !passiveHidden || !summary) return;
+
+        const isHybrid = raceSelect.value === HYBRID_RACE_VALUE;
+        block.style.display = isHybrid ? "block" : "none";
+        if (!isHybrid) return;
+
+        let ids = readHybridIdsAuto();
+        const options = getRaceOptionsAuto();
+        for (const option of options) {
+            if (ids.length >= 2) break;
+            if (!ids.includes(option.id)) ids.push(option.id);
+        }
+        ids = writeHybridIdsAuto(ids);
+
+        list.innerHTML = ids.map((raceId, index) => `
+            <div class="form-group" style="margin:0;">
+                <label>Raca ${index + 1}</label>
+                <select onchange="atualizarRacaHibridaAuto(${index}, this.value)">
+                    ${options.map((option) => `<option value="${option.id}" ${option.id === raceId ? "selected" : ""}>${escapeHtml(option.nome)}</option>`).join("")}
+                </select>
+                ${ids.length > 2 ? `<div style="margin-top:10px;"><button class="action-btn" type="button" onclick="removerRacaHibridaAuto(${index})">Remover</button></div>` : ""}
+            </div>
+        `).join("");
+
+        const passivas = getHybridPassivesAuto(ids);
+        let passiveKey = String(passiveHidden.value || "");
+        if (!passivas.some((item) => item.key === passiveKey)) {
+            passiveKey = "";
+            passiveHidden.value = passiveKey;
+        }
+        passiveSelect.innerHTML = passivas.length
+            ? `<option value="" ${passiveKey ? "" : "selected"}>Escolha uma passiva</option>${passivas.map((item) => `<option value="${item.key}" ${item.key === passiveKey ? "selected" : ""}>${escapeHtml(item.raceName)} - ${escapeHtml(item.passiva)}</option>`).join("")}`
+            : `<option value="">Nenhuma passiva disponivel</option>`;
+
+        const nomes = ids.map((raceId) => getRaceDataAuto(raceId).nome);
+        const passivaAtual = passivas.find((item) => item.key === passiveKey);
+        summary.textContent = `Origem atual: ${nomes.join(" + ")}${passivaAtual ? ` | Passiva: ${passivaAtual.raceName} - ${passivaAtual.passiva}` : ""}`;
+    }
+
+    function resolveSelectedRaceAuto(silent) {
+        const raceSelect = document.getElementById("race");
+        if (!raceSelect) return null;
+        if (raceSelect.value !== HYBRID_RACE_VALUE) {
+            return {
+                mode: "normal",
+                raceLabel: String(raceSelect.options[raceSelect.selectedIndex]?.text || "Raca"),
+                raceIds: [String(raceSelect.value || "")].filter(Boolean),
+                passiveKey: "",
+                raceData: getRaceDataAuto(raceSelect.value)
+            };
+        }
+
+        const ids = readHybridIdsAuto();
+        if (ids.length < 2) {
+            if (!silent) alert("Escolha pelo menos 2 racas para formar um hibrido.");
+            return null;
+        }
+
+        const passivas = getHybridPassivesAuto(ids);
+        const passiveKey = String(document.getElementById("hybridPassiveKeyAuto")?.value || "");
+        const passivaEscolhida = passivas.find((item) => item.key === passiveKey);
+        if (!passivaEscolhida) {
+            if (!silent) alert("Escolha 1 passiva racial para o hibrido.");
+            return null;
+        }
+
+        const soma = createEmptyRaceData().modificadores;
+        const nomes = ids.map((raceId) => {
+            const raceData = getRaceDataAuto(raceId);
+            RACE_ATTR_KEYS.forEach((attr) => {
+                soma[attr] += Number(raceData.modificadores[attr] || 0);
+            });
+            return raceData.nome;
+        });
+        const modificadores = {};
+        RACE_ATTR_KEYS.forEach((attr) => {
+            modificadores[attr] = Math.floor(soma[attr] / ids.length);
+        });
+
+        const raceLabel = `Hibrido: ${nomes.join(" + ")}`;
+        return {
+            mode: "hybrid",
+            raceLabel,
+            raceIds: ids,
+            passiveKey: passivaEscolhida.key,
+            raceData: {
+                nome: raceLabel,
+                modificadores,
+                passivas: [passivaEscolhida.passiva]
+            }
+        };
+    }
 
     const classesRPG = {
         atirador_arcano: { nome: "Atirador Arcano", hp: 40, mp: 35, sp: 30, passivas: ["Tiro Preciso", "Projéteis Mágicos"], subclasses: { arqueiro: { nome: "Arqueiro Arcano", efeitos: ["Alcance +50%"] } } },
@@ -935,19 +1193,17 @@
         } else {
             container.style.display = "none";
         }
+        atualizarInterfaceRacaHibridaAuto();
     }
 
     function generateCharacter() {
         const level = Math.max(1, parseInt(document.getElementById("level").value) || 1);
         const classeKey = document.getElementById("classeId").value;
         const subKey = document.getElementById("subclasseId").value;
-        const raceSel = document.getElementById("race");
-        const raceId = raceSel.value;
-        const raceName = raceSel.options[raceSel.selectedIndex].text;
-
         const classData = classesRPG[classeKey];
-        const raceData = racialModifiers[raceId];
-        if (!classData || !raceData) return;
+        const raceSelection = resolveSelectedRaceAuto(false);
+        const raceData = raceSelection && raceSelection.raceData;
+        if (!classData || !raceData || !raceSelection) return;
 
         // Atributos Base + Progressão Auto
         const totalPoints = 10 + (5 * (level - 1));
@@ -994,7 +1250,7 @@
         let html = `
             <div class="result-card">
                 <h3 class="result-title">Resumo da ficha</h3>
-                <p class="result-subtitle">Raca: ${raceName} | Classe: ${classData.nome} | Nivel: ${level} | Subclasse: ${subclassText}</p>
+                <p class="result-subtitle">Raca: ${raceSelection.raceLabel} | Classe: ${classData.nome} | Nivel: ${level} | Subclasse: ${subclassText}</p>
                 
                 <div class="bars">
                     <div class="bar-wrap hp"><div class="bar-inner">HP: ${hp}</div></div>
@@ -1016,6 +1272,7 @@
 
                 <h4 class="result-section-title">Passivas e efeitos</h4>
                 <ul class="passive-list">
+                    ${raceSelection.mode === "hybrid" ? `<li><span class="passive-type">Origem:</span> ${escapeHtml(raceSelection.raceLabel.replace(/^Hibrido:\\s*/, ""))}</li>` : ""}
                     ${raceData.passivas.map(p => `<li><span class="passive-type">Raca:</span> ${p}</li>`).join('')}
                     ${classData.passivas.map(p => `<li><span class="passive-type">Classe:</span> ${p}</li>`).join('')}
                     ${subclassData ? subclassData.efeitos.map(e => `<li><span class="passive-type">Subclasse:</span> ${e}</li>`).join('') : ''}
