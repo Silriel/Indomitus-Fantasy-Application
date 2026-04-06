@@ -2730,6 +2730,9 @@
             raridadeId: raridadeVal,
             raridadeNome,
             peso: `${cfg.peso} kg`,
+            pesoNumero: cfg.peso,
+            bonusFisico: bFisico,
+            bonusMagico: bMagico,
             danoResumo: cfg.categoria === 'arma' ? danoFinalTxt : '',
             fonte: "Calculadora RPG",
             artPath: iconArt
@@ -2750,5 +2753,7 @@
         return `<div class="${cls}"><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
     }
     </script>
+    <script src="app_screen_dock.js"></script>
+    <script src="calculadora_draft.js"></script>
 </body>
 </html>
