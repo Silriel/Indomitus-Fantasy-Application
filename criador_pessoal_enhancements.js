@@ -10,32 +10,48 @@
         { value: "cura_efeito", label: "Cura + efeito" }
     ];
     const SLOT_LABELS = {
-        arma: "Arma",
         armadura: "Armadura",
-        anel: "Anel",
-        colar: "Colar",
-        acessorio: "Acessorio",
+        mao_direita: "Mao direita",
+        mao_esquerda: "Mao esquerda",
+        adorno_1: "Adorno 1",
+        adorno_2: "Adorno 2",
+        adorno_3: "Adorno 3",
         nenhum: "Sem slot"
     };
+    const EQUIP_GROUP_LABELS = {
+        armadura: "Armadura",
+        mao: "Mao",
+        adorno: "Adorno",
+        nenhum: "Nao equipavel"
+    };
+    const HAND_MODE_LABELS = {
+        one_hand: "1 mao",
+        two_hands: "2 maos",
+        flex: "1 ou 2 maos",
+        none: "Sem uso nas maos"
+    };
+    const HAND_SLOTS = ["mao_direita", "mao_esquerda"];
+    const ADORN_SLOTS = ["adorno_1", "adorno_2", "adorno_3"];
+    const EQUIPMENT_SLOT_ORDER = ["armadura", ...HAND_SLOTS, ...ADORN_SLOTS];
     const DEFAULT_FILTERS = {
         abilities: { search: "", tier: "todos", unlockedOnly: false, selectedOnly: false },
         passives: { search: "", selected: "todas", requirement: "todas", availability: "todas" },
         inventory: { search: "", type: "todos", rarity: "todas", status: "todos" }
     };
     const DEFAULT_STATE = {
-        autosaveDraftVersion: 3,
+        autosaveDraftVersion: 4,
         skillQuickActions: {},
         combatActionHistory: [],
-        equipmentSlots: { arma: "", armadura: "", anel: "", colar: "", acessorio: "" },
+        equipmentSlots: { armadura: "", mao_direita: "", mao_esquerda: "", adorno_1: "", adorno_2: "", adorno_3: "" },
         compare: [],
         filters: DEFAULT_FILTERS
     };
 
     const state = {
-        autosaveDraftVersion: 3,
+        autosaveDraftVersion: 4,
         skillQuickActions: {},
         combatActionHistory: [],
-        equipmentSlots: { arma: "", armadura: "", anel: "", colar: "", acessorio: "" },
+        equipmentSlots: { armadura: "", mao_direita: "", mao_esquerda: "", adorno_1: "", adorno_2: "", adorno_3: "" },
         compare: [],
         filters: clone(DEFAULT_FILTERS)
     };
@@ -60,6 +76,11 @@
         return Number.isFinite(valor) ? Number(valor.toFixed(2)) : 0;
     }
 
+    function normalizarInteiro(valor, fallback) {
+        const numero = parseInt(valor, 10);
+        return Number.isFinite(numero) ? numero : (parseInt(fallback, 10) || 0);
+    }
+
     function parsePesoNumero(valor) {
         if (typeof valor === "number" && Number.isFinite(valor)) return valor;
         const match = String(valor || "").replace(",", ".").match(/-?\d+(\.\d+)?/);
@@ -68,13 +89,23 @@
 
     function normalizarSlotTipo(valor) {
         const slot = normalizarTexto(valor);
-        if (slot === "acessorio" || slot === "acessorio") return "acessorio";
         return Object.prototype.hasOwnProperty.call(SLOT_LABELS, slot) ? slot : "nenhum";
+    }
+
+    function normalizarEquipGroup(valor) {
+        const group = normalizarTexto(valor);
+        return Object.prototype.hasOwnProperty.call(EQUIP_GROUP_LABELS, group) ? group : "nenhum";
+    }
+
+    function normalizarHandMode(valor) {
+        const mode = normalizarTexto(valor);
+        if (mode === "one_hand" || mode === "two_hands" || mode === "flex" || mode === "none") return mode;
+        return "none";
     }
 
     function obterEstadoSerializado() {
         return {
-            autosaveDraftVersion: 3,
+            autosaveDraftVersion: 4,
             skillQuickActions: clone(state.skillQuickActions),
             combatActionHistory: clone(state.combatActionHistory),
             equipmentSlots: clone(state.equipmentSlots),
@@ -85,7 +116,7 @@
 
     function aplicarEstadoExtra(extra) {
         const dados = extra && typeof extra === "object" ? extra : {};
-        state.autosaveDraftVersion = 3;
+        state.autosaveDraftVersion = 4;
         state.skillQuickActions = sanitizarQuickActions(dados.skillQuickActions);
         state.combatActionHistory = sanitizarHistorico(dados.combatActionHistory);
         state.equipmentSlots = sanitizarEquipmentSlots(dados.equipmentSlots);
@@ -134,8 +165,22 @@
     function sanitizarEquipmentSlots(raw) {
         const slots = clone(DEFAULT_STATE.equipmentSlots);
         const source = raw && typeof raw === "object" ? raw : {};
-        Object.keys(slots).forEach((key) => {
+        EQUIPMENT_SLOT_ORDER.forEach((key) => {
             slots[key] = typeof source[key] === "string" ? source[key] : "";
+        });
+        if (!slots.mao_direita && typeof source.arma === "string") {
+            slots.mao_direita = source.arma;
+        }
+        if (!slots.armadura && typeof source.armadura === "string") {
+            slots.armadura = source.armadura;
+        }
+        const adornosLegados = [source.anel, source.colar, source.acessorio]
+            .filter((itemId) => typeof itemId === "string" && itemId.trim())
+            .filter((itemId, index, lista) => lista.indexOf(itemId) === index);
+        ADORN_SLOTS.forEach((slot, index) => {
+            if (!slots[slot] && adornosLegados[index]) {
+                slots[slot] = adornosLegados[index];
+            }
         });
         return slots;
     }
@@ -189,45 +234,157 @@
         }
     }
 
-    function inferirSlotItem(item) {
+    function inferirEquipMeta(item) {
         const forgeTipo = normalizarTexto(item && item.forgeTipo);
         const tipo = normalizarTexto(item && item.tipo);
         const categoria = normalizarTexto(item && item.categoria);
-        if (forgeTipo.includes("armadura") || categoria === "armadura") return "armadura";
-        if (forgeTipo.includes("equip") || categoria === "arma" || tipo === "equipamento" || tipo === "arma") return "arma";
-        if (forgeTipo === "anel") return "anel";
-        if (forgeTipo === "colar") return "colar";
-        if (tipo === "acessorio") return "acessorio";
+        const groupDireto = normalizarEquipGroup(item && item.equipGroup);
+        const modeDireto = normalizarHandMode(item && item.handMode);
+        if (groupDireto !== "nenhum") {
+            return {
+                equipGroup: groupDireto,
+                handMode: groupDireto === "mao" ? (modeDireto === "none" ? "flex" : modeDireto) : "none"
+            };
+        }
+        if (forgeTipo.startsWith("armadura") || forgeTipo === "roupas" || (categoria === "armadura" && forgeTipo !== "escudo")) {
+            return { equipGroup: "armadura", handMode: "none" };
+        }
+        if (forgeTipo === "escudo") {
+            return { equipGroup: "mao", handMode: "one_hand" };
+        }
+        if (forgeTipo === "equip_grande") {
+            return { equipGroup: "mao", handMode: "two_hands" };
+        }
+        if (forgeTipo === "equip_misto" || forgeTipo === "equip_definitivo") {
+            return { equipGroup: "mao", handMode: "flex" };
+        }
+        if (forgeTipo === "equip_pequeno" || forgeTipo === "equip_magico") {
+            return { equipGroup: "mao", handMode: "one_hand" };
+        }
+        if (forgeTipo === "anel" || forgeTipo === "colar" || categoria === "adorno" || tipo === "acessorio") {
+            return { equipGroup: "adorno", handMode: "none" };
+        }
+        if (categoria === "arma" || tipo === "equipamento" || tipo === "arma") {
+            return { equipGroup: "mao", handMode: "flex" };
+        }
+        return { equipGroup: "nenhum", handMode: "none" };
+    }
+
+    function inferirSlotItem(item) {
+        const meta = inferirEquipMeta(item);
+        if (meta.equipGroup === "armadura") return "armadura";
+        if (meta.equipGroup === "adorno") return "adorno_1";
+        if (meta.equipGroup === "mao") return "mao_direita";
         return "nenhum";
+    }
+
+    function obterSlotsHintPorEstado() {
+        const hints = {};
+        Object.entries(sanitizarEquipmentSlots(state.equipmentSlots)).forEach(([slot, itemId]) => {
+            if (!itemId) return;
+            if (!hints[itemId]) hints[itemId] = [];
+            hints[itemId].push(slot);
+        });
+        return hints;
+    }
+
+    function obterSlotsLegadosItem(item, meta) {
+        if (!item || !item.equipado) return [];
+        const slotLegado = normalizarTexto(item.slotTipo);
+        if (meta.equipGroup === "armadura") return ["armadura"];
+        if (meta.equipGroup === "adorno") return ["adorno_auto"];
+        if (meta.equipGroup === "mao") {
+            if (meta.handMode === "two_hands") return HAND_SLOTS.slice();
+            if (slotLegado === "mao_esquerda") return ["mao_esquerda"];
+            return ["mao_direita"];
+        }
+        return [];
+    }
+
+    function sanitizarSlotsSolicitados(item, meta, hintSlots) {
+        const raw = Array.isArray(item && item.equippedSlots)
+            ? item.equippedSlots.map((slot) => normalizarSlotTipo(slot)).filter((slot) => slot !== "nenhum")
+            : [];
+        if (raw.length) return raw;
+        if (Array.isArray(hintSlots) && hintSlots.length) {
+            return hintSlots.map((slot) => normalizarSlotTipo(slot)).filter((slot) => slot !== "nenhum");
+        }
+        return obterSlotsLegadosItem(item, meta);
+    }
+
+    function alocarSlotsItem(meta, requestedSlots, occupied) {
+        const pedidos = Array.isArray(requestedSlots) ? requestedSlots.slice() : [];
+        if (meta.equipGroup === "nenhum") return [];
+        if (meta.equipGroup === "armadura") {
+            if (!pedidos.length || occupied.has("armadura")) return [];
+            return ["armadura"];
+        }
+        if (meta.equipGroup === "adorno") {
+            const preferido = pedidos.find((slot) => ADORN_SLOTS.includes(slot));
+            if (preferido && !occupied.has(preferido)) return [preferido];
+            const livre = ADORN_SLOTS.find((slot) => !occupied.has(slot));
+            return livre ? [livre] : [];
+        }
+        if (meta.equipGroup === "mao") {
+            if (meta.handMode === "two_hands") {
+                return HAND_SLOTS.every((slot) => !occupied.has(slot)) ? HAND_SLOTS.slice() : [];
+            }
+            const pedidosDeMao = pedidos.filter((slot) => HAND_SLOTS.includes(slot));
+            if (meta.handMode === "flex" && pedidosDeMao.length === 2) {
+                return HAND_SLOTS.every((slot) => !occupied.has(slot)) ? HAND_SLOTS.slice() : [];
+            }
+            const ordem = pedidosDeMao.length
+                ? pedidosDeMao.concat(HAND_SLOTS.filter((slot) => !pedidosDeMao.includes(slot)))
+                : HAND_SLOTS.slice();
+            const livre = ordem.find((slot) => !occupied.has(slot));
+            return livre ? [livre] : [];
+        }
+        return [];
+    }
+
+    function obterSlotTipoCompat(meta, equippedSlots) {
+        if (meta.equipGroup === "armadura") return "armadura";
+        if (meta.equipGroup === "adorno") return "adorno";
+        if (meta.equipGroup === "mao") return "mao";
+        return "nenhum";
+    }
+
+    function obterDescricaoSlots(item) {
+        const slots = Array.isArray(item && item.equippedSlots) ? item.equippedSlots : [];
+        if (!slots.length) return "Guardado";
+        return slots.map((slot) => SLOT_LABELS[slot] || slot).join(" + ");
     }
 
     function garantirIntegridadeSlots(itens) {
         const lista = Array.isArray(itens) ? itens : [];
-        const slots = { arma: "", armadura: "", anel: "", colar: "", acessorio: "" };
+        const slots = clone(DEFAULT_STATE.equipmentSlots);
         const vistos = new Set();
+        const hints = obterSlotsHintPorEstado();
         const saida = lista.map((item) => {
-            const slotTipo = normalizarSlotTipo(item.slotTipo || inferirSlotItem(item));
-            let equipado = Boolean(item.equipado);
-            if (slotTipo === "nenhum") {
-                equipado = false;
-            } else if (equipado && vistos.has(slotTipo)) {
-                equipado = false;
-            } else if (equipado) {
-                vistos.add(slotTipo);
-                slots[slotTipo] = item.id;
-            }
+            const meta = inferirEquipMeta(item);
+            const requestedSlots = sanitizarSlotsSolicitados(item, meta, hints[item.id]);
+            const equippedSlots = alocarSlotsItem(meta, requestedSlots, vistos);
+            equippedSlots.forEach((slot) => {
+                vistos.add(slot);
+                slots[slot] = item.id;
+            });
+            const equipado = equippedSlots.length > 0;
             return {
                 ...item,
-                slotTipo,
+                equipGroup: meta.equipGroup,
+                handMode: meta.handMode,
+                equippedSlots,
                 equipado,
+                slotTipo: obterSlotTipoCompat(meta, equippedSlots),
                 statusEquipado: equipado ? "equipado" : "guardado",
                 bonusFisico: arredondar(item.bonusFisico),
                 bonusMagico: arredondar(item.bonusMagico),
-                pesoNumero: arredondar(item.pesoNumero || parsePesoNumero(item.peso))
+                pesoNumero: arredondar(item.pesoNumero || parsePesoNumero(item.peso)),
+                caBonus: Math.max(0, normalizarInteiro(item.caBonus, 0))
             };
         });
 
-        Object.keys(state.equipmentSlots).forEach((key) => {
+        Object.keys(DEFAULT_STATE.equipmentSlots).forEach((key) => {
             state.equipmentSlots[key] = slots[key] || "";
         });
 
@@ -236,7 +393,7 @@
 
     function obterResumoStatusItem(item) {
         if (!item) return "guardado";
-        return item.equipado ? "equipado" : "guardado";
+        return item.equipado ? `equipado (${obterDescricaoSlots(item)})` : "guardado";
     }
 
     function obterConfigQuickAction(key) {
@@ -469,6 +626,40 @@
         `;
     }
 
+    function obterResumoEquipavelItem(item) {
+        const partes = [EQUIP_GROUP_LABELS[item.equipGroup] || EQUIP_GROUP_LABELS.nenhum];
+        if (item.equipGroup === "mao") {
+            partes.push(HAND_MODE_LABELS[item.handMode] || HAND_MODE_LABELS.none);
+        }
+        return partes.join(" | ");
+    }
+
+    function renderAcoesEquiparItem(item) {
+        if (item.equipGroup === "nenhum") {
+            return `<span class="inventory-flag">Nao equipavel</span>`;
+        }
+        const botoes = [];
+        if (item.equipado) {
+            botoes.push(`<button class="action-btn mini-btn secondary" type="button" onclick="guardarItemInventario('${item.id}')">Guardar</button>`);
+        }
+        if (item.equipGroup === "armadura") {
+            botoes.push(`<button class="action-btn mini-btn" type="button" onclick="equiparItemInventario('${item.id}','armadura')">Equipar</button>`);
+        } else if (item.equipGroup === "adorno") {
+            ADORN_SLOTS.forEach((slot) => {
+                botoes.push(`<button class="action-btn mini-btn" type="button" onclick="equiparItemInventario('${item.id}','${slot}')">${SLOT_LABELS[slot]}</button>`);
+            });
+        } else if (item.equipGroup === "mao") {
+            if (item.handMode === "one_hand" || item.handMode === "flex") {
+                botoes.push(`<button class="action-btn mini-btn" type="button" onclick="equiparItemInventario('${item.id}','mao_direita')">Mao direita</button>`);
+                botoes.push(`<button class="action-btn mini-btn" type="button" onclick="equiparItemInventario('${item.id}','mao_esquerda')">Mao esquerda</button>`);
+            }
+            if (item.handMode === "two_hands" || item.handMode === "flex") {
+                botoes.push(`<button class="action-btn mini-btn" type="button" onclick="equiparItemInventario('${item.id}','two_hands')">2 maos</button>`);
+            }
+        }
+        return botoes.join("");
+    }
+
     function criarCardInventarioAprimorado(item, permitirAcoes) {
         const categoriaVisual = item.categoria === "armadura" ? "armadura" : (item.categoria === "arma" ? "arma" : "item");
         const materialColor = item.materialCorHex || "#d4af37";
@@ -479,13 +670,13 @@
             : (typeof window.obterSvgInventarioCategoria === "function" ? window.obterSvgInventarioCategoria(categoriaVisual) : "");
         const flags = [
             INVENTORY_TYPE_LABELS[item.tipo] || item.categoriaLabel || "Item",
-            SLOT_LABELS[item.slotTipo] || SLOT_LABELS.nenhum,
+            obterResumoEquipavelItem(item),
             item.raridadeNome,
             item.materialNome,
             item.caBonus > 0 ? `CA +${window.formatarValorFicha ? window.formatarValorFicha(item.caBonus) : item.caBonus}` : "",
             item.bonusMagico ? `Magico +${item.bonusMagico}` : "",
             item.peso ? `Peso ${item.peso}` : "",
-            obterResumoStatusItem(item) === "equipado" ? "Equipado" : "Guardado"
+            item.equipado ? `Equipado em ${obterDescricaoSlots(item)}` : "Guardado"
         ].filter(Boolean);
         const checkedCompare = state.compare.includes(item.id);
 
@@ -505,7 +696,7 @@
                 ${item.danoResumo ? `<div class="inventory-description">Dano/efeito: ${esc(item.danoResumo)}</div>` : ""}
                 ${permitirAcoes ? `
                     <div class="inventory-actions">
-                        ${item.slotTipo !== "nenhum" ? `<label class="inline-check"><input type="checkbox" ${item.equipado ? "checked" : ""} onchange="alternarEquipadoInventario('${item.id}', this.checked)"><span>Equipado</span></label>` : `<span class="inventory-flag">Nao equipavel</span>`}
+                        ${renderAcoesEquiparItem(item)}
                         <label class="inline-check"><input type="checkbox" ${checkedCompare ? "checked" : ""} onchange="alternarComparacao('${item.id}', this.checked)"><span>Comparar</span></label>
                         <button class="action-btn mini-btn danger" type="button" onclick="removerItemInventario('${item.id}')">Remover</button>
                     </div>
@@ -593,6 +784,7 @@
             return '<p class="codex-note" style="margin-top:14px;">Marque ate 2 itens para comparar lado a lado.</p>';
         }
         const campos = [
+            { key: "equipLabel", label: "Tipo", numeric: false },
             { key: "danoResumo", label: "Dano/efeito", numeric: false },
             { key: "caBonus", label: "CA", numeric: true },
             { key: "bonusMagico", label: "Bonus magico", numeric: true },
@@ -606,7 +798,13 @@
             if (!campo.numeric) return;
             maior[campo.key] = Math.max(...selecionados.map((item) => Number(item[campo.key]) || 0));
         });
-        return `<div class="cp-compare-grid">${selecionados.map((item) => `<div class="cp-compare-card"><strong>${esc(item.nome)}</strong><small>${esc(INVENTORY_TYPE_LABELS[item.tipo] || item.categoriaLabel || "Item")}</small>${campos.map((campo) => { const valor = campo.key === "statusEquipado" ? obterResumoStatusItem(item) : (item[campo.key] || "—"); const destaque = campo.numeric && (Number(item[campo.key]) || 0) === maior[campo.key] && maior[campo.key] > 0; return `<div class="cp-compare-row ${destaque ? "is-better" : ""}"><span>${campo.label}</span><span class="cp-compare-value">${esc(valor)}</span></div>`; }).join("")}</div>`).join("")}</div>`;
+        return `<div class="cp-compare-grid">${selecionados.map((item) => `<div class="cp-compare-card"><strong>${esc(item.nome)}</strong><small>${esc(INVENTORY_TYPE_LABELS[item.tipo] || item.categoriaLabel || "Item")}</small>${campos.map((campo) => { const valor = campo.key === "statusEquipado" ? obterResumoStatusItem(item) : (campo.key === "equipLabel" ? obterResumoEquipavelItem(item) : (campo.numeric ? String(Number(item[campo.key]) || 0) : (item[campo.key] || "-"))); const destaque = campo.numeric && (Number(item[campo.key]) || 0) === maior[campo.key] && maior[campo.key] > 0; return `<div class="cp-compare-row ${destaque ? "is-better" : ""}"><span>${campo.label}</span><span class="cp-compare-value">${esc(valor)}</span></div>`; }).join("")}</div>`).join("")}</div>`;
+    }
+
+    function renderListaInventarioHtml(itens, vazio) {
+        return itens.length
+            ? `<div class="inventory-list">${itens.map((item) => criarCardInventarioAprimorado(item, true)).join("")}</div>`
+            : `<p class="codex-note">${esc(vazio)}</p>`;
     }
 
     function renderPainelInventarioAvancado() {
@@ -619,17 +817,23 @@
         const filtrados = itens.filter((item) => {
             const busca = normalizarTexto(`${item.nome} ${item.descricao} ${item.resumo} ${item.materialNome} ${item.raridadeNome}`);
             if (filtro.search && !busca.includes(normalizarTexto(filtro.search))) return false;
-            if (filtro.type !== "todos" && item.tipo !== filtro.type && item.slotTipo !== filtro.type) return false;
+            if (filtro.type !== "todos") {
+                if (filtro.type === "nao_equipavel" && item.equipGroup !== "nenhum") return false;
+                if (["armadura", "mao", "adorno"].includes(filtro.type) && item.equipGroup !== filtro.type) return false;
+                if (!["armadura", "mao", "adorno", "nao_equipavel"].includes(filtro.type) && item.tipo !== filtro.type) return false;
+            }
             if (filtro.rarity !== "todas" && item.raridadeNome !== filtro.rarity) return false;
-            if (filtro.status !== "todos" && obterResumoStatusItem(item) !== filtro.status) return false;
+            if (filtro.status !== "todos" && (item.equipado ? "equipado" : "guardado") !== filtro.status) return false;
             return true;
         });
-        const equipados = Object.keys(state.equipmentSlots).map((slot) => ({
+        const equipados = EQUIPMENT_SLOT_ORDER.map((slot) => ({
             slot,
-            item: itens.find((item) => item.equipado && item.slotTipo === slot) || null
+            item: itens.find((item) => Array.isArray(item.equippedSlots) && item.equippedSlots.includes(slot)) || null
         }));
+        const equipadosFiltrados = filtrados.filter((item) => item.equipado);
+        const guardadosFiltrados = filtrados.filter((item) => !item.equipado);
 
-        painel.innerHTML = `${criarControlesFiltros()}<h4 class="codex-title">Itens do inventario</h4><p class="codex-note">Os itens equipados aparecem separados por slot. A defesa soma qualquer item equipado com bonus de CA.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA dos itens equipados: +${window.formatarValorFicha ? window.formatarValorFicha(bonusCa) : bonusCa}</span><span class="tag-pill">Comparando: ${state.compare.length}/2</span></div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small>${item ? `<small>${esc(item.raridadeNome || "Sem raridade")} | ${esc(item.materialNome || "Sem material")}</small>` : ""}</div>`).join("")}</div><div class="cp-filter-grid"><div class="cp-filter-box"><label>Buscar item</label><input type="text" value="${esc(filtro.search)}" oninput="setFiltro('inventory','search',this.value)" placeholder="Nome, material ou descricao"></div><div class="cp-filter-box"><label>Tipo ou slot</label><select onchange="setFiltro('inventory','type',this.value)"><option value="todos" ${filtro.type === "todos" ? "selected" : ""}>Todos</option><option value="item" ${filtro.type === "item" ? "selected" : ""}>Item geral</option><option value="equipamento" ${filtro.type === "equipamento" ? "selected" : ""}>Equipamento</option><option value="armadura" ${filtro.type === "armadura" ? "selected" : ""}>Armadura</option><option value="acessorio" ${filtro.type === "acessorio" ? "selected" : ""}>Acessorio</option><option value="consumivel" ${filtro.type === "consumivel" ? "selected" : ""}>Consumivel</option><option value="arma" ${filtro.type === "arma" ? "selected" : ""}>Slot arma</option><option value="anel" ${filtro.type === "anel" ? "selected" : ""}>Slot anel</option><option value="colar" ${filtro.type === "colar" ? "selected" : ""}>Slot colar</option></select></div><div class="cp-filter-box"><label>Raridade</label><select onchange="setFiltro('inventory','rarity',this.value)"><option value="todas" ${filtro.rarity === "todas" ? "selected" : ""}>Todas</option>${raridades.map((nome) => `<option value="${esc(nome)}" ${filtro.rarity === nome ? "selected" : ""}>${esc(nome)}</option>`).join("")}</select></div><div class="cp-filter-box"><label>Status</label><select onchange="setFiltro('inventory','status',this.value)"><option value="todos" ${filtro.status === "todos" ? "selected" : ""}>Todos</option><option value="equipado" ${filtro.status === "equipado" ? "selected" : ""}>Equipado</option><option value="guardado" ${filtro.status === "guardado" ? "selected" : ""}>Guardado</option></select></div></div>${renderPainelComparacaoHtml(itens)}${filtrados.length ? `<div class="inventory-list">${filtrados.map((item) => criarCardInventarioAprimorado(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item encontrado com esse filtro.</p>'}`;
+        painel.innerHTML = `${criarControlesFiltros()}<h4 class="codex-title">Itens do inventario</h4><p class="codex-note">A defesa soma a CA de qualquer item equipado. Use os slots abaixo para ver o que esta em uso.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA dos itens equipados: +${window.formatarValorFicha ? window.formatarValorFicha(bonusCa) : bonusCa}</span><span class="tag-pill">Comparando: ${state.compare.length}/2</span></div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small>${item ? `<small>${esc(item.raridadeNome || "Sem raridade")} | ${esc(item.materialNome || "Sem material")}</small>` : ""}</div>`).join("")}</div><div class="cp-filter-grid"><div class="cp-filter-box"><label>Buscar item</label><input type="text" value="${esc(filtro.search)}" oninput="setFiltro('inventory','search',this.value)" placeholder="Nome, material ou descricao"></div><div class="cp-filter-box"><label>Grupo</label><select onchange="setFiltro('inventory','type',this.value)"><option value="todos" ${filtro.type === "todos" ? "selected" : ""}>Todos</option><option value="armadura" ${filtro.type === "armadura" ? "selected" : ""}>Armadura</option><option value="mao" ${filtro.type === "mao" ? "selected" : ""}>Mao</option><option value="adorno" ${filtro.type === "adorno" ? "selected" : ""}>Adorno</option><option value="item" ${filtro.type === "item" ? "selected" : ""}>Item geral</option><option value="consumivel" ${filtro.type === "consumivel" ? "selected" : ""}>Consumivel</option><option value="nao_equipavel" ${filtro.type === "nao_equipavel" ? "selected" : ""}>Nao equipavel</option></select></div><div class="cp-filter-box"><label>Raridade</label><select onchange="setFiltro('inventory','rarity',this.value)"><option value="todas" ${filtro.rarity === "todas" ? "selected" : ""}>Todas</option>${raridades.map((nome) => `<option value="${esc(nome)}" ${filtro.rarity === nome ? "selected" : ""}>${esc(nome)}</option>`).join("")}</select></div><div class="cp-filter-box"><label>Status</label><select onchange="setFiltro('inventory','status',this.value)"><option value="todos" ${filtro.status === "todos" ? "selected" : ""}>Todos</option><option value="equipado" ${filtro.status === "equipado" ? "selected" : ""}>Equipado</option><option value="guardado" ${filtro.status === "guardado" ? "selected" : ""}>Guardado</option></select></div></div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(equipadosFiltrados, "Nenhum item equipado com esse filtro.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(guardadosFiltrados, "Nenhum item guardado com esse filtro.")}</div>`;
     }
 
     function renderAcoesRapidasResultado() {
@@ -660,8 +864,10 @@
         const panel = [...resultado.querySelectorAll(".resource-panel")].find((item) => normalizarTexto(item.querySelector("h4")?.textContent) === "inventario");
         if (!panel) return;
         const itens = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
-        const equipados = Object.keys(state.equipmentSlots).map((slot) => ({ slot, item: itens.find((item) => item.equipado && item.slotTipo === slot) || null }));
-        panel.innerHTML = `<h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Inventario</h4><textarea id="inventarioTextoCard" class="notes-area" placeholder="Descreva o inventario dessa ficha..." oninput="sincronizarInventarioTexto(this.value, 'card')">${esc(document.getElementById("inventarioTexto")?.value || "")}</textarea><div class="notes-help">Os itens equipados ficam separados por slot. O restante continua no inventario abaixo.</div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small></div>`).join("")}</div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;">${itens.length ? `<div class="inventory-list">${itens.map((item) => criarCardInventarioAprimorado(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item foi adicionado ao inventario ainda.</p>'}</div>`;
+        const equipados = EQUIPMENT_SLOT_ORDER.map((slot) => ({ slot, item: itens.find((item) => Array.isArray(item.equippedSlots) && item.equippedSlots.includes(slot)) || null }));
+        const itensEquipados = itens.filter((item) => item.equipado);
+        const itensGuardados = itens.filter((item) => !item.equipado);
+        panel.innerHTML = `<h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Inventario</h4><textarea id="inventarioTextoCard" class="notes-area" placeholder="Descreva o inventario dessa ficha..." oninput="sincronizarInventarioTexto(this.value, 'card')">${esc(document.getElementById("inventarioTexto")?.value || "")}</textarea><div class="notes-help">Os itens equipados ficam separados por slot e o restante continua guardado logo abaixo.</div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small></div>`).join("")}</div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(itensEquipados, "Nenhum item equipado ainda.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(itensGuardados, "Nenhum item guardado ainda.")}</div>`;
     }
 
     function limparHistoricoCombate() {
@@ -670,14 +876,94 @@
         if (typeof window.calcularFicha === "function") window.calcularFicha(true);
     }
 
+    function resolverSlotsDesejados(meta, modo, itensAtuais, alvoId) {
+        const ocupados = new Set();
+        (Array.isArray(itensAtuais) ? itensAtuais : []).forEach((item) => {
+            if (!item || item.id === alvoId || !Array.isArray(item.equippedSlots)) return;
+            item.equippedSlots.forEach((slot) => ocupados.add(slot));
+        });
+        if (meta.equipGroup === "armadura") {
+            return ["armadura"];
+        }
+        if (meta.equipGroup === "adorno") {
+            if (ADORN_SLOTS.includes(modo)) return [modo];
+            const livre = ADORN_SLOTS.find((slot) => !ocupados.has(slot));
+            return livre ? [livre] : [];
+        }
+        if (meta.equipGroup === "mao") {
+            if (meta.handMode === "two_hands" || modo === "two_hands") {
+                return HAND_SLOTS.slice();
+            }
+            if (HAND_SLOTS.includes(modo)) return [modo];
+            const livre = HAND_SLOTS.find((slot) => !ocupados.has(slot));
+            return [livre || "mao_direita"];
+        }
+        return [];
+    }
+
+    function guardarItemInventario(id) {
+        const atuais = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
+        const itens = atuais.map((item) => item.id === id ? { ...item, equippedSlots: [], equipado: false } : item);
+        window.salvarInventarioItens(itens);
+        window.renderPainelInventario();
+        if (document.getElementById("resultado")?.innerHTML.trim()) window.calcularFicha(true);
+        debounceAutosave();
+    }
+
+    function equiparItemInventario(id, modo) {
+        const atuais = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
+        const alvo = atuais.find((item) => item.id === id);
+        if (!alvo) return;
+        const meta = inferirEquipMeta(alvo);
+        if (meta.equipGroup === "nenhum") {
+            alert("Esse item nao pode ser equipado.");
+            return;
+        }
+        const desiredSlots = resolverSlotsDesejados(meta, modo, atuais, id);
+        if (!desiredSlots.length) {
+            alert("Nao foi possivel equipar esse item nesse slot.");
+            return;
+        }
+        const itens = atuais.map((item) => {
+            if (item.id === id) {
+                return { ...item, equipGroup: meta.equipGroup, handMode: meta.handMode, equippedSlots: desiredSlots, equipado: true };
+            }
+            const atuaisSlots = Array.isArray(item.equippedSlots) ? item.equippedSlots : [];
+            const conflita = atuaisSlots.some((slot) => desiredSlots.includes(slot));
+            return conflita ? { ...item, equippedSlots: [], equipado: false } : item;
+        });
+        window.salvarInventarioItens(itens);
+        window.renderPainelInventario();
+        if (document.getElementById("resultado")?.innerHTML.trim()) window.calcularFicha(true);
+        debounceAutosave();
+    }
+
+    function atualizarCamposEquipamentoManual() {
+        const groupEl = document.getElementById("inventarioManualEquipGroup");
+        const handWrap = document.getElementById("inventarioManualHandModeWrap");
+        const handEl = document.getElementById("inventarioManualHandMode");
+        if (!groupEl || !handWrap || !handEl) return;
+        const mostrarMao = groupEl.value === "mao" || groupEl.value === "auto";
+        handWrap.style.display = mostrarMao ? "" : "none";
+        if (!mostrarMao) {
+            handEl.value = "auto";
+        }
+    }
+
     function garantirCampoSlotManual() {
-        if (document.getElementById("inventarioManualSlot")) return;
+        if (document.getElementById("inventarioManualEquipGroup")) return;
         const tipoGrupo = document.getElementById("inventarioManualTipo")?.closest(".resource-input");
         if (!tipoGrupo || !tipoGrupo.parentElement) return;
-        const div = document.createElement("div");
-        div.className = "resource-input";
-        div.innerHTML = `<label for="inventarioManualSlot">Slot</label><select id="inventarioManualSlot"><option value="auto">Detectar automaticamente</option><option value="arma">Arma</option><option value="armadura">Armadura</option><option value="anel">Anel</option><option value="colar">Colar</option><option value="acessorio">Acessorio</option><option value="nenhum">Sem slot</option></select>`;
-        tipoGrupo.parentElement.insertBefore(div, tipoGrupo.nextSibling);
+        const groupDiv = document.createElement("div");
+        groupDiv.className = "resource-input";
+        groupDiv.innerHTML = `<label for="inventarioManualEquipGroup">Grupo equipavel</label><select id="inventarioManualEquipGroup" onchange="atualizarCamposEquipamentoManual()"><option value="auto">Detectar automaticamente</option><option value="armadura">Armadura</option><option value="mao">Mao</option><option value="adorno">Adorno</option><option value="nenhum">Nao equipavel</option></select>`;
+        const handDiv = document.createElement("div");
+        handDiv.className = "resource-input";
+        handDiv.id = "inventarioManualHandModeWrap";
+        handDiv.innerHTML = `<label for="inventarioManualHandMode">Uso nas maos</label><select id="inventarioManualHandMode"><option value="auto">Detectar automaticamente</option><option value="one_hand">1 mao</option><option value="two_hands">2 maos</option><option value="flex">1 ou 2 maos</option></select>`;
+        tipoGrupo.parentElement.insertBefore(groupDiv, tipoGrupo.nextSibling);
+        tipoGrupo.parentElement.insertBefore(handDiv, groupDiv.nextSibling);
+        atualizarCamposEquipamentoManual();
     }
 
     function inserirBotaoLimparRascunho() {
@@ -707,12 +993,17 @@
             const base = original.sanitizarInventarioItens ? original.sanitizarInventarioItens(brutos) : [];
             const enriquecidos = base.map((item, index) => {
                 const bruto = brutos[index] && typeof brutos[index] === "object" ? brutos[index] : {};
+                const meta = inferirEquipMeta({ ...item, ...bruto });
                 return {
                     ...item,
-                    slotTipo: normalizarSlotTipo(bruto.slotTipo || item.slotTipo || inferirSlotItem({ ...item, ...bruto })),
+                    slotTipo: normalizarTexto(bruto.slotTipo || item.slotTipo || ""),
+                    equipGroup: meta.equipGroup,
+                    handMode: meta.handMode,
+                    equippedSlots: Array.isArray(bruto.equippedSlots) ? bruto.equippedSlots.slice(0, 2) : (Array.isArray(item.equippedSlots) ? item.equippedSlots.slice(0, 2) : []),
                     bonusFisico: arredondar(bruto.bonusFisico),
                     bonusMagico: arredondar(bruto.bonusMagico),
-                    pesoNumero: arredondar(bruto.pesoNumero || parsePesoNumero(item.peso))
+                    pesoNumero: arredondar(bruto.pesoNumero || parsePesoNumero(item.peso)),
+                    caBonus: Math.max(0, normalizarInteiro(bruto.caBonus ?? item.caBonus, 0))
                 };
             });
             return garantirIntegridadeSlots(enriquecidos);
@@ -725,46 +1016,63 @@
         window.obterDadosFichaBase = function () {
             const ficha = original.obterDadosFichaBase ? original.obterDadosFichaBase() : null;
             if (!ficha) return ficha;
-            ficha.caInventario = window.obterBonusCaInventario();
-            ficha.caTotal = ficha.caBase + ficha.caInventario;
+            const caBaseManual = Math.max(0, normalizarInteiro(ficha.caBase, 2));
+            const caAtributos = Math.floor((Number(ficha.aFim) || 0) / 10) + Math.floor((Number(ficha.rFim) || 0) / 10);
+            const caNivel = Math.floor((Number(ficha.nivel) || 0) / 5);
+            const caEquipamentos = window.obterBonusCaInventario();
+            ficha.caBase = caBaseManual;
+            ficha.caBaseManual = caBaseManual;
+            ficha.caAtributos = caAtributos;
+            ficha.caNivel = caNivel;
+            ficha.caEquipamentos = caEquipamentos;
+            ficha.caInventario = caEquipamentos;
+            ficha.caTotal = caBaseManual + caAtributos + caNivel + caEquipamentos;
             return ficha;
         };
 
         window.alternarEquipadoInventario = function (id, ativo) {
+            if (!ativo) {
+                guardarItemInventario(id);
+                return;
+            }
             const atuais = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
             const alvo = atuais.find((item) => item.id === id);
-            const itens = atuais.map((item) => {
-                if (item.id === id) {
-                    return { ...item, equipado: alvo && alvo.slotTipo !== "nenhum" ? !!ativo : false };
-                }
-                if (ativo && alvo && alvo.slotTipo !== "nenhum" && item.slotTipo === alvo.slotTipo) {
-                    return { ...item, equipado: false };
-                }
-                return item;
-            });
-            window.salvarInventarioItens(itens);
-            window.renderPainelInventario();
-            if (document.getElementById("resultado")?.innerHTML.trim()) window.calcularFicha(true);
-            debounceAutosave();
+            if (!alvo) return;
+            const meta = inferirEquipMeta(alvo);
+            if (meta.equipGroup === "armadura") {
+                equiparItemInventario(id, "armadura");
+                return;
+            }
+            if (meta.equipGroup === "adorno") {
+                equiparItemInventario(id, "auto");
+                return;
+            }
+            if (meta.equipGroup === "mao") {
+                equiparItemInventario(id, meta.handMode === "two_hands" ? "two_hands" : "mao_direita");
+            }
         };
 
         window.adicionarItemManualInventario = function () {
             const nomeEl = document.getElementById("inventarioManualNome");
             const tipoEl = document.getElementById("inventarioManualTipo");
-            const slotEl = document.getElementById("inventarioManualSlot");
+            const groupEl = document.getElementById("inventarioManualEquipGroup");
+            const handModeEl = document.getElementById("inventarioManualHandMode");
             const caEl = document.getElementById("inventarioManualCa");
             const descricaoEl = document.getElementById("inventarioManualDescricao");
             const nome = String(nomeEl && nomeEl.value || "").trim();
             const descricao = String(descricaoEl && descricaoEl.value || "").trim();
             const tipo = INVENTORY_TYPE_LABELS[tipoEl?.value] ? tipoEl.value : "item";
             const categoria = tipo === "armadura" ? "armadura" : ((tipo === "equipamento") ? "arma" : "item");
-            const caBonus = Number.parseFloat(caEl && caEl.value);
+            const caBonus = normalizarInteiro(caEl && caEl.value, 0);
             if (!nome && !descricao) {
                 alert("Preencha pelo menos o nome ou a descricao do item manual.");
                 return;
             }
-            const brutoSlot = slotEl ? slotEl.value : "auto";
-            const slotTipo = brutoSlot === "auto" ? normalizarSlotTipo(inferirSlotItem({ tipo, categoria })) : normalizarSlotTipo(brutoSlot);
+            const metaInferida = inferirEquipMeta({ tipo, categoria });
+            const equipGroup = groupEl && groupEl.value !== "auto" ? normalizarEquipGroup(groupEl.value) : metaInferida.equipGroup;
+            const handMode = equipGroup === "mao"
+                ? (handModeEl && handModeEl.value !== "auto" ? normalizarHandMode(handModeEl.value) : (metaInferida.handMode === "none" ? "flex" : metaInferida.handMode))
+                : "none";
             const itens = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
             itens.push({
                 id: typeof window.criarIdLocal === "function" ? window.criarIdLocal("item") : `item_${Date.now()}`,
@@ -775,9 +1083,12 @@
                 categoriaLabel: INVENTORY_TYPE_LABELS[tipo],
                 descricao,
                 resumo: "Item manual da ficha.",
-                caBonus: Number.isFinite(caBonus) ? Math.max(0, Number(caBonus.toFixed(2))) : 0,
+                caBonus: Math.max(0, caBonus),
                 equipado: false,
-                slotTipo,
+                slotTipo: equipGroup === "armadura" ? "armadura" : (equipGroup === "mao" ? "mao" : (equipGroup === "adorno" ? "adorno" : "nenhum")),
+                equipGroup,
+                handMode,
+                equippedSlots: [],
                 materialNome: "",
                 materialCorHex: "",
                 materialCor: "",
@@ -799,7 +1110,9 @@
             if (descricaoEl) descricaoEl.value = "";
             if (caEl) caEl.value = "0";
             if (tipoEl) tipoEl.value = "item";
-            if (slotEl) slotEl.value = "auto";
+            if (groupEl) groupEl.value = "auto";
+            if (handModeEl) handModeEl.value = "auto";
+            atualizarCamposEquipamentoManual();
             window.renderPainelInventario();
             if (document.getElementById("resultado")?.innerHTML.trim()) window.calcularFicha(true);
             debounceAutosave();
@@ -813,12 +1126,16 @@
             }
             const atuais = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
             const idsAtuais = new Set(atuais.map((item) => item.id));
-            const slotsOcupados = new Set(atuais.filter((item) => item.equipado).map((item) => item.slotTipo));
             const novos = compartilhados.filter((item) => !idsAtuais.has(item.id)).map((item) => {
-                const slotTipo = normalizarSlotTipo(item.slotTipo || inferirSlotItem(item));
-                const equipado = slotTipo !== "nenhum" && !slotsOcupados.has(slotTipo);
-                if (equipado) slotsOcupados.add(slotTipo);
-                return { ...item, slotTipo, equipado };
+                const meta = inferirEquipMeta(item);
+                const equippedSlots = resolverSlotsDesejados(meta, "auto", [...atuais, ...compartilhados], item.id);
+                return {
+                    ...item,
+                    equipGroup: meta.equipGroup,
+                    handMode: meta.handMode,
+                    equippedSlots,
+                    equipado: equippedSlots.length > 0
+                };
             });
             if (!novos.length) {
                 if (typeof window.atualizarStatusSave === "function") window.atualizarStatusSave("Todos os itens forjados ja foram importados para o inventario.");
@@ -849,7 +1166,7 @@
 
         window.coletarDadosFicha = function () {
             const payload = original.coletarDadosFicha ? original.coletarDadosFicha() : { version: 1, exportedAt: new Date().toISOString(), dados: {} };
-            payload.dados.autosaveDraftVersion = 3;
+            payload.dados.autosaveDraftVersion = 4;
             payload.dados.skillQuickActions = clone(state.skillQuickActions);
             payload.dados.combatActionHistory = clone(state.combatActionHistory);
             payload.dados.equipmentSlots = clone(state.equipmentSlots);
@@ -861,6 +1178,7 @@
         window.aplicarDadosFicha = function (dados) {
             if (original.aplicarDadosFicha) original.aplicarDadosFicha(dados);
             aplicarEstadoExtra(dados);
+            atualizarCamposEquipamentoManual();
             if (typeof window.renderPainelsDeClasse === "function") window.renderPainelsDeClasse();
             if (document.getElementById("resultado")?.innerHTML.trim() && typeof window.calcularFicha === "function") {
                 window.calcularFicha(true);
@@ -892,6 +1210,7 @@
     function inicializar() {
         envolverFuncoesBase();
         garantirCampoSlotManual();
+        atualizarCamposEquipamentoManual();
         inserirBotaoLimparRascunho();
         anexarListenersAutosave();
         if (!carregarRascunhoLocal() && typeof window.renderPainelsDeClasse === "function") {
@@ -915,6 +1234,9 @@
     window.alternarComparacao = alternarComparacao;
     window.limparHistoricoCombate = limparHistoricoCombate;
     window.limparRascunhoLocalFicha = limparRascunhoLocalFicha;
+    window.equiparItemInventario = equiparItemInventario;
+    window.guardarItemInventario = guardarItemInventario;
+    window.atualizarCamposEquipamentoManual = atualizarCamposEquipamentoManual;
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", inicializar);
     } else {

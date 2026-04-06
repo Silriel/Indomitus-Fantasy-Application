@@ -1581,7 +1581,7 @@
 
                 <div class="form-group">
                     <label for="caBase">Classe de Armadura Base (CA)</label>
-                    <input type="number" id="caBase" value="0" min="0" step="0.01" onchange="recalcularSeResultadoVisivel()">
+                    <input type="number" id="caBase" value="2" min="0" step="1" onchange="recalcularSeResultadoVisivel()">
                 </div>
 
                 <div class="section-banner full-width section-anchor" id="sec-recursos">
@@ -2475,6 +2475,16 @@
         return valor;
     }
 
+    function lerNumeroInteiroNaoNegativo(id, fallback) {
+        const el = document.getElementById(id);
+        const valorLido = parseInt(el && el.value, 10);
+        const valor = Number.isFinite(valorLido) ? Math.max(0, valorLido) : Math.max(0, parseInt(fallback, 10) || 0);
+        if (el && String(el.value) !== String(valor)) {
+            el.value = valor;
+        }
+        return valor;
+    }
+
     function criarIdLocal(prefixo) {
         return `${prefixo}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     }
@@ -2808,7 +2818,7 @@
                 categoriaLabel: String(item && item.categoriaLabel || ""),
                 descricao,
                 resumo: String(item && item.resumo || ""),
-                caBonus: Number.isFinite(caBonus) ? Math.max(0, Number(caBonus.toFixed(2))) : 0,
+                caBonus: Number.isFinite(caBonus) ? Math.max(0, Math.floor(caBonus)) : 0,
                 equipado: Boolean(item && item.equipado),
                 materialNome: String(item && item.materialNome || ""),
                 materialCorHex: String(item && item.materialCorHex || ""),
@@ -2876,7 +2886,7 @@
             categoriaLabel: INVENTORY_TYPE_LABELS[tipo],
             descricao,
             resumo: tipo === "armadura" ? "Armadura manual da ficha." : "Item manual da ficha.",
-            caBonus: Number.isFinite(caBonus) ? Math.max(0, Number(caBonus.toFixed(2))) : 0,
+            caBonus: Number.isFinite(caBonus) ? Math.max(0, Math.floor(caBonus)) : 0,
             equipado: false,
             materialNome: "",
             materialCorHex: "",
@@ -3121,7 +3131,7 @@
         const aFim = getMod(attrs.a, raceData.modificadores.agilidade);
         const rFim = getMod(attrs.r, raceData.modificadores.resistência);
         const cFim = getMod(attrs.c, raceData.modificadores.carisma);
-        const caBase = lerNumeroDecimalNaoNegativo("caBase", 0);
+        const caBase = lerNumeroInteiroNaoNegativo("caBase", 2);
         const caInventario = obterBonusCaInventario();
         const caTotal = caBase + caInventario;
 
@@ -3401,7 +3411,9 @@
                     <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Defesa</h4>
                     <div class="stats-grid">
                         ${mkBox('CA Base', formatarValorFicha(ficha.caBase))}
-                        ${mkBox('CA Inventario', formatarValorFicha(ficha.caInventario))}
+                        ${mkBox('CA Atributos', formatarValorFicha(ficha.caAtributos || 0))}
+                        ${mkBox('CA Nivel', formatarValorFicha(ficha.caNivel || 0))}
+                        ${mkBox('CA Equipamentos', formatarValorFicha(ficha.caEquipamentos != null ? ficha.caEquipamentos : ficha.caInventario))}
                         ${mkBox('CA Final', formatarValorFicha(ficha.caTotal))}
                     </div>
                 </div>
@@ -3527,7 +3539,7 @@
         const notes = [...document.querySelectorAll(".notes-help")];
         if (notes[0]) notes[0].textContent = "Essas anotacoes tambem entram no arquivo .txt e podem ser editadas depois.";
         if (notes[1]) notes[1].textContent = "Aqui voce pode guardar texto livre e tambem itens manuais ou importados da calculadora.";
-        if (notes[2]) notes[2].textContent = "Armaduras equipadas no inventario somam automaticamente na CA final da ficha.";
+        if (notes[2]) notes[2].textContent = "A CA usa base manual, bonus de atributos, bonus por nivel e bonus dos itens equipados.";
 
         const banners = [...document.querySelectorAll(".section-banner")];
         if (banners[0]) {
@@ -3544,7 +3556,7 @@
             const text = banners[1].querySelector("p");
             if (kicker) kicker.textContent = "Atributos e defesa";
             if (title) title.textContent = "Pontos e valores principais";
-            if (text) text.textContent = "Distribua os pontos e defina a CA base. A CA final pode aumentar com itens do inventario.";
+            if (text) text.textContent = "Distribua os pontos e ajuste a CA base. A CA final soma atributos, nivel e itens equipados.";
         }
         if (banners[2]) {
             const kicker = banners[2].querySelector(".section-kicker");

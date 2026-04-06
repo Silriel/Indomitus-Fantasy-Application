@@ -2204,6 +2204,29 @@
     const FORGED_ITEM_STORAGE_KEY = "INDOMITUS_FORGED_ITEMS_V1";
     let ultimoItemForjado = null;
 
+    function obterMetadadosEquipaveisForja(forgeTipo, cfg){
+        const tipoNormalizado = String(forgeTipo || "").trim();
+        if ((cfg && cfg.categoria === 'armadura' && tipoNormalizado !== 'escudo') || tipoNormalizado.startsWith('armadura') || tipoNormalizado === 'roupas') {
+            return { equipGroup: 'armadura', handMode: 'none' };
+        }
+        if (tipoNormalizado === 'escudo') {
+            return { equipGroup: 'mao', handMode: 'one_hand' };
+        }
+        if (tipoNormalizado === 'equip_pequeno' || tipoNormalizado === 'equip_magico') {
+            return { equipGroup: 'mao', handMode: 'one_hand' };
+        }
+        if (tipoNormalizado === 'equip_grande') {
+            return { equipGroup: 'mao', handMode: 'two_hands' };
+        }
+        if (tipoNormalizado === 'equip_misto' || tipoNormalizado === 'equip_definitivo') {
+            return { equipGroup: 'mao', handMode: 'flex' };
+        }
+        if (tipoNormalizado === 'anel' || tipoNormalizado === 'colar' || (cfg && cfg.categoria === 'adorno')) {
+            return { equipGroup: 'adorno', handMode: 'none' };
+        }
+        return { equipGroup: 'nenhum', handMode: 'none' };
+    }
+
     function lerItensForjadosCompartilhados() {
         try {
             const bruto = window.localStorage.getItem(FORGED_ITEM_STORAGE_KEY);
@@ -2710,18 +2733,23 @@
         html += `</div>`;
         html += `<div class="result-actions"><button class="action-btn result-action-btn" type="button" onclick="exportarUltimoItemForjado()">Enviar para a ficha pessoal</button></div>`;
 
+        const equipMeta = obterMetadadosEquipaveisForja(tipo, cfg);
         ultimoItemForjado = {
             id: `forja_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
             origem: "calculadora",
             nome: cfg.label,
             tipo: cfg.categoria === 'armadura' ? 'armadura' : (cfg.categoria === 'arma' ? 'arma' : 'acessorio'),
             forgeTipo: tipo,
+            visualType: tipo,
             categoria: cfg.categoria,
             categoriaLabel: iconLabel,
             resumo: `${cfg.label} calculado`,
             descricao: `Material: ${materialLinha} | Raridade: ${raridadeNome} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Camada base: ${sel.tecido.nome}` : ''}${m.isFusion ? ' | Regra: media arredondada dos materiais' : ''}`,
-            caBonus: (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') ? caFinalNumero : 0,
+            caBonus: (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') ? Math.max(0, Math.floor(caFinalNumero)) : 0,
             equipado: false,
+            equipGroup: equipMeta.equipGroup,
+            handMode: equipMeta.handMode,
+            equippedSlots: [],
             materialNome: materialLinha,
             materialIds: m.ids || [String(materialVal)],
             materialReferenciaId: String(m.referenciaId || materialVal || ""),
