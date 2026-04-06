@@ -291,6 +291,20 @@
             gap: 10px;
         }
 
+        .currency-conversion-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .currency-convert-note {
+            margin-top: 12px;
+            color: var(--text-soft);
+            font-size: 0.92em;
+            line-height: 1.5;
+        }
+
         .resource-btn.coin-add { --btn-color: #f0c16b; }
         .resource-btn.coin-remove { --btn-color: #ff9f9f; }
 
@@ -570,6 +584,13 @@
                 drop-shadow(0 0 12px var(--rarity-glow));
         }
 
+        .inventory-item-icon img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+        }
+
         .inventory-item-icon svg {
             width: 100%;
             height: 100%;
@@ -640,7 +661,8 @@
             }
 
             .currency-manager-grid,
-            .currency-manager-actions {
+            .currency-manager-actions,
+            .currency-conversion-actions {
                 grid-template-columns: 1fr;
             }
         }
@@ -871,7 +893,7 @@
         }
 
         .forge-header h2::after {
-            content: "Criacao Pessoal (Manual)";
+            content: "Ficha pessoal";
             position: absolute;
             inset: 0;
             color: #fff0c8;
@@ -933,6 +955,90 @@
             color: var(--text-soft);
             line-height: 1.6;
             font-size: 0.94em;
+        }
+
+        .section-index {
+            margin-bottom: 24px;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid var(--line-soft);
+            background:
+                radial-gradient(circle at top left, rgba(112, 151, 255, 0.12), transparent 34%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.04),
+                0 18px 36px rgba(0, 0, 0, 0.18);
+        }
+
+        .section-index-header {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .section-index-header h3 {
+            margin: 0;
+            color: #fff0ca;
+            font-size: clamp(1.25rem, 1.8vw, 1.65rem);
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .section-index-header p {
+            margin: 0;
+            max-width: 820px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .section-index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .section-index-card {
+            display: grid;
+            gap: 8px;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .section-index-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(241, 216, 166, 0.28);
+            box-shadow:
+                0 14px 28px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .section-index-card span {
+            color: #9db8ff;
+            font-size: 0.78em;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .section-index-card strong {
+            color: #fff0ca;
+            font-size: 0.98em;
+            line-height: 1.35;
+        }
+
+        .section-index-card p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 0.9em;
+            line-height: 1.55;
+        }
+
+        .section-anchor {
+            scroll-margin-top: 136px;
         }
 
         .form-grid {
@@ -1121,6 +1227,45 @@
             margin-top: 28px;
         }
 
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .workflow-panel {
+            display: grid;
+            gap: 16px;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at top right, rgba(255, 205, 112, 0.08), transparent 28%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .workflow-panel h3 {
+            margin: 0;
+            color: #fff0ca;
+            font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .workflow-panel p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .workflow-panel-primary {
+            border-color: rgba(241, 216, 166, 0.2);
+            background:
+                radial-gradient(circle at top left, rgba(112, 151, 255, 0.12), transparent 36%),
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        }
+
         .save-status {
             min-height: 0;
             padding: 14px 18px;
@@ -1188,7 +1333,9 @@
             }
 
             .page-hero-grid,
-            .guide-grid {
+            .guide-grid,
+            .section-index-grid,
+            .workflow-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1203,9 +1350,11 @@
             }
 
             .page-hero,
+            .section-index,
             .forge-container,
             .section-banner,
-            .form-group {
+            .form-group,
+            .workflow-panel {
                 padding: 18px;
             }
 
@@ -1245,30 +1394,30 @@
         <section class="page-hero">
             <div class="page-hero-grid">
                 <div>
-                    <span class="hero-eyebrow">Sala da Ficha Manual</span>
-                    <h2>Organize a ficha com mais presenca, mais clareza e menos caos na mesa.</h2>
-                    <p>O criador pessoal agora fica mais limpo para montar identidade, atributos, moedas, inventario e compendio sem perder o controle fino da ficha. A ideia aqui e deixar criacao, consulta e edicao futuras muito mais confortaveis.</p>
+                    <span class="hero-eyebrow">Ficha manual</span>
+                    <h2>Preencha a ficha de forma simples, clara e facil de revisar.</h2>
+                    <p>Use esta pagina para registrar os dados do personagem, organizar recursos e salvar tudo em .txt para continuar depois.</p>
                     <div class="hero-link-row">
-                        <a class="hero-link" href="calculadora_rpg.html">Abrir Forja de Equipamentos</a>
-                        <a class="hero-link ghost" href="criador_personagem.html">Ir para Criador Automatico</a>
+                        <a class="hero-link" href="calculadora_rpg.html">Abrir calculadora de equipamentos</a>
+                        <a class="hero-link ghost" href="criador_personagem.html">Abrir criador automatico</a>
                     </div>
                 </div>
                 <div class="hero-stat-grid">
                     <div class="hero-stat">
                         <span>Fluxo</span>
-                        <strong>Base, recursos, compendio e ficha final no mesmo painel.</strong>
+                        <strong>Dados basicos, recursos e resultado final no mesmo lugar.</strong>
                     </div>
                     <div class="hero-stat">
-                        <span>Persistencia</span>
-                        <strong>Save e load continuam integrados com moedas, notas e inventario.</strong>
+                        <span>Salvar</span>
+                        <strong>Save e load incluem moedas, notas, habilidades e inventario.</strong>
                     </div>
                     <div class="hero-stat">
                         <span>Importacao</span>
-                        <strong>Itens da forja entram melhor na leitura da ficha e da CA.</strong>
+                        <strong>Itens da calculadora entram no inventario e atualizam a CA.</strong>
                     </div>
                     <div class="hero-stat">
-                        <span>Uso em jogo</span>
-                        <strong>Mais facil de bater o olho em HP, MP, SP, habilidades e itens.</strong>
+                        <span>Leitura</span>
+                        <strong>HP, MP, SP, habilidades e itens ficam mais faceis de consultar.</strong>
                     </div>
                 </div>
             </div>
@@ -1277,31 +1426,66 @@
             <div class="forge-header">
                 <div>
                 <h2>Criação Pessoal (Manual)</h2>
-                    <p class="forge-subtitle">Monte a ficha como se estivesse abrindo um tomo vivo: primeiro a identidade, depois os fundamentos, em seguida recursos e por fim tudo que faz o personagem funcionar em jogo.</p>
+                    <p class="forge-subtitle">Preencha a ficha em etapas simples: dados basicos, atributos, recursos, habilidades e resultado final.</p>
                 </div>
-                <div class="forge-chip">Manual, persistente e pronto para editar</div>
+                <div class="forge-chip">Edicao simples com save em .txt</div>
             </div>
 
             <div class="guide-grid">
                 <article class="guide-card">
                     <span>Passo 1</span>
-                    <strong>Defina o nucleo</strong>
-                    <p>Escolha nome, nivel, classe, subclasse e linhagem antes de distribuir pontos. Isso prepara toda a base da ficha.</p>
+                    <strong>Preencha os dados basicos</strong>
+                    <p>Comece com nome, nivel, classe, subclasse e raca para definir a base da ficha.</p>
                 </article>
                 <article class="guide-card">
                     <span>Passo 2</span>
-                    <strong>Estruture os recursos</strong>
-                    <p>CA, moedas, anotacoes e habilidades personalizadas ficam em blocos separados para voce navegar melhor.</p>
+                    <strong>Organize os recursos</strong>
+                    <p>Preencha atributos, CA, moedas, anotacoes e habilidades personalizadas em blocos separados.</p>
                 </article>
                 <article class="guide-card">
                     <span>Passo 3</span>
-                    <strong>Feche o compendio</strong>
-                    <p>Escolhas de classe, passivas, especializacoes e inventario agora ficam mais legiveis antes de gravar a ficha.</p>
+                    <strong>Revise e gere a ficha</strong>
+                    <p>Confira habilidades, passivas, especializacoes e inventario antes de salvar ou gerar a ficha final.</p>
                 </article>
             </div>
 
+            <section class="section-index" aria-label="Mapa da ficha">
+                <div class="section-index-header">
+                    <span class="section-kicker">Resumo da pagina</span>
+                    <h3>Navegacao rapida</h3>
+                    <p>Use este painel para ir direto para a parte que voce quer editar.</p>
+                </div>
+                <div class="section-index-grid">
+                    <a class="section-index-card" href="#sec-nucleo">
+                        <span>Bloco 1</span>
+                        <strong>Dados basicos</strong>
+                        <p>Nome, nivel, classe, subclasse e raca.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-combate">
+                        <span>Bloco 2</span>
+                        <strong>Atributos e defesa</strong>
+                        <p>Atributos, pontos livres e CA base.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-recursos">
+                        <span>Bloco 3</span>
+                        <strong>Recursos e inventario</strong>
+                        <p>Moedas, anotacoes, habilidades personalizadas e itens.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-compendio">
+                        <span>Bloco 4</span>
+                        <strong>Habilidades e progresso</strong>
+                        <p>Habilidades da classe, passivas e especializacoes.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-acoes">
+                        <span>Bloco 5</span>
+                        <strong>Salvar e finalizar</strong>
+                        <p>Salvar em .txt, carregar depois e gerar a ficha.</p>
+                    </a>
+                </div>
+            </section>
+
             <div class="form-grid">
-                <div class="section-banner full-width">
+                <div class="section-banner full-width section-anchor" id="sec-nucleo">
                     <span class="section-kicker">Nucleo da Ficha</span>
                     <h3>Identidade e Fundamentos</h3>
                     <p>Comece pela base do personagem para destravar corretamente os paineis de subclasse, progressao e estatisticas iniciais.</p>
@@ -1313,7 +1497,7 @@
 
                 <div class="form-group">
                     <label for="nivel">Nível da Jornada</label>
-                    <input type="number" id="nivel" min="1" value="1" onchange="atualizarPontosLivres(); triggerClassChecks();">
+                    <input type="number" id="nivel" min="1" value="" placeholder="1" onchange="atualizarPontosLivres(); triggerClassChecks();">
                 </div>
                 
                 <div class="form-group">
@@ -1353,7 +1537,7 @@
                     </select>
                 </div>
                 
-                <div class="section-banner full-width">
+                <div class="section-banner full-width section-anchor" id="sec-combate">
                     <span class="section-kicker">Estrutura de Combate</span>
                     <h3>Atributos, Pontos e Defesa</h3>
                     <p>Distribua os pontos com uma leitura mais limpa e deixe a base de CA preparada antes de somar armaduras e itens do inventario.</p>
@@ -1382,7 +1566,7 @@
                     <input type="number" id="caBase" value="0" min="0" step="0.01" onchange="recalcularSeResultadoVisivel()">
                 </div>
 
-                <div class="section-banner full-width">
+                <div class="section-banner full-width section-anchor" id="sec-recursos">
                     <span class="section-kicker">Recursos e Registro</span>
                     <h3>Moedas, Notas e Inventario Vivo</h3>
                     <p>Guarde economia, observacoes, habilidades unicas e itens em blocos separados para a ficha continuar legivel mesmo depois de crescer bastante.</p>
@@ -1397,12 +1581,13 @@
                         <div class="coin-input"><label for="platina">Platina</label><input type="number" id="platina" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
                         <div class="coin-input"><label for="mithril">Mithril</label><input type="number" id="mithril" value="0" min="0" onchange="atualizarResumoMoedas(); recalcularSeResultadoVisivel()"></div>
                     </div>
-                    <div class="currency-summary" id="moedasResumo">Total base: 0 cobre | Forma compacta: 0 mithril | 0 platina | 0 ouro | 0 prata | 0 cobre</div>
+                    <div class="currency-summary" id="moedasResumo">Carteira atual: 0 mithril | 0 platina | 0 ouro | 0 prata | 0 cobre | Equivalente total: 0 cobre</div>
+                    <div class="currency-convert-note">Sem conversão automática. Para subir ou descer moedas, use a conversão manual depois de criar a ficha: 100 cobre = 1 prata, 100 prata = 1 ouro, 1000 ouro = 1 platina e 100 platina = 1 mithril.</div>
                     <input type="hidden" id="hpAtual" value="">
                     <input type="hidden" id="mpAtual" value="">
                     <input type="hidden" id="spAtual" value="">
                     <input type="hidden" id="acaoValorEstado" value="10">
-                    <input type="hidden" id="moedaValorEstado" value="1">
+                    <input type="hidden" id="moedaValorEstado" value="0">
                     <input type="hidden" id="moedaTipoEstado" value="ouro">
                 </div>
 
@@ -1472,7 +1657,7 @@
                     <div id="painelInventario" class="codex-panel" style="margin-top:14px;"></div>
                 </div>
 
-                <div class="section-banner full-width">
+                <div class="section-banner full-width section-anchor" id="sec-compendio">
                     <span class="section-kicker">Progressao e Compendio</span>
                     <h3>Classe, Passivas e Especializacoes</h3>
                     <p>As secoes abaixo concentram o corpo tecnico da ficha. Aqui voce revisa tudo que o personagem destrava por classe, nivel e escolhas permanentes.</p>
@@ -1495,22 +1680,35 @@
                 </div>
             </div>
 
-            <div class="workflow-footer">
-                <div class="utility-actions">
-                <button class="action-btn utility-btn" type="button" onclick="salvarFichaTxt()">Salvar .txt</button>
-                <button class="action-btn utility-btn" type="button" onclick="abrirCarregamentoFicha()">Carregar .txt</button>
-                <input class="file-input-hidden" type="file" id="arquivoFicha" accept=".txt,text/plain" onchange="carregarFichaTxt(event)">
-            </div>
+            <div class="workflow-footer section-anchor" id="sec-acoes">
+                <div class="workflow-grid">
+                    <section class="workflow-panel">
+                        <span class="section-kicker">Persistencia</span>
+                        <h3>Salvar, carregar e continuar depois</h3>
+                        <p>Guarde a ficha em texto para manter moedas, inventario, habilidades e anotacoes prontas para a proxima sessao.</p>
+                        <div class="utility-actions">
+                            <button class="action-btn utility-btn" type="button" onclick="salvarFichaTxt()">Salvar .txt</button>
+                            <button class="action-btn utility-btn" type="button" onclick="abrirCarregamentoFicha()">Carregar .txt</button>
+                            <input class="file-input-hidden" type="file" id="arquivoFicha" accept=".txt,text/plain" onchange="carregarFichaTxt(event)">
+                        </div>
 
-            <div class="save-status" id="saveStatus"></div>
+                        <div class="save-status" id="saveStatus"></div>
+                    </section>
 
-            <div class="final-action">
+                    <section class="workflow-panel workflow-panel-primary">
+                        <span class="section-kicker">Fechamento</span>
+                        <h3>Gerar a ficha final</h3>
+                        <p>Depois de revisar os blocos acima, finalize aqui para abrir a ficha completa com recursos, compendio, inventario e estado atual de jogo.</p>
+
+                        <div class="final-action">
 
             <button class="action-btn" type="button" onclick="calcularFicha()">Inscrever na Pedra Mística</button>
 
-            </div>
+                        </div>
+                    </section>
+                </div>
 
-            <div class="result-container" id="resultado"></div>
+                <div class="result-container" id="resultado"></div>
             </div>
         </div>
     </main>
@@ -1555,6 +1753,7 @@
     ];
     const NUMBER_FORMAT = new Intl.NumberFormat("pt-BR");
     const COIN_ORDER = ["mithril", "platina", "ouro", "prata", "cobre"];
+    const COIN_ASC_ORDER = ["cobre", "prata", "ouro", "platina", "mithril"];
     const COIN_VALUES = {
         cobre: 1,
         prata: 100,
@@ -1883,7 +2082,7 @@
             return `<div class="catalog-tier"><h5>${TIER_TITLES[tier]}</h5><ul>${lista.map((item) => `<li><strong>${item.nome}</strong> (${item.custo})<br>${item.descricao}${item.efeito ? ` Efeito: ${item.efeito}` : ""}</li>`).join("")}</ul></div>`;
         }).join("");
 
-        painel.innerHTML = `<h4 class="codex-title">Progressao da Classe</h4><p class="codex-note">No nivel 1 voce escolhe 2 habilidades basicas. No nivel 5 ganha outra basica, no 10 uma intermediaria, no 25 uma avancada, no 50 uma mestre, no 75 uma suprema, no 100 uma lendaria e no nivel 15 escolhe a subclasse.</p><div class="meta-grid"><div class="meta-card"><strong>${classe.nome}</strong><small>HP base ${classe.hp} | MP base ${classe.mp} | SP base ${classe.sp}</small></div><div class="meta-card"><strong>Passivas da Classe</strong><small>${(classe.passivas || []).join(" | ") || "Sem passivas detalhadas."}</small></div><div class="meta-card"><strong>Slots Ativos</strong><small>${ABILITY_SLOT_RULES.filter((item) => nivel >= item.minLevel).map((item) => item.label).join(" | ") || "Sem slots liberados."}</small></div><div class="meta-card"><strong>Subclasse</strong><small>${subclasseAtiva ? subclasseAtiva.nome : (nivel >= 15 ? "Nenhuma escolhida ainda." : "Libera no nivel 15.")}</small></div></div><div class="tag-list">${(classe.passivas || []).map((item) => `<span class="tag-pill">${item}</span>`).join("")}</div><div class="selection-grid">${slotsHtml}</div>${(classe.subclasses && Object.keys(classe.subclasses).length) ? `<h4 class="codex-title" style="margin-top:18px;">Subclasses</h4><div class="ability-grid">${subclassesHtml}</div>` : ""}<h4 class="codex-title" style="margin-top:18px;">Codex de Habilidades</h4><div class="catalog-columns">${catalogHtml || '<div class="catalog-tier"><h5>Sem compendio</h5><ul><li>Essa classe nao possui compendio detalhado carregado.</li></ul></div>'}</div>`;
+        painel.innerHTML = `<h4 class="codex-title">Resumo da classe</h4><p class="codex-note">No nivel 1 voce escolhe 2 habilidades basicas. Depois novas escolhas sao liberadas pelos niveis 5, 10, 25, 50, 75 e 100. A subclasse fica disponivel no nivel 15.</p><div class="meta-grid"><div class="meta-card"><strong>${classe.nome}</strong><small>HP base ${classe.hp} | MP base ${classe.mp} | SP base ${classe.sp}</small></div><div class="meta-card"><strong>Passivas da classe</strong><small>${(classe.passivas || []).join(" | ") || "Sem passivas detalhadas."}</small></div><div class="meta-card"><strong>Escolhas liberadas</strong><small>${ABILITY_SLOT_RULES.filter((item) => nivel >= item.minLevel).map((item) => item.label).join(" | ") || "Nenhuma escolha liberada."}</small></div><div class="meta-card"><strong>Subclasse</strong><small>${subclasseAtiva ? subclasseAtiva.nome : (nivel >= 15 ? "Nenhuma escolhida ainda." : "Disponivel no nivel 15.")}</small></div></div><div class="tag-list">${(classe.passivas || []).map((item) => `<span class="tag-pill">${item}</span>`).join("")}</div><div class="selection-grid">${slotsHtml}</div>${(classe.subclasses && Object.keys(classe.subclasses).length) ? `<h4 class="codex-title" style="margin-top:18px;">Opcoes de subclasse</h4><div class="ability-grid">${subclassesHtml}</div>` : ""}<h4 class="codex-title" style="margin-top:18px;">Lista de habilidades</h4><div class="catalog-columns">${catalogHtml || '<div class="catalog-tier"><h5>Sem lista</h5><ul><li>Essa classe ainda nao tem habilidades carregadas nesta pagina.</li></ul></div>'}</div>`;
     }
 
     function renderPainelPassivas() {
@@ -1905,7 +2104,7 @@
             return `<label class="toggle-card ${desbloqueada ? "" : "is-locked"} ${selecionadas.has(item.id) ? "is-selected" : ""}"><input type="checkbox" ${selecionadas.has(item.id) ? "checked" : ""} ${desbloqueada ? "" : "disabled"} onchange="alternarPassiva('${item.id}', this.checked)"><span><strong>${item.nome}</strong><small>${item.resumo} Bonus: ${item.bonus}${item.requisito ? ` Requisito: ${item.requisito}.` : ""}</small></span></label>`;
         }).join("");
 
-        painel.innerHTML = `<h4 class="codex-title">Habilidades Passivas</h4><p class="codex-note">As passivas com pre-requisito so ficam liberadas quando a ficha possui a pericia correspondente. As pericias detectadas da classe e as extras marcadas abaixo entram nessa validacao.</p><div class="tag-list">${[...periciasDisponiveis].map((nome) => `<span class="tag-pill">${nome}</span>`).join("") || '<span class="tag-pill">Sem pericias detectadas</span>'}</div><div class="toggle-grid">${extrasHtml}</div><h4 class="codex-title" style="margin-top:18px;">Escolha de Passivas</h4><div class="toggle-grid">${passivasHtml}</div>`;
+        painel.innerHTML = `<h4 class="codex-title">Passivas</h4><p class="codex-note">As passivas com requisito so ficam liberadas quando a ficha tem a pericia correspondente. As pericias da classe e as extras marcadas abaixo entram nessa validacao.</p><div class="tag-list">${[...periciasDisponiveis].map((nome) => `<span class="tag-pill">${nome}</span>`).join("") || '<span class="tag-pill">Nenhuma pericia detectada</span>'}</div><div class="toggle-grid">${extrasHtml}</div><h4 class="codex-title" style="margin-top:18px;">Selecionar passivas</h4><div class="toggle-grid">${passivasHtml}</div>`;
     }
 
     function renderPainelEspecializacoes() {
@@ -1920,7 +2119,7 @@
             return `<div class="selection-card ${escolhas[index] ? "is-selected" : ""}"><strong>${slot.label}</strong><small>Uma mesma especializacao nao pode ser escolhida duas vezes.</small><select onchange="selecionarEspecializacao('${slot.key}', this.value)"><option value="">Nao escolher agora</option>${SPECIALIZATIONS.map((item) => `<option value="${item.id}" ${item.id === escolhas[index] ? "selected" : ""}>${item.nome}</option>`).join("")}</select></div>`;
         }).join("");
         const catalogHtml = SPECIALIZATIONS.map((item) => `<div class="ability-card ${escolhas.includes(item.id) ? "is-selected" : ""}"><strong>${item.nome}</strong><small>${item.resumo}</small></div>`).join("");
-        painel.innerHTML = `<h4 class="codex-title">Habilidades de Especializacao</h4><p class="codex-note">As especializacoes liberam no nivel 25, 50 e 75. Cada slot aceita uma escolha unica e a mesma especializacao nao pode ser repetida.</p><div class="selection-grid">${slotsHtml}</div><h4 class="codex-title" style="margin-top:18px;">Catalogo de Especializacoes</h4><div class="ability-grid">${catalogHtml}</div>`;
+        painel.innerHTML = `<h4 class="codex-title">Especializacoes</h4><p class="codex-note">As especializacoes liberam nos niveis 25, 50 e 75. Cada espaco aceita uma escolha unica e a mesma especializacao nao pode ser repetida.</p><div class="selection-grid">${slotsHtml}</div><h4 class="codex-title" style="margin-top:18px;">Lista de especializacoes</h4><div class="ability-grid">${catalogHtml}</div>`;
     }
 
     function renderPainelsDeClasse() {
@@ -2031,6 +2230,34 @@
         return RARITY_GLOW_MAP[raridadeId] || "rgba(212,175,55,0.18)";
     }
 
+    function obterSafeMaterialIdInventario(item) {
+        const ids = Array.isArray(item && item.materialIds) ? item.materialIds : [];
+        const bruto = String((ids[0] || item.materialReferenciaId || "")).trim();
+        return /^\d+$/.test(bruto) ? String(Number(bruto)).padStart(2, "0") : "";
+    }
+
+    function obterArteInventarioItem(item) {
+        const artPath = String(item && item.artPath || "").trim();
+        if (/^assets\/forja\/[a-z0-9_./-]+\.png$/i.test(artPath)) {
+            return artPath;
+        }
+
+        const materialId = obterSafeMaterialIdInventario(item);
+        const forgeTipo = String(item && item.forgeTipo || "").trim();
+        const nomeBase = `${String(item && item.nome || "")} ${String(item && item.categoriaLabel || "")}`.toLowerCase();
+        const isArmorDef = forgeTipo === "armadura_definitiva" || (!forgeTipo && nomeBase.includes("armadura definitiva"));
+        const isWeaponDef = forgeTipo === "equip_definitivo" || (!forgeTipo && nomeBase.includes("equipamento definitivo"));
+        const materialFallback = item && item.materialCorHex ? "" : "01";
+        const materialKey = materialId || materialFallback;
+        if (!materialKey) return "";
+        if (isArmorDef) return `assets/forja/generated/armor-def-m${materialKey}.png`;
+        if (isWeaponDef) return `assets/forja/generated/weapon-def-m${materialKey}.png`;
+        if (item && item.categoria === "armadura") return `assets/forja/generated/armor-m${materialKey}.png`;
+        if (item && item.categoria === "arma") return `assets/forja/generated/weapon-m${materialKey}.png`;
+        if (item && (item.categoria === "adorno" || item.tipo === "acessorio")) return `assets/forja/generated/adorn-m${materialKey}.png`;
+        return "";
+    }
+
     function obterSvgInventarioCategoria(categoria) {
         if (categoria === "armadura") {
             return `
@@ -2073,6 +2300,7 @@
         const materialColor = item.materialCorHex || "#d4af37";
         const glow = obterGlowRaridade(item.raridadeId);
         const tipoLabel = INVENTORY_TYPE_LABELS[item.tipo] || item.categoriaLabel || "Item";
+        const artPath = obterArteInventarioItem(item);
         const flags = [
             tipoLabel,
             item.raridadeNome,
@@ -2087,7 +2315,7 @@
             <div class="inventory-card ${item.equipado ? "is-equipped" : ""}">
                 <div class="inventory-header">
                     <div class="inventory-visual" style="--material-color:${escaparHtml(materialColor)}; --rarity-glow:${escaparHtml(glow)};">
-                        <div class="inventory-item-icon" aria-hidden="true">${obterSvgInventarioCategoria(categoriaVisual)}</div>
+                        <div class="inventory-item-icon" aria-hidden="true">${artPath ? `<img src="${escaparHtml(artPath)}" alt="">` : obterSvgInventarioCategoria(categoriaVisual)}</div>
                     </div>
                     <div class="inventory-details">
                         <strong>${escaparHtml(item.nome)}</strong>
@@ -2125,6 +2353,11 @@
         return Number.isFinite(numero) && numero > 0 ? numero : Math.max(1, fallback || 1);
     }
 
+    function normalizarInteiroNaoNegativo(valor, fallback) {
+        const numero = parseInt(valor, 10);
+        return Number.isFinite(numero) && numero >= 0 ? numero : Math.max(0, fallback || 0);
+    }
+
     function obterValorAcaoPersistido() {
         const estado = document.getElementById("acaoValorEstado");
         const valor = normalizarInteiroPositivo(estado && estado.value, 10);
@@ -2150,13 +2383,13 @@
 
     function obterValorMoedaPersistido() {
         const estado = document.getElementById("moedaValorEstado");
-        const valor = normalizarInteiroPositivo(estado && estado.value, 1);
+        const valor = normalizarInteiroNaoNegativo(estado && estado.value, 0);
         if (estado) estado.value = valor;
         return valor;
     }
 
     function sincronizarValorMoeda(valor) {
-        const normalizado = normalizarInteiroPositivo(valor, obterValorMoedaPersistido());
+        const normalizado = normalizarInteiroNaoNegativo(valor, obterValorMoedaPersistido());
         const estado = document.getElementById("moedaValorEstado");
         const input = document.getElementById("moedaValorAcao");
         if (estado) estado.value = normalizado;
@@ -2238,7 +2471,7 @@
         const painel = document.getElementById("painelHabilidadesPersonalizadas");
         if (!painel) return;
         const habilidades = obterHabilidadesPersonalizadas();
-        painel.innerHTML = `<h4 class="codex-title">Codex Personalizado</h4><p class="codex-note">Use esse espaco para registrar magias, tecnicas, talentos ou golpes que nao existem no compendio da classe.</p>${habilidades.length ? `<div class="ability-grid">${habilidades.map((item) => `<div class="ability-card is-selected"><strong>${escaparHtml(item.nome)}</strong><small>${escaparHtml(item.custo)}${item.descricao ? `<br>${escaparHtml(item.descricao)}` : ""}</small><div class="panel-actions" style="margin-top:10px;"><button class="action-btn mini-btn danger" type="button" onclick="removerHabilidadePersonalizada('${item.id}')">Remover</button></div></div>`).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade personalizada registrada ainda.</p>'}`;
+        painel.innerHTML = `<h4 class="codex-title">Habilidades personalizadas</h4><p class="codex-note">Use este espaco para registrar habilidades que nao estao na lista da classe.</p>${habilidades.length ? `<div class="ability-grid">${habilidades.map((item) => `<div class="ability-card is-selected"><strong>${escaparHtml(item.nome)}</strong><small>${escaparHtml(item.custo)}${item.descricao ? `<br>${escaparHtml(item.descricao)}` : ""}</small><div class="panel-actions" style="margin-top:10px;"><button class="action-btn mini-btn danger" type="button" onclick="removerHabilidadePersonalizada('${item.id}')">Remover</button></div></div>`).join("")}</div>` : '<p class="codex-note">Nenhuma habilidade personalizada cadastrada.</p>'}`;
     }
 
     function adicionarHabilidadePersonalizada() {
@@ -2289,6 +2522,12 @@
             const categoriaBruta = String(item && item.categoria || "").trim();
             const categoria = categoriaBruta || (tipo === "armadura" ? "armadura" : ((tipo === "equipamento" || tipo === "arma") ? "arma" : "item"));
             const caBonus = Number(item && item.caBonus);
+            const materialIds = Array.isArray(item && item.materialIds)
+                ? item.materialIds.map((valor) => String(valor).trim()).filter((valor) => /^\d+$/.test(valor)).slice(0, 24)
+                : [];
+            const artPathBruto = String(item && item.artPath || "").trim();
+            const forgeTipoBruto = String(item && item.forgeTipo || "").trim();
+            const materialReferenciaBruta = String(item && item.materialReferenciaId || "").trim();
 
             return {
                 id: /^[a-z0-9_:-]+$/i.test(String(item && item.id || "")) ? String(item.id) : criarIdLocal("item"),
@@ -2304,11 +2543,15 @@
                 materialNome: String(item && item.materialNome || ""),
                 materialCorHex: String(item && item.materialCorHex || ""),
                 materialCor: String(item && item.materialCor || ""),
+                materialIds,
+                materialReferenciaId: /^\d+$/.test(materialReferenciaBruta) ? String(Number(materialReferenciaBruta)) : "",
                 raridadeId: String(item && item.raridadeId || ""),
                 raridadeNome: String(item && item.raridadeNome || ""),
                 peso: String(item && item.peso || ""),
                 danoResumo: String(item && item.danoResumo || ""),
-                fonte: String(item && item.fonte || (item && item.origem === "calculadora" ? "Calculadora RPG" : "Manual"))
+                fonte: String(item && item.fonte || (item && item.origem === "calculadora" ? "Calculadora RPG" : "Manual")),
+                artPath: /^assets\/forja\/[a-z0-9_./-]+\.png$/i.test(artPathBruto) ? artPathBruto : "",
+                forgeTipo: /^[a-z_]+$/i.test(forgeTipoBruto) ? forgeTipoBruto : ""
             };
         }).filter(Boolean);
     }
@@ -2334,7 +2577,7 @@
         if (!painel) return;
         const itens = obterInventarioItens();
         const bonusCa = obterBonusCaInventario();
-        painel.innerHTML = `<h4 class="codex-title">Itens Guardados</h4><p class="codex-note">Itens importados da calculadora chegam com material, raridade e bonus. Armaduras equipadas entram na CA final automaticamente.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA do inventario: +${formatarValorFicha(bonusCa)}</span></div>${itens.length ? `<div class="inventory-list">${itens.map((item) => criarCardInventarioHtml(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item no inventario ainda.</p>'}`;
+        painel.innerHTML = `<h4 class="codex-title">Itens do inventario</h4><p class="codex-note">Itens importados da calculadora mantem material, raridade e bonus. Armaduras equipadas entram na CA final automaticamente.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA do inventario: +${formatarValorFicha(bonusCa)}</span></div>${itens.length ? `<div class="inventory-list">${itens.map((item) => criarCardInventarioHtml(item, true)).join("")}</div>` : '<p class="codex-note">Nenhum item no inventario ainda.</p>'}`;
     }
 
     function adicionarItemManualInventario() {
@@ -2368,11 +2611,15 @@
             materialNome: "",
             materialCorHex: "",
             materialCor: "",
+            materialIds: [],
+            materialReferenciaId: "",
             raridadeId: "",
             raridadeNome: "",
             peso: "",
             danoResumo: "",
-            fonte: "Manual"
+            fonte: "Manual",
+            artPath: "",
+            forgeTipo: ""
         });
         salvarInventarioItens(itens);
 
@@ -2471,8 +2718,7 @@
 
         const moedas = obterMoedasFicha();
         const totalCobre = calcularTotalCobre(moedas);
-        const moedasCompactas = normalizarMoedas(totalCobre);
-        resumo.textContent = `Total base: ${formatarNumero(totalCobre)} cobre | Forma compacta: ${resumirMoedas(moedasCompactas)}`;
+        resumo.textContent = `Carteira atual: ${resumirMoedas(moedas)} | Equivalente total: ${formatarNumero(totalCobre)} cobre`;
     }
 
     function recalcularSeResultadoVisivel() {
@@ -2485,18 +2731,79 @@
     function aplicarDeltaMoedas(tipo, quantidade) {
         const moedaTipo = COIN_VALUES[tipo] ? tipo : obterTipoMoedaPersistido();
         const moedasAtuais = obterMoedasFicha();
-        const totalAtual = calcularTotalCobre(moedasAtuais);
-        const delta = (Number(quantidade) || 0) * COIN_VALUES[moedaTipo];
-        const novoTotal = Math.max(0, totalAtual + delta);
-        const normalizadas = normalizarMoedas(novoTotal);
+        const delta = Math.floor(Number(quantidade) || 0);
+
+        moedasAtuais[moedaTipo] = Math.max(0, (moedasAtuais[moedaTipo] || 0) + delta);
 
         COIN_ORDER.forEach((chave) => {
             const el = document.getElementById(chave);
-            if (el) el.value = normalizadas[chave];
+            if (el) el.value = Math.max(0, Math.floor(moedasAtuais[chave] || 0));
         });
 
         atualizarResumoMoedas();
         recalcularSeResultadoVisivel();
+    }
+
+    function obterMoedaAdjacente(tipo, direcao) {
+        const indice = COIN_ASC_ORDER.indexOf(tipo);
+        if (indice === -1) return null;
+        if (direcao === "up") {
+            return indice < COIN_ASC_ORDER.length - 1 ? COIN_ASC_ORDER[indice + 1] : null;
+        }
+        return indice > 0 ? COIN_ASC_ORDER[indice - 1] : null;
+    }
+
+    function obterTaxaConversaoMoeda(tipo, direcao) {
+        const destino = obterMoedaAdjacente(tipo, direcao);
+        if (!destino) return 0;
+        if (direcao === "up") {
+            return COIN_VALUES[destino] / COIN_VALUES[tipo];
+        }
+        return COIN_VALUES[tipo] / COIN_VALUES[destino];
+    }
+
+    function converterMoedas(direcao) {
+        const tipoSelecionado = sincronizarTipoMoeda(document.getElementById("moedaTipoAcao") && document.getElementById("moedaTipoAcao").value);
+        const valor = sincronizarValorMoeda(document.getElementById("moedaValorAcao") && document.getElementById("moedaValorAcao").value);
+        const destino = obterMoedaAdjacente(tipoSelecionado, direcao);
+
+        if (!valor) {
+            atualizarStatusSave("Digite uma quantidade maior que zero para converter moedas.", true);
+            return;
+        }
+
+        if (!destino) {
+            atualizarStatusSave(direcao === "up" ? "Essa moeda já está no topo da cadeia de conversão." : "Essa moeda já está na base da cadeia de conversão.", true);
+            return;
+        }
+
+        const taxa = obterTaxaConversaoMoeda(tipoSelecionado, direcao);
+        const moedas = obterMoedasFicha();
+        const disponivel = moedas[tipoSelecionado] || 0;
+
+        if (disponivel < valor) {
+            atualizarStatusSave(`Você não possui ${formatarNumero(valor)} ${tipoSelecionado} para converter.`, true);
+            return;
+        }
+
+        if (direcao === "up" && valor % taxa !== 0) {
+            atualizarStatusSave(`Para subir ${tipoSelecionado} em ${destino}, use múltiplos de ${formatarNumero(taxa)}.`, true);
+            return;
+        }
+
+        const ganho = direcao === "up" ? (valor / taxa) : (valor * taxa);
+
+        moedas[tipoSelecionado] = Math.max(0, disponivel - valor);
+        moedas[destino] = Math.max(0, (moedas[destino] || 0) + ganho);
+
+        COIN_ORDER.forEach((chave) => {
+            const el = document.getElementById(chave);
+            if (el) el.value = Math.max(0, Math.floor(moedas[chave] || 0));
+        });
+
+        atualizarResumoMoedas();
+        recalcularSeResultadoVisivel();
+        atualizarStatusSave(`Conversão manual: ${formatarNumero(valor)} ${tipoSelecionado} -> ${formatarNumero(ganho)} ${destino}.`);
     }
 
     function adicionarMoedas() {
@@ -2516,7 +2823,7 @@
     }
 
     function obterDadosFichaBase() {
-        const nome = document.getElementById("nome").value || "Heroi Sem Nome";
+        const nome = document.getElementById("nome").value || "Personagem sem nome";
         const nivel = parseInt(document.getElementById("nivel").value) || 1;
         const classeKey = document.getElementById("classeId").value;
         const subKey = document.getElementById("subclasseId").value;
@@ -2628,7 +2935,7 @@
         const dados = {};
         SAVE_FIELD_IDS.forEach((id) => {
             const el = document.getElementById(id);
-            if (el) dados[id] = el.value;
+            if (el) dados[id] = id === "nivel" ? String(obterNivelAtual()) : el.value;
         });
         return {
             version: 1,
@@ -2638,13 +2945,13 @@
     }
 
     function gerarNomeArquivoFicha() {
-        const nomeBase = (document.getElementById("nome").value || "heroi_sem_nome")
+        const nomeBase = (document.getElementById("nome").value || "personagem_sem_nome")
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .replace(/[^a-zA-Z0-9_-]+/g, "_")
             .replace(/^_+|_+$/g, "")
             .toLowerCase();
-        return `${nomeBase || "heroi_sem_nome"}_indomitus.txt`;
+        return `${nomeBase || "personagem_sem_nome"}_indomitus.txt`;
     }
 
     function serializarDadosFicha(payload) {
@@ -2743,7 +3050,7 @@
 
     function calcularFicha(silencioso) {
         if (atualizarPontosLivres() < 0) {
-            if (!silencioso) alert("Você excedeu o limite de pontos misticos!");
+            if (!silencioso) alert("Voce excedeu o limite de pontos.");
             return;
         }
 
@@ -2752,7 +3059,6 @@
 
         const moedas = obterMoedasFicha();
         const totalCobre = calcularTotalCobre(moedas);
-        const moedasCompactas = normalizarMoedas(totalCobre);
         const recursosAtuais = sincronizarRecursosAtuais(ficha);
         const valorAcao = obterValorAcaoPersistido();
         const valorMoedaAcao = obterValorMoedaPersistido();
@@ -2833,11 +3139,11 @@
                         ${mkCoinCard("Platina", moedas.platina)}
                         ${mkCoinCard("Mithril", moedas.mithril)}
                     </div>
-                    <div class="currency-summary">Total em cobre: ${formatarNumero(totalCobre)} | Forma compacta: ${resumirMoedas(moedasCompactas)}</div>
+                    <div class="currency-summary">Carteira atual: ${resumirMoedas(moedas)} | Equivalente total: ${formatarNumero(totalCobre)} cobre</div>
                     <div class="currency-manager-grid">
                         <div class="resource-input">
                             <label for="moedaValorAcao">Quantidade</label>
-                            <input type="number" id="moedaValorAcao" min="1" value="${valorMoedaAcao}" oninput="sincronizarValorMoeda(this.value)">
+                            <input type="number" id="moedaValorAcao" min="0" value="${valorMoedaAcao}" oninput="sincronizarValorMoeda(this.value)">
                         </div>
                         <div class="resource-input">
                             <label for="moedaTipoAcao">Tipo de moeda</label>
@@ -2854,14 +3160,19 @@
                             <button class="action-btn resource-btn coin-remove" type="button" onclick="removerMoedas()">Remover</button>
                         </div>
                     </div>
+                    <div class="currency-conversion-actions">
+                        <button class="action-btn resource-btn coin-add" type="button" onclick="converterMoedas('up')">Converter para cima</button>
+                        <button class="action-btn resource-btn coin-remove" type="button" onclick="converterMoedas('down')">Converter para baixo</button>
+                    </div>
+                    <div class="currency-convert-note">Conversão manual por degrau: 100 cobre = 1 prata, 100 prata = 1 ouro, 1000 ouro = 1 platina e 100 platina = 1 mithril.</div>
                 </div>
 
-                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Heraldistica</h4>
+                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Resumo rapido</h4>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
                     ${skillTableLogic(ficha.nivel).map(s => `<div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:4px; text-align:center;"><small style="color:var(--text-muted); font-size:0.7em;">${s.name}</small><br><strong>${s.val}</strong></div>`).join('')}
                 </div>
 
-                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Herancas</h4>
+                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Bonus de raca e classe</h4>
                 <ul style="list-style:none; padding:0; font-size:0.9em;">
                     ${ficha.raceData.passivas.map(p => `<li>&#127811; ${p}</li>`).join('')}
                     ${ficha.classData.passivas.map(p => `<li>&#128171; ${p}</li>`).join('')}
@@ -2916,13 +3227,132 @@
         res.style.display = "block";
     }
 
+    function aplicarTextosClaros() {
+        const setText = (selector, text) => {
+            const el = document.querySelector(selector);
+            if (el) el.textContent = text;
+        };
+
+        setText(".forge-header h2", "Ficha pessoal");
+        setText('label[for="nome"]', "Nome do personagem");
+        setText('label[for="nivel"]', "Nivel");
+        setText('label[for="classeId"]', "Classe");
+        setText('label[for="subclasseId"]', "Subclasse (nivel 15)");
+        setText('label[for="raca"]', "Raca");
+
+        const formTitles = [...document.querySelectorAll(".form-group h4")];
+        if (formTitles[0]) formTitles[0].textContent = "Distribuicao de pontos";
+        if (formTitles[1]) formTitles[1].textContent = "Moedas";
+        if (formTitles[2]) formTitles[2].textContent = "Anotacoes";
+        if (formTitles[3]) formTitles[3].textContent = "Habilidades personalizadas";
+        if (formTitles[4]) formTitles[4].textContent = "Inventario";
+
+        const notes = [...document.querySelectorAll(".notes-help")];
+        if (notes[0]) notes[0].textContent = "Essas anotacoes tambem entram no arquivo .txt e podem ser editadas depois.";
+        if (notes[1]) notes[1].textContent = "Aqui voce pode guardar texto livre e tambem itens manuais ou importados da calculadora.";
+        if (notes[2]) notes[2].textContent = "Armaduras equipadas no inventario somam automaticamente na CA final da ficha.";
+
+        const banners = [...document.querySelectorAll(".section-banner")];
+        if (banners[0]) {
+            const kicker = banners[0].querySelector(".section-kicker");
+            const title = banners[0].querySelector("h3");
+            const text = banners[0].querySelector("p");
+            if (kicker) kicker.textContent = "Dados basicos";
+            if (title) title.textContent = "Informacoes principais";
+            if (text) text.textContent = "Preencha primeiro os dados principais do personagem. Isso atualiza as opcoes dos blocos abaixo.";
+        }
+        if (banners[1]) {
+            const kicker = banners[1].querySelector(".section-kicker");
+            const title = banners[1].querySelector("h3");
+            const text = banners[1].querySelector("p");
+            if (kicker) kicker.textContent = "Atributos e defesa";
+            if (title) title.textContent = "Pontos e valores principais";
+            if (text) text.textContent = "Distribua os pontos e defina a CA base. A CA final pode aumentar com itens do inventario.";
+        }
+        if (banners[2]) {
+            const kicker = banners[2].querySelector(".section-kicker");
+            const title = banners[2].querySelector("h3");
+            const text = banners[2].querySelector("p");
+            if (kicker) kicker.textContent = "Recursos e inventario";
+            if (title) title.textContent = "Moedas, notas e itens";
+            if (text) text.textContent = "Use esta parte para guardar moedas, observacoes, habilidades personalizadas e itens.";
+        }
+        if (banners[3]) {
+            const kicker = banners[3].querySelector(".section-kicker");
+            const title = banners[3].querySelector("h3");
+            const text = banners[3].querySelector("p");
+            if (kicker) kicker.textContent = "Habilidades e progresso";
+            if (title) title.textContent = "Classe, passivas e especializacoes";
+            if (text) text.textContent = "Revise aqui as habilidades da classe, as passivas e as especializacoes liberadas pelo nivel.";
+        }
+
+        const anotacoes = document.getElementById("anotacoes");
+        if (anotacoes) anotacoes.placeholder = "Escreva observacoes importantes sobre a ficha...";
+        const habNome = document.getElementById("habilidadeCustomNome");
+        if (habNome) habNome.placeholder = "Ex.: Ataque extra";
+        const habCusto = document.getElementById("habilidadeCustomCusto");
+        if (habCusto) habCusto.placeholder = "Ex.: 12 MP ou 4 SP";
+        const habDesc = document.getElementById("habilidadeCustomDescricao");
+        if (habDesc) habDesc.placeholder = "Descreva o efeito, o custo, o dano ou qualquer regra importante...";
+        const invTexto = document.getElementById("inventarioTexto");
+        if (invTexto) invTexto.placeholder = "Descreva itens, recursos, organizacao ou observacoes do inventario...";
+        const invNome = document.getElementById("inventarioManualNome");
+        if (invNome) invNome.placeholder = "Ex.: Pocao de cura";
+        const invDesc = document.getElementById("inventarioManualDescricao");
+        if (invDesc) invDesc.placeholder = "Escreva detalhes, bonus, uso ou qualquer observacao importante...";
+
+        setText("#sec-acoes .workflow-panel:first-child .section-kicker", "Salvar e carregar");
+        setText("#sec-acoes .workflow-panel:first-child h3", "Continuar depois");
+        setText("#sec-acoes .workflow-panel:first-child p", "Salve a ficha em .txt para continuar editando depois com os mesmos dados.");
+        setText("#sec-acoes .workflow-panel-primary .section-kicker", "Finalizar");
+        setText("#sec-acoes .workflow-panel-primary h3", "Gerar a ficha");
+        setText("#sec-acoes .workflow-panel-primary p", "Depois de revisar os blocos acima, gere a ficha final para ver tudo organizado em um painel.");
+
+        const finalButton = document.querySelector(".final-action .action-btn");
+        if (finalButton) finalButton.textContent = "Gerar ficha";
+    }
+
+    function normalizarAtributosDistribuicaoIniciais() {
+        ["forca", "inteligencia", "forcaVontade", "agilidade", "resistencia", "carisma"].forEach((id) => {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.min = "1";
+            if (input.value === "" || input.value === "0") {
+                input.value = "1";
+            }
+        });
+    }
+
+    function lerAtributoDistribuicaoAtual(id) {
+        const input = document.getElementById(id);
+        const valor = parseInt(input && input.value, 10);
+        return Number.isFinite(valor) ? valor : 1;
+    }
+
+    function atualizarPontosLivres() {
+        const nivel = Math.max(1, parseInt(document.getElementById("nivel").value) || 1);
+        const total = 10 + (nivel - 1) * 5;
+        const gastos = ["forca", "inteligencia", "forcaVontade", "agilidade", "resistencia", "carisma"]
+            .reduce((acc, id) => acc + Math.max(0, lerAtributoDistribuicaoAtual(id) - 1), 0);
+
+        const sobra = total - gastos;
+        const el = document.getElementById("pontosTxt");
+        if (el) {
+            el.innerText = `Pontos DisponÃ­veis: ${sobra}`;
+            el.style.color = sobra < 0 ? "#ff4444" : "var(--primary)";
+        }
+        return sobra;
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+        aplicarTextosClaros();
+        normalizarAtributosDistribuicaoIniciais();
         atualizarPontosLivres();
         triggerClassChecks();
         atualizarResumoMoedas();
         sincronizarAnotacoes(document.getElementById("anotacoes").value || "", "form");
         sincronizarInventarioTexto(document.getElementById("inventarioTexto").value || "", "form");
-        atualizarStatusSave("Você pode salvar a ficha em .txt e carregar depois.");
+        atualizarStatusSave("Voce pode salvar a ficha em .txt e carregar depois.");
     });
 </script>
 </body>

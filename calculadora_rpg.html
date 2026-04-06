@@ -743,6 +743,168 @@
             font-family: 'Cinzel', serif;
         }
 
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .guide-card {
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018)),
+                radial-gradient(circle at top right, rgba(184, 215, 255, 0.05), transparent 38%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .guide-card span {
+            display: block;
+            color: #9db8ff;
+            font-size: 0.8em;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .guide-card strong {
+            display: block;
+            margin: 10px 0 8px;
+            color: #fff0ca;
+            font-size: 1.03em;
+        }
+
+        .guide-card p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .section-index {
+            margin-bottom: 24px;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at top left, rgba(112, 151, 255, 0.12), transparent 34%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.04),
+                0 18px 36px rgba(0, 0, 0, 0.18);
+        }
+
+        .section-index-header {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .section-index-header h3 {
+            margin: 0;
+            color: #fff0ca;
+            font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .section-index-header p {
+            margin: 0;
+            max-width: 760px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .section-index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .section-index-card {
+            display: grid;
+            gap: 8px;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .section-index-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(241, 216, 166, 0.28);
+            box-shadow:
+                0 14px 28px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .section-index-card span {
+            color: #9db8ff;
+            font-size: 0.78em;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .section-index-card strong {
+            color: #fff0ca;
+            font-size: 0.98em;
+            line-height: 1.35;
+        }
+
+        .section-index-card p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 0.9em;
+            line-height: 1.55;
+        }
+
+        .section-banner {
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(240, 194, 123, 0.18);
+            background:
+                radial-gradient(circle at right top, rgba(255, 205, 112, 0.12), transparent 32%),
+                linear-gradient(135deg, rgba(20, 27, 46, 0.96), rgba(13, 18, 31, 0.88));
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
+        }
+
+        .section-kicker {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(241, 216, 166, 0.18);
+            background: rgba(241, 216, 166, 0.08);
+            color: #f8d58b;
+            font-size: 0.76em;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .section-banner h3 {
+            margin: 12px 0 8px;
+            font-size: clamp(1.35rem, 2vw, 1.85rem);
+            color: #fff2cf;
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .section-banner p {
+            margin: 0;
+            max-width: 760px;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .section-anchor {
+            scroll-margin-top: 136px;
+        }
+
         .form-grid {
             grid-template-columns: repeat(12, minmax(0, 1fr));
             gap: 18px;
@@ -810,6 +972,121 @@
         select:hover, input:hover, select:focus, input:focus {
             border-color: rgba(240, 194, 123, 0.34);
             box-shadow: 0 0 0 4px rgba(240, 194, 123, 0.08), 0 0 18px rgba(184, 215, 255, 0.10);
+        }
+
+        .form-help {
+            margin-top: 12px;
+            color: var(--text-soft);
+            font-size: 0.98em;
+            line-height: 1.55;
+        }
+
+        .calc-actions {
+            display: grid;
+            gap: 16px;
+            margin-top: 28px;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at top left, rgba(112, 151, 255, 0.12), transparent 36%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .calc-actions h3 {
+            margin: 0;
+            color: #fff0ca;
+            font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+            font-family: 'MedievalSharp', serif;
+        }
+
+        .calc-actions p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.7;
+        }
+
+        .fusion-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .fusion-action {
+            width: auto;
+            max-width: none;
+            margin: 0;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(240, 194, 123, 0.24);
+            background: linear-gradient(135deg, rgba(13, 23, 42, 0.98), rgba(34, 54, 92, 0.82) 48%, rgba(120, 70, 30, 0.8) 100%);
+            color: #fff0d2;
+            letter-spacing: 0.04em;
+            font-size: 0.84em;
+            text-transform: uppercase;
+            box-shadow: 0 14px 26px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .fusion-action:hover {
+            background: linear-gradient(135deg, #dbe9ff, #f1c37b 58%, #ff9c49 100%);
+            color: #15100d;
+            box-shadow: 0 16px 28px rgba(240, 194, 123, 0.22);
+        }
+
+        .fusion-action.ghost {
+            border-color: rgba(191, 214, 255, 0.16);
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            color: #dce7fb;
+        }
+
+        .fusion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .fusion-chip,
+        .fusion-empty {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 42px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .fusion-chip strong {
+            color: #fff2d6;
+            font-size: 0.98em;
+        }
+
+        .fusion-chip button {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: #fff5e0;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: var(--transition);
+        }
+
+        .fusion-chip button:hover {
+            background: rgba(255, 158, 87, 0.22);
+            color: #fff;
+        }
+
+        .fusion-empty {
+            color: var(--text-soft);
+            font-size: 0.96em;
+            line-height: 1.45;
         }
 
         .action-btn {
@@ -1097,7 +1374,9 @@
             }
 
             .forge-hero-grid,
-            .forge-hero-stats {
+            .forge-hero-stats,
+            .guide-grid,
+            .section-index-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1110,7 +1389,10 @@
             .forge-hero,
             .forge-container,
             .result-card,
-            .form-group {
+            .form-group,
+            .section-index,
+            .section-banner,
+            .calc-actions {
                 padding: 18px;
             }
 
@@ -1138,6 +1420,7 @@
             <ul>
                 <li><a href="menu.html">Início</a></li>
                 <li><a href="criador_personagem.html">Criador Personagem</a></li>
+                <li><a href="criador_pessoal.html">Criador Pessoal</a></li>
             </ul>
         </nav>
     </header>
@@ -1189,8 +1472,61 @@
                 </div>
                 <div class="forge-badge">Forja viva, aço em brasa e aura de raridade</div>
             </div>
+
+            <div class="guide-grid">
+                <article class="guide-card">
+                    <span>Passo 1</span>
+                    <strong>Escolha o tipo do item</strong>
+                    <p>Defina se o item e arma, armadura ou acessorio. Alguns campos aparecem ou somem conforme essa escolha.</p>
+                </article>
+                <article class="guide-card">
+                    <span>Passo 2</span>
+                    <strong>Defina material e qualidade</strong>
+                    <p>Escolha um material ou faca uma combinacao. Depois ajuste raridade, essencia e encantamento.</p>
+                </article>
+                <article class="guide-card">
+                    <span>Passo 3</span>
+                    <strong>Gere o resultado</strong>
+                    <p>Veja os bonus finais, a aparencia do item e envie o resultado para a ficha pessoal se quiser.</p>
+                </article>
+            </div>
+
+            <section class="section-index" aria-label="Resumo da calculadora">
+                <div class="section-index-header">
+                    <span class="section-kicker">Resumo da pagina</span>
+                    <h3>Navegacao rapida</h3>
+                    <p>Use estes atalhos para ir direto para a parte que voce quer preencher.</p>
+                </div>
+                <div class="section-index-grid">
+                    <a class="section-index-card" href="#sec-item">
+                        <span>Bloco 1</span>
+                        <strong>Tipo do item</strong>
+                        <p>Escolha o tipo e os campos principais do item.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-material">
+                        <span>Bloco 2</span>
+                        <strong>Material e combinacao</strong>
+                        <p>Escolha um material ou combine varios para calcular a media.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-ajustes">
+                        <span>Bloco 3</span>
+                        <strong>Qualidade e extras</strong>
+                        <p>Defina raridade, essencia e encantamento.</p>
+                    </a>
+                    <a class="section-index-card" href="#sec-resultado">
+                        <span>Bloco 4</span>
+                        <strong>Resultado</strong>
+                        <p>Calcule o item e veja os bonus finais.</p>
+                    </a>
+                </div>
+            </section>
             
             <div class="form-grid">
+                <div class="form-group full-width section-banner section-anchor" id="sec-item">
+                    <span class="section-kicker">Tipo do item</span>
+                    <h3>Escolha a base do item</h3>
+                    <p>Comece definindo o tipo do item. Isso ajusta os campos e o tipo de calculo usado no resultado.</p>
+                </div>
                 <div class="form-group full-width">
                     <label for="equipamento">Tipo de Equipamento</label>
                     <select id="equipamento" onchange="toggleCampos()">
@@ -1220,6 +1556,12 @@
                 <div class="form-group" id="group-forca" style="display: none;">
                     <label for="modificador-forca">Modificador de Força</label>
                     <input type="number" id="modificador-forca" min="0" value="0" placeholder="0">
+                </div>
+
+                <div class="form-group full-width section-banner section-anchor" id="sec-material">
+                    <span class="section-kicker">Material e combinacao</span>
+                    <h3>Escolha o material principal</h3>
+                    <p>Use um material sozinho ou combine varios materiais. Quando houver fusao, a calculadora usa a media arredondada dos bonus.</p>
                 </div>
 
                 <div class="form-group full-width" id="group-tecido" style="display: none;">
@@ -1313,7 +1655,7 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="material">Material (Metal / Minério Principal)</label>
+                    <label for="material">Material (Metal / Minério Base)</label>
                     <select id="material">
                         <option value="1">1. Cobre</option>
                         <option value="2">2. Latão</option>
@@ -1416,6 +1758,19 @@
                         <option value="99">99. Augieteritia</option>
                         <option value="100">100. Celestiarius (Divinos)</option>
                     </select>
+                    <div class="fusion-actions">
+                        <button class="fusion-action" type="button" onclick="adicionarMaterialFusao()">Adicionar material à fusão</button>
+                        <button class="fusion-action ghost" type="button" onclick="limparMateriaisFusao()">Limpar fusão</button>
+                    </div>
+                    <div class="form-help">Se você usar só um material, a forja funciona normal. Se adicionar vários minérios, a forja faz a média arredondada dos bônus físicos, mágicos, de CA, cor e pontuação do material para entregar o resultado final.</div>
+                    <input type="hidden" id="material-fusao-state" value="">
+                    <div id="material-fusao-list" class="fusion-list"></div>
+                </div>
+
+                <div class="form-group full-width section-banner section-anchor" id="sec-ajustes">
+                    <span class="section-kicker">Qualidade e extras</span>
+                    <h3>Defina os ajustes finais</h3>
+                    <p>Escolha a raridade, a essencia e o encantamento para completar os bonus do item.</p>
                 </div>
 
                 <div class="form-group">
@@ -1525,7 +1880,12 @@
                 </div>
             </div>
 
-            <button class="action-btn" onclick="forjarEquipamento()">Calcular e Forjar</button>
+            <div class="calc-actions section-anchor" id="sec-resultado">
+                <span class="section-kicker">Resultado</span>
+                <h3>Calcular item</h3>
+                <p>Clique no botao abaixo para gerar o item com os bonus finais, a imagem e o resumo completo.</p>
+                <button class="action-btn" onclick="forjarEquipamento()">Calcular item</button>
+            </div>
 
             <div class="result-container" id="resultado-container">
                 <div class="result-card" id="resultado">
@@ -1861,7 +2221,7 @@
 
     function exportarUltimoItemForjado() {
         if (!ultimoItemForjado) {
-            alert('Forje um item antes de enviar para o criador pessoal.');
+            alert('Calcule um item antes de enviar para a ficha pessoal.');
             return;
         }
 
@@ -1871,7 +2231,7 @@
             salvarItensForjadosCompartilhados(atuais.slice(-100));
         }
 
-        alert(`"${ultimoItemForjado.nome}" foi enviado para o inventario do Criador Pessoal.`);
+        alert(`"${ultimoItemForjado.nome}" foi enviado para o inventario da ficha pessoal.`);
     }
 
     function toggleCampos() {
@@ -1884,7 +2244,57 @@
         if (groupForca) groupForca.style.display = (cfg && cfg.usaForca) ? 'flex' : 'none';
     }
 
-    document.addEventListener('DOMContentLoaded', toggleCampos);
+    function aplicarTextosClarosCalculadora() {
+        const setText = (selector, text) => {
+            const el = document.querySelector(selector);
+            if (el) el.textContent = text;
+        };
+
+        setText('.forge-eyebrow', 'Calculadora de equipamentos');
+        setText('.forge-hero h2', 'Monte o item passo a passo e veja o resultado final com os bonus calculados.');
+        setText('.forge-hero p', 'Escolha o tipo do item, o material, a raridade, a essencia e o encantamento. A calculadora mostra os bonus finais de forma simples e clara.');
+        setText('.forge-header h2', 'Calculadora de equipamentos');
+        setText('.forge-header .subtitle', 'Preencha os campos abaixo para calcular os bonus do item e ver o resultado final.');
+        setText('.forge-badge', 'Calculo direto e visual claro');
+        setText('label[for="equipamento"]', 'Tipo do item');
+        setText('label[for="modificador-forca"]', 'Modificador de forca');
+        setText('label[for="tecido"]', 'Camada base (tecido ou couro)');
+        setText('label[for="material"]', 'Material principal');
+        setText('label[for="raridade"]', 'Raridade');
+        setText('label[for="cristal"]', 'Essencia');
+        setText('label[for="encantamento_grau"]', 'Nivel do encantamento');
+        setText('label[for="encantamento_tipo"]', 'Tipo do encantamento');
+
+        const heroMarks = [...document.querySelectorAll('.forge-mark')];
+        if (heroMarks[0]) heroMarks[0].textContent = 'Tipo do item';
+        if (heroMarks[1]) heroMarks[1].textContent = 'Material';
+        if (heroMarks[2]) heroMarks[2].textContent = 'Resultado final';
+
+        const heroLinks = [...document.querySelectorAll('.forge-hero-link')];
+        if (heroLinks[0]) heroLinks[0].textContent = 'Abrir ficha pessoal';
+        if (heroLinks[1]) heroLinks[1].textContent = 'Abrir tradutores';
+
+        const heroStats = [...document.querySelectorAll('.forge-hero-card strong')];
+        if (heroStats[0]) heroStats[0].textContent = 'O item aparece com imagem, cor do material e brilho da raridade.';
+        if (heroStats[1]) heroStats[1].textContent = 'Armas, armaduras, adornos e variantes definitivas usam calculos separados.';
+        if (heroStats[2]) heroStats[2].textContent = 'Se voce misturar ou repetir materiais, a calculadora usa a media arredondada dos bonus.';
+        if (heroStats[3]) heroStats[3].textContent = 'A raridade muda os bonus e a cor da aura ao redor do item.';
+
+        const fusionButtons = document.querySelectorAll('.fusion-action');
+        if (fusionButtons[0]) fusionButtons[0].textContent = 'Adicionar material';
+        if (fusionButtons[1]) fusionButtons[1].textContent = 'Limpar combinacao';
+
+        const help = document.querySelector('#material-fusao-list')?.previousElementSibling?.previousElementSibling;
+        if (help && help.classList.contains('form-help')) {
+            help.textContent = 'Se voce usar um material, o calculo usa apenas esse material. Se combinar varios, a calculadora usa a media arredondada dos bonus fisicos, magicos, de CA, cor e pontuacao. Se repetir um material, ele conta mais de uma vez na media.';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        aplicarTextosClarosCalculadora();
+        toggleCampos();
+        renderizarMateriaisFusao();
+    });
 
     function escHtml(s) {
         return String(s)
@@ -1894,13 +2304,158 @@
             .replace(/"/g, "&quot;");
     }
 
+    function hexParaRgb(hex) {
+        const raw = String(hex || '').replace('#', '').trim();
+        const normalizado = raw.length === 3
+            ? raw.split('').map((char) => char + char).join('')
+            : raw.padStart(6, '8').slice(0, 6);
+        const numero = parseInt(normalizado, 16);
+        if (!Number.isFinite(numero)) {
+            return { r: 136, g: 136, b: 136 };
+        }
+        return {
+            r: (numero >> 16) & 255,
+            g: (numero >> 8) & 255,
+            b: numero & 255
+        };
+    }
+
+    function rgbParaHex(rgb) {
+        const toHex = (valor) => Math.max(0, Math.min(255, Math.round(valor || 0))).toString(16).padStart(2, '0');
+        return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
+    }
+
+    function mediaArredondada(valores) {
+        if (!Array.isArray(valores) || !valores.length) return 0;
+        const soma = valores.reduce((acc, valor) => acc + Number(valor || 0), 0);
+        return Math.round(soma / valores.length);
+    }
+
+    function obterIdsMateriaisFusao() {
+        const estado = document.getElementById('material-fusao-state');
+        if (!estado || !estado.value) return [];
+        try {
+            const parsed = JSON.parse(estado.value);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.map((item) => String(item)).filter((id) => materiais[id]);
+        } catch (_error) {
+            return [];
+        }
+    }
+
+    function salvarIdsMateriaisFusao(ids) {
+        const estado = document.getElementById('material-fusao-state');
+        const normalizados = (Array.isArray(ids) ? ids : []).map((item) => String(item)).filter((id) => materiais[id]);
+        if (estado) estado.value = JSON.stringify(normalizados);
+        return normalizados;
+    }
+
+    function renderizarMateriaisFusao() {
+        const container = document.getElementById('material-fusao-list');
+        if (!container) return;
+
+        const ids = obterIdsMateriaisFusao();
+        if (!ids.length) {
+            container.innerHTML = `<div class="fusion-empty">Nenhuma combinacao montada. Se voce calcular agora, o sistema vai usar apenas o material selecionado.</div>`;
+            return;
+        }
+
+        container.innerHTML = ids.map((id, index) => {
+            const material = materiais[id];
+            if (!material) return '';
+            return `
+                <div class="fusion-chip">
+                    <span class="material-swatch" style="background-color:${escHtml(material.corHex || '#888888')}"></span>
+                    <strong>${escHtml(material.nome)}</strong>
+                    <button type="button" onclick="removerMaterialFusao(${index})" aria-label="Remover ${escHtml(material.nome)} da combinacao">×</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function adicionarMaterialFusao() {
+        const select = document.getElementById('material');
+        if (!select) return;
+        const id = String(select.value);
+        const ids = obterIdsMateriaisFusao();
+        ids.push(id);
+        salvarIdsMateriaisFusao(ids);
+        renderizarMateriaisFusao();
+    }
+
+    function removerMaterialFusao(index) {
+        const ids = obterIdsMateriaisFusao();
+        const posicao = Number(index);
+        if (!Number.isInteger(posicao) || posicao < 0 || posicao >= ids.length) {
+            return;
+        }
+        ids.splice(posicao, 1);
+        salvarIdsMateriaisFusao(ids);
+        renderizarMateriaisFusao();
+    }
+
+    function limparMateriaisFusao() {
+        salvarIdsMateriaisFusao([]);
+        renderizarMateriaisFusao();
+    }
+
+    function obterIdsMateriaisAtivos() {
+        const ids = obterIdsMateriaisFusao();
+        return ids.length ? ids : [String(document.getElementById('material').value)];
+    }
+
+    function construirMaterialCombinado(materialIds) {
+        const lista = (Array.isArray(materialIds) ? materialIds : [])
+            .map((id) => ({ id: String(id), ...(materiais[id] || {}) }))
+            .filter((item) => item.nome);
+
+        if (!lista.length) return null;
+
+        if (lista.length === 1) {
+            return {
+                ...lista[0],
+                ids: [lista[0].id],
+                nomes: [lista[0].nome],
+                descricaoMateriais: lista[0].nome,
+                nomeCurto: lista[0].nome,
+                referenciaId: lista[0].id,
+                isFusion: false
+            };
+        }
+
+        const rgbs = lista.map((item) => hexParaRgb(item.corHex || '#888888'));
+        const mediaRgb = {
+            r: mediaArredondada(rgbs.map((item) => item.r)),
+            g: mediaArredondada(rgbs.map((item) => item.g)),
+            b: mediaArredondada(rgbs.map((item) => item.b))
+        };
+        const nomes = lista.map((item) => item.nome);
+
+        return {
+            id: `fusao_${lista.map((item) => item.id).join('_')}`,
+            ids: lista.map((item) => item.id),
+            nomes,
+            nome: `Combinacao de ${nomes.join(' + ')}`,
+            nomeCurto: `Combinacao de ${lista.length} materiais`,
+            descricaoMateriais: nomes.join(' + '),
+            cor: 'Cor media da combinacao',
+            corHex: rgbParaHex(mediaRgb),
+            bonusFisico: mediaArredondada(lista.map((item) => item.bonusFisico)),
+            bonusMagico: mediaArredondada(lista.map((item) => item.bonusMagico)),
+            bonusCa: mediaArredondada(lista.map((item) => item.bonusCa)),
+            pontos: mediaArredondada(lista.map((item) => item.pontos)),
+            referenciaId: lista[0].id,
+            isFusion: true
+        };
+    }
+
     function obterRotuloIcone(tipo, cfg) {
-        if (!cfg) return "Item Forjado";
+        if (!cfg) return "Item";
         if (tipo === 'armadura_definitiva') return "Armadura Definitiva";
-        if (tipo === 'equip_definitivo') return "Lamina Definitiva";
-        if (cfg.categoria === 'armadura') return "Armadura Forjada";
-        if (cfg.categoria === 'arma') return "Espada Forjada";
-        return "Adorno Forjado";
+        if (tipo === 'equip_definitivo') return "Arma Definitiva";
+        if (cfg.categoria === 'armadura') return "Armadura";
+        if (cfg.categoria === 'arma') return "Arma";
+        return "Acessorio";
     }
 
     function obterClasseVisualIcone(tipo, cfg) {
@@ -2018,14 +2573,16 @@
         if (!cfg) return;
 
         const materialVal = document.getElementById('material').value;
+        const materialIdsAtivos = obterIdsMateriaisAtivos();
         const raridadeVal = document.getElementById('raridade').value;
         const cristalVal = document.getElementById('cristal').value;
         const tecidoVal = document.getElementById('tecido').value;
         const encGrauVal = document.getElementById('encantamento_grau').value;
         const encTipoVal = document.getElementById('encantamento_tipo').value;
+        const materialCombinado = construirMaterialCombinado(materialIdsAtivos);
 
         const sel = {
-            material: materiais[materialVal],
+            material: materialCombinado,
             raridade: raridades[raridadeVal],
             cristal:  cristais[cristalVal] || cristais[0],
             tecido:   tecidos[tecidoVal] || tecidos[0],
@@ -2071,31 +2628,33 @@
         const corTxt = m.cor || "";
         const iconLabel = obterRotuloIcone(tipo, cfg);
         const iconClass = obterClasseVisualIcone(tipo, cfg);
-        const iconArt = obterArteEquipamento(tipo, cfg, materialVal);
+        const iconArt = obterArteEquipamento(tipo, cfg, m.referenciaId || materialVal);
         const raridadeNome = obterTextoSelecionado('raridade');
         const caFinalNumero = Number((((bCa + extraCaEncanto) * cfg.multCA)).toFixed(2));
         const totalBonusFixo = bFisico + bMagico;
         let danoFinalTxt = cfg.categoria === 'arma' ? `${cfg.dado} + ${totalBonusFixo}` : '';
         if (cfg.categoria === 'arma' && extraDanoPct > 0) danoFinalTxt += ` (+${extraDanoPct}%)`;
+        const materialLinha = m.isFusion ? `Combinacao media: ${m.descricaoMateriais}` : m.nome;
+        const materialDetalhe = m.isFusion ? 'Cor media da combinacao' : corTxt;
 
         let html = `<h3 class="result-title">${cfg.label}</h3>`;
         html += `<p class="result-subtitle">
             <span class="hl">Material:</span>
-            <span class="material-inline" title="${escHtml(corTxt)}">
+            <span class="material-inline" title="${escHtml(materialDetalhe)}">
                 <span class="material-swatch" style="background-color:${escHtml(corHex)}"></span>
-                ${escHtml(m.nome)}
+                ${escHtml(materialLinha)}
             </span>
-            <span class="cor-do-mineral"><br><span class="hl">Cor do metal:</span> ${escHtml(corTxt)}</span>
+            <span class="cor-do-mineral"><br><span class="hl">Cor:</span> ${escHtml(materialDetalhe)}</span>
             <br><br>
             <span class="hl">Raridade:</span> ${raridadeNome} <br>
-            <span class="hl">Essência:</span> ${sel.cristal.nome} 
-            ${cfg.usaTecido ? `| <span class="hl">Tecido:</span> ${sel.tecido.nome}` : ''}
+            <span class="hl">Essencia:</span> ${sel.cristal.nome} 
+            ${cfg.usaTecido ? `| <span class="hl">Camada base:</span> ${sel.tecido.nome}` : ''}
         </p>`;
 
         html += `<div class="result-ribbon-row">
             <span class="result-ribbon">${escHtml(iconLabel)}</span>
             <span class="result-ribbon">${escHtml(raridadeNome)}</span>
-            <span class="result-ribbon">${escHtml(m.nome)}</span>
+            <span class="result-ribbon">${escHtml(m.nomeCurto || m.nome)}</span>
         </div>`;
 
         html += `<div class="result-visual">
@@ -2112,59 +2671,68 @@
         html += `<div class="stats-grid">`;
 
         html += criarBox(
-            'Aparência (minério)',
-            `<span class="material-inline"><span class="material-swatch" style="background-color:${escHtml(corHex)}"></span><span style="font-size:0.85em;font-weight:normal">${escHtml(corTxt)}</span></span>`
+            'Cor do material',
+            `<span class="material-inline"><span class="material-swatch" style="background-color:${escHtml(corHex)}"></span><span style="font-size:0.85em;font-weight:normal">${escHtml(materialDetalhe)}</span></span>`
         );
+
+        if (m.isFusion) {
+            html += criarBox('Combinacao de materiais', escHtml(m.descricaoMateriais));
+            html += criarBox('Regra do calculo', 'Media arredondada dos materiais');
+        }
 
         if (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') {
             let caFinalVal = caFinalNumero.toFixed(2);
             let caDisplay = isEspecialRari ? `${caFinalVal} + Especial` : caFinalVal;
-            html += criarBox('Defesa Social/CA', caDisplay);
-            html += criarBox('Bônus Material', `+${sel.material.bonusCa}`);
-            if (cfg.usaTecido) html += criarBox('Bônus Tecido', `+${sel.tecido.bonusCa}`);
+            html += criarBox('CA final', caDisplay);
+            html += criarBox('Bonus do material', `+${sel.material.bonusCa}`);
+            if (cfg.usaTecido) html += criarBox('Bonus da camada base', `+${sel.tecido.bonusCa}`);
             if (extraCaEncanto > 0) html += criarBox('Encanto (CA)', `+${extraCaEncanto}`);
         } else {
             html += criarBox('Dano Base', cfg.dado);
-            html += criarBox('Bônus Fixo', `+${totalBonusFixo}`);
+            html += criarBox('Bonus fixo', `+${totalBonusFixo}`);
             
-            html += criarBox('Dano Total Estimado', danoFinalTxt, true);
+            html += criarBox('Dano total estimado', danoFinalTxt, true);
         }
 
-        html += criarBox('Bônus Físico', `+${bFisico}`);
-        html += criarBox('Bônus Mágico', `+${bMagico}`);
-        html += criarBox('Mod. Raridade', sel.raridade.bonusEquipamento);
-        html += criarBox('Peso Final', `${cfg.peso} kg`);
+        html += criarBox('Bonus fisico', `+${bFisico}`);
+        html += criarBox('Bonus magico', `+${bMagico}`);
+        html += criarBox('Bonus da raridade', sel.raridade.bonusEquipamento);
+        html += criarBox('Peso final', `${cfg.peso} kg`);
 
         if (sel.encGrau.pontos > 0) {
-            html += criarBox('Ritual Magnânimo', sel.encGrau.nome);
-            html += criarBox('Efeito do Ritual', sel.encTipo.nome);
-            html += criarBox('Chance Sucesso', sel.encGrau.sucesso);
-            html += criarBox('Revés (Falha)', `-${sel.encGrau.reves}%`);
+            html += criarBox('Nivel do encantamento', sel.encGrau.nome);
+            html += criarBox('Tipo do encantamento', sel.encTipo.nome);
+            html += criarBox('Chance de sucesso', sel.encGrau.sucesso);
+            html += criarBox('Penalidade em falha', `-${sel.encGrau.reves}%`);
         }
 
-        html += criarBox('Pontuação de Forja', pontos, true);
+        html += criarBox('Pontuacao total', pontos, true);
         html += `</div>`;
-        html += `<div class="result-actions"><button class="action-btn result-action-btn" type="button" onclick="exportarUltimoItemForjado()">Enviar ao Criador Pessoal</button></div>`;
+        html += `<div class="result-actions"><button class="action-btn result-action-btn" type="button" onclick="exportarUltimoItemForjado()">Enviar para a ficha pessoal</button></div>`;
 
         ultimoItemForjado = {
             id: `forja_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
             origem: "calculadora",
             nome: cfg.label,
             tipo: cfg.categoria === 'armadura' ? 'armadura' : (cfg.categoria === 'arma' ? 'arma' : 'acessorio'),
+            forgeTipo: tipo,
             categoria: cfg.categoria,
             categoriaLabel: iconLabel,
-            resumo: `${cfg.label} forjado`,
-            descricao: `Material: ${m.nome} | Raridade: ${raridadeNome} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Tecido: ${sel.tecido.nome}` : ''}`,
+            resumo: `${cfg.label} calculado`,
+            descricao: `Material: ${materialLinha} | Raridade: ${raridadeNome} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Camada base: ${sel.tecido.nome}` : ''}${m.isFusion ? ' | Regra: media arredondada dos materiais' : ''}`,
             caBonus: (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') ? caFinalNumero : 0,
             equipado: false,
-            materialNome: m.nome,
+            materialNome: materialLinha,
+            materialIds: m.ids || [String(materialVal)],
+            materialReferenciaId: String(m.referenciaId || materialVal || ""),
             materialCorHex: corHex,
-            materialCor: corTxt,
+            materialCor: materialDetalhe,
             raridadeId: raridadeVal,
             raridadeNome,
             peso: `${cfg.peso} kg`,
             danoResumo: cfg.categoria === 'arma' ? danoFinalTxt : '',
-            fonte: "Calculadora RPG"
+            fonte: "Calculadora RPG",
+            artPath: iconArt
         };
 
         resDiv.innerHTML = html;

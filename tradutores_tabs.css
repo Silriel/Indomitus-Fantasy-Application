@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap');
+
 .language-tabs-shell {
     position: relative;
     z-index: 2;
@@ -57,19 +59,15 @@
     gap: 10px;
     margin-bottom: 8px;
     color: var(--primary, #ead8ab);
-    font-size: 0.78rem;
+    font-size: 0.86rem;
     font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-transform: none;
 }
 
 .language-tabs-kicker::before,
 .language-tabs-kicker::after {
-    content: "";
-    width: 30px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, currentColor);
-    opacity: 0.66;
+    display: none;
 }
 
 .language-tabs-copy p {
@@ -89,10 +87,10 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
     color: var(--primary, #ead8ab);
-    font-size: 0.74rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-transform: none;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -192,10 +190,10 @@
 
 .language-tab-flavor {
     color: var(--text-muted, rgba(228, 230, 240, 0.72));
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-transform: none;
 }
 
 header nav ul {
@@ -287,4 +285,88 @@ header nav a:hover::before {
     .language-tab-flavor {
         font-size: 0.62rem;
     }
+}
+
+body,
+header h1,
+header nav a,
+.language-tabs,
+.language-tabs-copy p,
+.language-tabs-kicker,
+.language-tabs-badge,
+.language-tab-title,
+.language-tab-flavor,
+.tower-kicker,
+.tower-hero h2,
+.tower-hero p,
+.tower-panel span,
+.tower-panel strong,
+.hub-title h2,
+.hub-title p,
+.lang-card span,
+.lang-card small,
+.forge-header h2,
+.forge-header p.subtitle,
+.translator-header h2,
+.translator-header p,
+.forest-header h2,
+.forest-header p,
+.output-label,
+.output,
+#transcription,
+#outputText,
+.translation-text,
+.error,
+.error-msg,
+.error-log,
+label,
+input,
+textarea,
+select,
+button,
+.translator-field-label,
+.translation-note {
+    font-family: "Source Sans 3", sans-serif !important;
+}
+
+header h1,
+.tower-hero h2,
+.hub-title h2,
+.lang-card span,
+.forge-header h2,
+.translator-header h2,
+.forest-header h2,
+.language-tab-title {
+    letter-spacing: 0.02em !important;
+    text-transform: none !important;
+}
+
+header nav a,
+.tower-kicker,
+.tower-panel span,
+.lang-card small,
+.language-tabs-kicker,
+.language-tabs-badge,
+.language-tab-flavor {
+    letter-spacing: 0.04em !important;
+    text-transform: none !important;
+}
+
+.translator-field-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary, #ead8ab);
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.translator-field-label.is-result {
+    margin-top: 18px;
+}
+
+.translation-note {
+    margin-top: 10px;
+    color: var(--text-muted, rgba(228, 230, 240, 0.72));
+    font-size: 0.92rem;
+    line-height: 1.5;
 }
