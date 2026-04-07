@@ -1532,27 +1532,40 @@
 
                 <div class="form-group full-width">
                     <label for="raca">Raça Base (Linhagem Nativa)</label>
-                    <select id="raca" onchange="atualizarInterfaceRacaHibrida(); recalcularSeResultadoVisivel();">
+                    <select id="raca" onchange="atualizarInterfaceRacaHibrida(); atualizarPainelRacial(); recalcularSeResultadoVisivel();">
                         <option value="1">Altos Elfos</option><option value="2">Anões</option><option value="3">Autômatos</option><option value="4">Drakarerins</option><option value="5">Draconatos</option><option value="6">Elfos da Floresta</option><option value="7">Elfos Negros</option><option value="8">Elfos da Neve</option><option value="9">Fadalia</option><option value="10">Gnomo</option><option value="11">Goblin</option><option value="12">Hobbit</option><option value="13">Hobgoblin</option><option value="14">Humano</option><option value="15">Pessoas Besta</option><option value="16">Orcs</option><option value="17">Sereios</option><option value="18">Umnos</option><option value="19">Abysanguina’tor</option><option value="20">Abyssalords</option><option value="21">Abyssaterrox</option><option value="22">Altum Unmo</option><option value="23">Anjos</option><option value="24">Arcanjos</option><option value="25">Anões Abissais</option><option value="26">Anões das Profundezas</option><option value="27">Anões Vulcânicos</option><option value="28">Akash</option><option value="29">Ciclope</option><option value="30">Demônios</option><option value="31">Demônios Principialis</option><option value="32">Draconatos Antigos</option><option value="33">Dragões</option><option value="34">Dreadlords</option><option value="35">Dwevers</option><option value="36">Edelins</option><option value="37">Elandres</option><option value="38">Elandres Indorielien</option><option value="39">Elfarin</option><option value="40">Elfae</option><option value="41">Elfos das Areias</option><option value="42">Elfos do Mar</option><option value="43">Elfos da Luz</option><option value="44">Elfos da Noite</option><option value="45">Eltmar</option><option value="46">Ferrekins</option><option value="47">Gigantes</option><option value="48">Haesir</option><option value="49">Kametari</option><option value="50">Licantropo</option><option value="51">Nolare</option><option value="52">Nobraqui</option><option value="53">Sanguinor</option><option value="54">Sylvaras</option><option value="55">Trovarin</option><option value="56">Troll</option><option value="57">Orcarins</option><option value="58">Unmo Superioris</option><option value="59">Vampiro</option><option value="60">Vampyr</option><option value="61">Vampyr’rein</option>
                         <option value="hybrid">Hibrido</option>
                     </select>
                     <input type="hidden" id="raceMode" value="normal">
                     <input type="hidden" id="hybridRaceIds" value="[]">
-                    <input type="hidden" id="hybridPassiveKey" value="">
+                    <input type="hidden" id="hybridPassiveKeys" value="[]">
+                    <input type="hidden" id="activeRaceDisadvantageIds" value="[]">
+                    <input type="hidden" id="raceDisadvantageSourceKey" value="">
+                    <div class="codex-note" style="margin-top:8px;">O bonus racial base entra no nivel 1 e se repete nos niveis 21, 41, 61 e 81.</div>
+                </div>
+
+                <div class="form-group full-width resource-input" id="blocoVarianteRacial" style="display:none;">
+                    <label for="raceVariant">Estagio ou variante da raca</label>
+                    <select id="raceVariant" onchange="atualizarPainelRacial(); recalcularSeResultadoVisivel();"></select>
                 </div>
 
                 <div class="form-group full-width codex-panel" id="blocoRacaHibrida" style="display:none;">
                     <h4 class="codex-title">Origem hibrida</h4>
-                    <p class="codex-note">Escolha 2 ou mais racas diferentes. Os modificadores raciais sao a media entre elas, arredondando para baixo. Depois escolha 1 passiva racial individual.</p>
+                    <p class="codex-note">Escolha 2 ou mais racas diferentes. Primeiro a ficha calcula a media dos bonus raciais, arredonda para baixo e depois repete esse bonus nos niveis 21, 41, 61 e 81. As passivas raciais sao opcionais e voce pode marcar quantas quiser entre as racas escolhidas.</p>
                     <div id="hybridRaceList" class="toggle-grid"></div>
                     <div class="panel-actions" style="margin-top:12px;">
                         <button class="action-btn mini-btn" type="button" onclick="adicionarRacaHibrida()">Adicionar raca</button>
                     </div>
                     <div class="resource-input" style="margin-top:12px;">
-                        <label for="hybridPassiveSelect">Passiva racial do hibrido</label>
-                        <select id="hybridPassiveSelect" onchange="sincronizarPassivaHibrida(this.value)"></select>
+                        <label>Passivas raciais do hibrido</label>
+                        <div id="hybridPassiveList" class="toggle-grid"></div>
                     </div>
                     <div id="hybridRaceResumo" class="codex-note" style="margin-top:10px;"></div>
+                </div>
+
+                <div class="form-group full-width codex-panel" id="painelRacial">
+                    <h4 class="codex-title">Resumo racial</h4>
+                    <div id="conteudoPainelRacial" class="codex-note">Escolha uma raca para ver passiva, vantagens e desvantagens.</div>
                 </div>
                 
                 <div class="section-banner full-width section-anchor" id="sec-combate">
@@ -1737,6 +1750,7 @@
 <script src="criador_pessoal_dados_classes_3.js"></script>
 <script src="criador_pessoal_dados_classes_4.js"></script>
 <script src="criador_pessoal_dados_classes_5.js"></script>
+<script src="racas_estruturadas.js"></script>
 <script>
     const SAVE_FILE_HEADER = "INDOMITUS_CRIADOR_PESSOAL_V1";
     const SAVE_FIELD_IDS = [
@@ -1747,7 +1761,10 @@
         "raca",
         "raceMode",
         "hybridRaceIds",
-        "hybridPassiveKey",
+        "hybridPassiveKeys",
+        "raceVariant",
+        "activeRaceDisadvantageIds",
+        "raceDisadvantageSourceKey",
         "forca",
         "inteligencia",
         "forcaVontade",
@@ -1853,6 +1870,38 @@
         };
     }
 
+    function calcularPassoModificadorRacial(nivel) {
+        const nivelSeguro = Math.max(1, parseInt(nivel, 10) || 1);
+        return Math.floor((nivelSeguro - 1) / 20) + 1;
+    }
+
+    function calcularModificadoresRaciaisProgressivos(modificadoresBase, nivel) {
+        const passo = calcularPassoModificadorRacial(nivel);
+        const resultado = {};
+        RACE_ATTR_KEYS.forEach((attr) => {
+            resultado[attr] = Number(modificadoresBase?.[attr] || 0) * passo;
+        });
+        return resultado;
+    }
+
+    function resumirModificadoresRaciais(modificadores) {
+        const labels = {
+            "força": "For",
+            "inteligência": "Int",
+            "forçaVontade": "Von",
+            "agilidade": "Agi",
+            "resistência": "Res",
+            "carisma": "Car"
+        };
+        const partes = RACE_ATTR_KEYS
+            .map((attr) => {
+                const valor = Number(modificadores?.[attr] || 0);
+                return valor ? `${labels[attr] || attr} ${valor > 0 ? "+" : ""}${valor}` : "";
+            })
+            .filter(Boolean);
+        return partes.length ? partes.join(" | ") : "Sem bonus racial numerico";
+    }
+
     function obterOpcoesRaciaisSelect(selectId) {
         const select = document.getElementById(selectId || "raca");
         if (!select) return [];
@@ -1869,8 +1918,11 @@
         return option ? option.nome : `Raca ${raceId}`;
     }
 
-    function obterRaceDataPorId(raceId, selectId) {
+    function obterRaceDataPorId(raceId, selectId, variantKey) {
         const base = racialModifiers[String(raceId)];
+        if (typeof window.resolveIndomitusRaceData === "function") {
+            return window.resolveIndomitusRaceData(String(raceId), base, variantKey);
+        }
         const vazio = criarRaceDataVazia(obterNomeRacialPorId(raceId, selectId));
         if (!base || typeof base !== "object") return vazio;
         return {
@@ -1881,6 +1933,164 @@
             },
             passivas: Array.isArray(base.passivas) ? base.passivas.slice() : []
         };
+    }
+
+    function obterVariantesRaciaisDisponiveis(raceId, selectId) {
+        if (typeof window.getIndomitusRaceVariants === "function") {
+            return window.getIndomitusRaceVariants(String(raceId), racialModifiers[String(raceId)]);
+        }
+        return [];
+    }
+
+    function atualizarInterfaceVarianteRacial() {
+        const raceSelect = document.getElementById("raca");
+        const variantBlock = document.getElementById("blocoVarianteRacial");
+        const variantSelect = document.getElementById("raceVariant");
+        if (!raceSelect || !variantBlock || !variantSelect) return;
+        if (raceSelect.value === HYBRID_RACE_VALUE) {
+            variantBlock.style.display = "none";
+            variantSelect.innerHTML = "";
+            variantSelect.value = "";
+            return;
+        }
+        const variants = obterVariantesRaciaisDisponiveis(raceSelect.value, "raca");
+        if (!variants.length) {
+            variantBlock.style.display = "none";
+            variantSelect.innerHTML = "";
+            variantSelect.value = "";
+            return;
+        }
+        variantBlock.style.display = "block";
+        let currentValue = String(variantSelect.value || "");
+        if (!variants.some((item) => item.key === currentValue)) {
+            currentValue = variants[0].key;
+        }
+        variantSelect.innerHTML = variants.map((item) => `<option value="${escaparHtml(item.key)}" ${item.key === currentValue ? "selected" : ""}>${escaparHtml(item.label)}</option>`).join("");
+        variantSelect.value = currentValue;
+    }
+
+    function obterChaveRacialAtual() {
+        const raceSelect = document.getElementById("raca");
+        const variantSelect = document.getElementById("raceVariant");
+        if (!raceSelect || raceSelect.value === HYBRID_RACE_VALUE) return "";
+        return `${raceSelect.value}::${String(variantSelect?.value || "")}`;
+    }
+
+    function lerDesvantagensRaciaisAtivas(raceData) {
+        const hidden = document.getElementById("activeRaceDisadvantageIds");
+        const sourceHidden = document.getElementById("raceDisadvantageSourceKey");
+        const currentKey = obterChaveRacialAtual();
+        const validIds = new Set((raceData?.desvantagens || []).map((item) => item.id));
+        if (!hidden || !sourceHidden || !currentKey) return [];
+        let values = [];
+        try {
+            values = JSON.parse(hidden.value || "[]");
+        } catch (_error) {
+            values = [];
+        }
+        let normalized = (Array.isArray(values) ? values : [])
+            .map((item) => String(item || ""))
+            .filter((item) => validIds.has(item));
+        if (sourceHidden.value !== currentKey) {
+            normalized = [...validIds];
+        }
+        hidden.value = JSON.stringify(normalized);
+        sourceHidden.value = currentKey;
+        return normalized;
+    }
+
+    function escreverDesvantagensRaciaisAtivas(ids) {
+        const hidden = document.getElementById("activeRaceDisadvantageIds");
+        const sourceHidden = document.getElementById("raceDisadvantageSourceKey");
+        if (!hidden || !sourceHidden) return [];
+        const raceData = obterRaceDataPorId(document.getElementById("raca")?.value, "raca", document.getElementById("raceVariant")?.value);
+        const validIds = new Set((raceData?.desvantagens || []).map((item) => item.id));
+        const normalized = (Array.isArray(ids) ? ids : [])
+            .map((item) => String(item || ""))
+            .filter((item) => validIds.has(item));
+        hidden.value = JSON.stringify(normalized);
+        sourceHidden.value = obterChaveRacialAtual();
+        return normalized;
+    }
+
+    function obterIdsDesvantagensAnuladas(raceData) {
+        return new Set(
+            [...(raceData?.vantagensPadrao || []), ...(raceData?.vantagensSituacionais || [])]
+                .flatMap((item) => Array.isArray(item.annuls) ? item.annuls : [])
+                .map((item) => String(item || ""))
+                .filter(Boolean)
+        );
+    }
+
+    function removerDesvantagemRacial(disadvantageId) {
+        const raceData = obterRaceDataPorId(document.getElementById("raca")?.value, "raca", document.getElementById("raceVariant")?.value);
+        const activeIds = lerDesvantagensRaciaisAtivas(raceData).filter((item) => item !== String(disadvantageId || ""));
+        escreverDesvantagensRaciaisAtivas(activeIds);
+        atualizarPainelRacial();
+        recalcularSeResultadoVisivel();
+    }
+
+    function adicionarDesvantagemRacial(disadvantageId) {
+        const raceData = obterRaceDataPorId(document.getElementById("raca")?.value, "raca", document.getElementById("raceVariant")?.value);
+        const activeIds = lerDesvantagensRaciaisAtivas(raceData);
+        if (!activeIds.includes(String(disadvantageId || ""))) activeIds.push(String(disadvantageId || ""));
+        escreverDesvantagensRaciaisAtivas(activeIds);
+        atualizarPainelRacial();
+        recalcularSeResultadoVisivel();
+    }
+
+    function renderListaRacial(itens, vazioTexto, anuladas, modo) {
+        if (!Array.isArray(itens) || !itens.length) {
+            return `<div class="codex-note">${escaparHtml(vazioTexto)}</div>`;
+        }
+        return `<div style="display:grid; gap:8px;">${itens.map((item) => {
+            const anulada = anuladas && anuladas.has(item.id);
+            const action = modo === "remover"
+                ? `<button class="action-btn mini-btn" type="button" onclick="removerDesvantagemRacial('${escaparHtml(item.id)}')">Remover</button>`
+                : modo === "adicionar"
+                    ? `<button class="action-btn mini-btn" type="button" onclick="adicionarDesvantagemRacial('${escaparHtml(item.id)}')">Adicionar</button>`
+                    : "";
+            return `<div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:10px 12px; border:1px solid rgba(255,255,255,0.08); border-radius:10px; background:rgba(255,255,255,0.03);"><div><strong>${escaparHtml(item.texto || item.passiva || item)}</strong>${anulada ? `<div class="codex-note">Marcada como anulada por uma vantagem racial.</div>` : ""}</div>${action}</div>`;
+        }).join("")}</div>`;
+    }
+
+    function atualizarPainelRacial() {
+        const panel = document.getElementById("conteudoPainelRacial");
+        const raceSelect = document.getElementById("raca");
+        if (!panel || !raceSelect) return;
+        atualizarInterfaceVarianteRacial();
+
+        if (raceSelect.value === HYBRID_RACE_VALUE) {
+            const ids = lerIdsHibridos("raca");
+            const nomes = ids.map((raceId) => obterRaceDataPorId(raceId, "raca").baseNome || obterRaceDataPorId(raceId, "raca").nome);
+            const passivas = obterPassivasHibridasDisponiveis(ids, "raca").filter((item) => lerPassivasHibridasSelecionadas(ids, "raca").includes(item.key));
+            panel.innerHTML = `
+                <div class="codex-note">Hibridos continuam usando media racial e passivas escolhidas. Vantagens e desvantagens estruturadas das racas base nao sao combinadas nesta rodada.</div>
+                <div class="tag-list" style="margin-top:12px;">${nomes.length ? nomes.map((nome) => `<span class="tag-pill">${escaparHtml(nome)}</span>`).join("") : `<span class="tag-pill">Sem racas base</span>`}</div>
+                <div style="margin-top:12px;"><strong>Passivas hibridas selecionadas:</strong><div class="codex-note" style="margin-top:8px;">${passivas.length ? passivas.map((item) => `${escaparHtml(item.raceName)} - ${escaparHtml(item.passiva)}`).join(" | ") : "Nenhuma selecionada"}</div></div>
+            `;
+            return;
+        }
+
+        const raceData = obterRaceDataPorId(raceSelect.value, "raca", document.getElementById("raceVariant")?.value);
+        const activeIds = new Set(lerDesvantagensRaciaisAtivas(raceData));
+        const anuladas = obterIdsDesvantagensAnuladas(raceData);
+        const desvantagensAtivas = (raceData.desvantagens || []).filter((item) => activeIds.has(item.id));
+        const desvantagensDisponiveis = (raceData.desvantagens || []).filter((item) => !activeIds.has(item.id));
+
+        panel.innerHTML = `
+            <div class="tag-list" style="margin-bottom:12px;">
+                <span class="tag-pill">${escaparHtml(raceData.displayNome || raceData.nome || "Raca sem nome")}</span>
+                <span class="tag-pill">Mod final = metade dos pontos + mod racial</span>
+            </div>
+            <div style="display:grid; gap:14px;">
+                <div><strong>Passiva racial</strong>${renderListaRacial(raceData.passivaRacial ? [{ id: "passiva_racial", texto: raceData.passivaRacial }] : [], "Nenhuma passiva racial cadastrada.", new Set())}</div>
+                <div><strong>Vantagens padrao</strong>${renderListaRacial(raceData.vantagensPadrao, "Nenhuma vantagem padrao cadastrada.", new Set())}</div>
+                <div><strong>Vantagens situacionais</strong>${renderListaRacial(raceData.vantagensSituacionais, "Nenhuma vantagem situacional cadastrada.", new Set())}</div>
+                <div><strong>Desvantagens ativas</strong>${renderListaRacial(desvantagensAtivas, "Nenhuma desvantagem ativa.", anuladas, "remover")}</div>
+                <div><strong>Desvantagens disponiveis</strong>${renderListaRacial(desvantagensDisponiveis, "Nenhuma desvantagem disponivel.", anuladas, "adicionar")}</div>
+            </div>
+        `;
     }
 
     function normalizarIdsHibridos(raceIds, selectId) {
@@ -1926,9 +2136,53 @@
         });
     }
 
-    function sincronizarPassivaHibrida(passiveKey) {
-        const hidden = document.getElementById("hybridPassiveKey");
-        if (hidden) hidden.value = String(passiveKey || "");
+    function normalizarPassivasHibridasSelecionadas(passiveKeys, raceIds, selectId) {
+        const permitidas = new Set(obterPassivasHibridasDisponiveis(raceIds, selectId).map((item) => item.key));
+        let valores = passiveKeys;
+        if (typeof valores === "string") {
+            const bruto = valores.trim();
+            if (!bruto) {
+                valores = [];
+            } else {
+                try {
+                    valores = JSON.parse(bruto);
+                } catch (_error) {
+                    valores = [bruto];
+                }
+            }
+        }
+        const usados = new Set();
+        return (Array.isArray(valores) ? valores : [valores])
+            .map((item) => String(item || ""))
+            .filter((item) => item && permitidas.has(item))
+            .filter((item) => {
+                if (usados.has(item)) return false;
+                usados.add(item);
+                return true;
+            });
+    }
+
+    function lerPassivasHibridasSelecionadas(raceIds, selectId) {
+        const hidden = document.getElementById("hybridPassiveKeys");
+        if (!hidden) return [];
+        return normalizarPassivasHibridasSelecionadas(hidden.value || "[]", raceIds, selectId);
+    }
+
+    function escreverPassivasHibridasSelecionadas(passiveKeys, raceIds, selectId) {
+        const hidden = document.getElementById("hybridPassiveKeys");
+        if (!hidden) return [];
+        const selecionadas = normalizarPassivasHibridasSelecionadas(passiveKeys, raceIds, selectId);
+        hidden.value = JSON.stringify(selecionadas);
+        return selecionadas;
+    }
+
+    function alternarPassivaHibrida(passiveKey, checked) {
+        const raceIds = lerIdsHibridos("raca");
+        const atuais = lerPassivasHibridasSelecionadas(raceIds, "raca");
+        const proximo = checked
+            ? [...atuais, String(passiveKey || "")]
+            : atuais.filter((item) => item !== String(passiveKey || ""));
+        escreverPassivasHibridasSelecionadas(proximo, raceIds, "raca");
         atualizarInterfaceRacaHibrida();
         recalcularSeResultadoVisivel();
     }
@@ -1943,10 +2197,6 @@
             return;
         }
         ids[index] = String(raceId);
-        if (anterior !== raceId) {
-            const passiveHidden = document.getElementById("hybridPassiveKey");
-            if (passiveHidden) passiveHidden.value = "";
-        }
         escreverIdsHibridos(ids, "raca");
         atualizarInterfaceRacaHibrida();
         recalcularSeResultadoVisivel();
@@ -1962,8 +2212,6 @@
         }
         ids.push(disponivel.id);
         escreverIdsHibridos(ids, "raca");
-        const passiveHidden = document.getElementById("hybridPassiveKey");
-        if (passiveHidden) passiveHidden.value = "";
         atualizarInterfaceRacaHibrida();
         recalcularSeResultadoVisivel();
     }
@@ -1976,8 +2224,6 @@
         }
         ids.splice(index, 1);
         escreverIdsHibridos(ids, "raca");
-        const passiveHidden = document.getElementById("hybridPassiveKey");
-        if (passiveHidden) passiveHidden.value = "";
         atualizarInterfaceRacaHibrida();
         recalcularSeResultadoVisivel();
     }
@@ -1987,15 +2233,18 @@
         const bloco = document.getElementById("blocoRacaHibrida");
         const raceMode = document.getElementById("raceMode");
         const list = document.getElementById("hybridRaceList");
-        const passiveSelect = document.getElementById("hybridPassiveSelect");
-        const passiveHidden = document.getElementById("hybridPassiveKey");
+        const passiveList = document.getElementById("hybridPassiveList");
+        const passiveHidden = document.getElementById("hybridPassiveKeys");
         const resumo = document.getElementById("hybridRaceResumo");
-        if (!select || !bloco || !raceMode || !list || !passiveSelect || !passiveHidden || !resumo) return;
+        if (!select || !bloco || !raceMode || !list || !passiveList || !passiveHidden || !resumo) return;
 
         const isHybrid = select.value === HYBRID_RACE_VALUE;
         raceMode.value = isHybrid ? "hybrid" : "normal";
         bloco.style.display = isHybrid ? "block" : "none";
-        if (!isHybrid) return;
+        if (!isHybrid) {
+            atualizarInterfaceVarianteRacial();
+            return;
+        }
 
         let ids = lerIdsHibridos("raca");
         const opcoes = obterOpcoesRaciaisSelect("raca");
@@ -2016,30 +2265,34 @@
         `).join("");
 
         const passivas = obterPassivasHibridasDisponiveis(ids, "raca");
-        let passiveKey = String(passiveHidden.value || "");
-        if (!passivas.some((item) => item.key === passiveKey)) {
-            passiveKey = "";
-            passiveHidden.value = passiveKey;
-        }
-        passiveSelect.innerHTML = passivas.length
-            ? `<option value="" ${passiveKey ? "" : "selected"}>Escolha uma passiva</option>${passivas.map((item) => `<option value="${item.key}" ${item.key === passiveKey ? "selected" : ""}>${escaparHtml(item.raceName)} - ${escaparHtml(item.passiva)}</option>`).join("")}`
-            : `<option value="">Nenhuma passiva disponivel</option>`;
+        const passiveKeys = escreverPassivasHibridasSelecionadas(passiveHidden.value || "[]", ids, "raca");
+        passiveList.innerHTML = passivas.length
+            ? passivas.map((item) => `
+                <label style="display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:rgba(255,255,255,0.03);">
+                    <input type="checkbox" ${passiveKeys.includes(item.key) ? "checked" : ""} onchange="alternarPassivaHibrida('${item.key}', this.checked)">
+                    <span><strong>${escaparHtml(item.raceName)}</strong><br><small>${escaparHtml(item.passiva)}</small></span>
+                </label>
+            `).join("")
+            : `<div class="codex-note">Nenhuma passiva disponivel para as racas escolhidas.</div>`;
 
         const nomes = ids.map((raceId) => obterRaceDataPorId(raceId, "raca").nome);
-        const passivaAtual = passivas.find((item) => item.key === passiveKey);
-        resumo.textContent = `Origem atual: ${nomes.join(" + ")}${passivaAtual ? ` | Passiva: ${passivaAtual.raceName} - ${passivaAtual.passiva}` : ""}`;
+        const passivasAtuais = passivas.filter((item) => passiveKeys.includes(item.key));
+        resumo.textContent = `Origem atual: ${nomes.join(" + ")} | Passivas: ${passivasAtuais.length ? passivasAtuais.map((item) => `${item.raceName} - ${item.passiva}`).join(" | ") : "Nenhuma selecionada"}`;
     }
 
     function resolverRaceDataSelecionada(selectId, silencioso) {
         const select = document.getElementById(selectId || "raca");
         if (!select) return null;
         if (select.value !== HYBRID_RACE_VALUE) {
+            const variantKey = document.getElementById("raceVariant")?.value || "";
+            const raceData = obterRaceDataPorId(select.value, selectId, variantKey);
             return {
                 mode: "normal",
                 raceIds: [String(select.value || "")].filter(Boolean),
-                passiveKey: "",
-                raceLabel: String(select.options[select.selectedIndex]?.text || "Raca"),
-                raceData: obterRaceDataPorId(select.value, selectId)
+                passiveKeys: [],
+                raceVariant: raceData.variantKey || variantKey,
+                raceLabel: String(raceData.displayNome || raceData.nome || select.options[select.selectedIndex]?.text || "Raca"),
+                raceData
             };
         }
 
@@ -2050,12 +2303,8 @@
         }
 
         const passivas = obterPassivasHibridasDisponiveis(ids, selectId);
-        const passiveKey = String(document.getElementById("hybridPassiveKey")?.value || "");
-        const passivaEscolhida = passivas.find((item) => item.key === passiveKey);
-        if (!passivaEscolhida) {
-            if (!silencioso) alert("Escolha 1 passiva racial para o hibrido.");
-            return null;
-        }
+        const passiveKeys = lerPassivasHibridasSelecionadas(ids, selectId);
+        const passivasEscolhidas = passivas.filter((item) => passiveKeys.includes(item.key));
 
         const soma = criarRaceDataVazia().modificadores;
         const nomes = ids.map((raceId) => {
@@ -2074,12 +2323,17 @@
         return {
             mode: "hybrid",
             raceIds: ids,
-            passiveKey: passivaEscolhida.key,
+            passiveKeys,
+            raceVariant: "",
             raceLabel,
             raceData: {
                 nome: raceLabel,
                 modificadores,
-                passivas: [passivaEscolhida.passiva]
+                passivas: passivasEscolhidas.map((item) => item.passiva),
+                passivaRacial: "",
+                vantagensPadrao: [],
+                vantagensSituacionais: [],
+                desvantagens: []
             }
         };
     }
@@ -2433,6 +2687,9 @@
             subSel.innerHTML = '<option value="none">Padrão</option>';
             subSel.value = "none";
         }
+        atualizarInterfaceRacaHibrida();
+        atualizarInterfaceVarianteRacial();
+        atualizarPainelRacial();
         renderPainelsDeClasse();
         recalcularSeResultadoVisivel();
     }
@@ -3102,6 +3359,70 @@
         return Math.min(Math.max(0, Math.floor(Number(valor) || 0)), Math.max(0, maximo || 0));
     }
 
+    function criarListaResultadoRacial(itens, vazioTexto, anuladas) {
+        if (!Array.isArray(itens) || !itens.length) {
+            return `<p class="codex-note">${escaparHtml(vazioTexto)}</p>`;
+        }
+        return `<div class="ability-grid">${itens.map((item) => {
+            const texto = escaparHtml(item?.texto || item?.passiva || item || "");
+            const anulada = Boolean(anuladas && item?.id && anuladas.has(item.id));
+            return `<div class="ability-card is-selected"><strong>${texto}</strong>${anulada ? '<small>Marcada como anulada por uma vantagem racial.</small>' : ""}</div>`;
+        }).join("")}</div>`;
+    }
+
+    function criarResumoRacialResultadoHtml(ficha) {
+        if (!ficha || !ficha.raceData) return "";
+        const bonusBase = escaparHtml(resumirModificadoresRaciais(ficha.raceModifiersBase));
+        const bonusAtual = escaparHtml(resumirModificadoresRaciais(ficha.raceModifiersProgressive));
+        if (ficha.raceMode === "hybrid") {
+            const passivas = (ficha.raceData.passivas || []).map((texto) => ({ texto }));
+            return `
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Resumo racial</h4>
+                    <div class="tag-list" style="margin-bottom:12px;">
+                        <span class="tag-pill">${escaparHtml(ficha.raceLabel)}</span>
+                        <span class="tag-pill">Passo racial x${ficha.raceModifierStep}</span>
+                    </div>
+                    <ul style="list-style:none; padding:0; font-size:0.9em;">
+                        <li>Bonus racial base: ${bonusBase}</li>
+                        <li>Bonus racial no nivel atual: ${bonusAtual}</li>
+                    </ul>
+                    <div class="codex-note">Hibridos continuam usando media racial e passivas escolhidas. Vantagens e desvantagens estruturadas das racas base nao sao combinadas nesta rodada.</div>
+                    <div style="margin-top:14px;">
+                        <strong>Passivas raciais escolhidas</strong>
+                        ${criarListaResultadoRacial(passivas, "Nenhuma passiva racial escolhida para o hibrido.", new Set())}
+                    </div>
+                </div>
+            `;
+        }
+
+        const anuladas = new Set(ficha.raceAnnulledDisadvantageIds || []);
+        const ativas = new Set(ficha.activeRaceDisadvantageIds || []);
+        const desvantagensAtivas = (ficha.raceData.desvantagens || []).filter((item) => ativas.has(item.id));
+        const passiva = ficha.raceData.passivaRacial ? [{ texto: ficha.raceData.passivaRacial }] : [];
+
+        return `
+            <div class="resource-panel">
+                <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Resumo racial</h4>
+                <div class="tag-list" style="margin-bottom:12px;">
+                    <span class="tag-pill">${escaparHtml(ficha.raceData.displayNome || ficha.raceLabel)}</span>
+                    <span class="tag-pill">Passo racial x${ficha.raceModifierStep}</span>
+                    <span class="tag-pill">Mod final = metade dos pontos + mod racial</span>
+                </div>
+                <ul style="list-style:none; padding:0; font-size:0.9em;">
+                    <li>Bonus racial base: ${bonusBase}</li>
+                    <li>Bonus racial no nivel atual: ${bonusAtual}</li>
+                </ul>
+                <div style="display:grid; gap:14px; margin-top:14px;">
+                    <div><strong>Passiva racial</strong>${criarListaResultadoRacial(passiva, "Nenhuma passiva racial cadastrada.", new Set())}</div>
+                    <div><strong>Vantagens padrao</strong>${criarListaResultadoRacial(ficha.raceData.vantagensPadrao || [], "Nenhuma vantagem padrao cadastrada.", new Set())}</div>
+                    <div><strong>Vantagens situacionais</strong>${criarListaResultadoRacial(ficha.raceData.vantagensSituacionais || [], "Nenhuma vantagem situacional cadastrada.", new Set())}</div>
+                    <div><strong>Desvantagens ativas</strong>${criarListaResultadoRacial(desvantagensAtivas, "Nenhuma desvantagem ativa.", anuladas)}</div>
+                </div>
+            </div>
+        `;
+    }
+
     function obterDadosFichaBase(silencioso) {
         const nome = document.getElementById("nome").value || "Personagem sem nome";
         const nivel = parseInt(document.getElementById("nivel").value) || 1;
@@ -3123,17 +3444,30 @@
             c: parseInt(document.getElementById("carisma").value) || 0
         };
 
-        const getMod = (base, raceMod) => Math.floor(base / 2) + Math.floor(raceMod * Math.max(1, nivel / 20));
+        const raceModifiersBase = {};
+        RACE_ATTR_KEYS.forEach((attr) => {
+            raceModifiersBase[attr] = Number(raceData.modificadores[attr] || 0);
+        });
+        const raceModifierStep = calcularPassoModificadorRacial(nivel);
+        const raceModifiersProgressive = calcularModificadoresRaciaisProgressivos(raceModifiersBase, nivel);
+        const getMod = (base, raceMod) => Math.floor(base / 2) + Number(raceMod || 0);
 
-        const fFim = getMod(attrs.f, raceData.modificadores.força);
-        const iFim = getMod(attrs.i, raceData.modificadores.inteligência);
-        const vFim = getMod(attrs.v, raceData.modificadores.forçaVontade);
-        const aFim = getMod(attrs.a, raceData.modificadores.agilidade);
-        const rFim = getMod(attrs.r, raceData.modificadores.resistência);
-        const cFim = getMod(attrs.c, raceData.modificadores.carisma);
+        const fFim = getMod(attrs.f, raceModifiersProgressive["força"]);
+        const iFim = getMod(attrs.i, raceModifiersProgressive["inteligência"]);
+        const vFim = getMod(attrs.v, raceModifiersProgressive["forçaVontade"]);
+        const aFim = getMod(attrs.a, raceModifiersProgressive["agilidade"]);
+        const rFim = getMod(attrs.r, raceModifiersProgressive["resistência"]);
+        const cFim = getMod(attrs.c, raceModifiersProgressive["carisma"]);
         const caBase = lerNumeroInteiroNaoNegativo("caBase", 2);
+        const caAtributos = Math.floor(Math.max(0, aFim) / 10) + Math.floor(Math.max(0, rFim) / 10);
+        const caNivel = Math.floor(Math.max(1, nivel) / 5);
         const caInventario = obterBonusCaInventario();
-        const caTotal = caBase + caInventario;
+        const caEquipamentos = caInventario;
+        const caTotal = caBase + caAtributos + caNivel + caEquipamentos;
+        const raceAnnulledDisadvantageIds = Array.from(obterIdsDesvantagensAnuladas(raceData));
+        const activeRaceDisadvantageIds = raceSelection.mode === "normal"
+            ? lerDesvantagensRaciaisAtivas(raceData)
+            : [];
 
         let hpMax = classData.hp + ((nivel - 1) * 5) + rFim;
         let mpMax = classData.mp + ((nivel - 1) * 2) + iFim;
@@ -3151,7 +3485,14 @@
             raceMode: raceSelection.mode,
             raceIds: raceSelection.raceIds,
             raceLabel: raceSelection.raceLabel,
-            hybridPassiveKey: raceSelection.passiveKey,
+            raceVariant: raceSelection.raceVariant || raceData.variantKey || "",
+            raceVariantLabel: raceData.variantLabel || "",
+            hybridPassiveKeys: Array.isArray(raceSelection.passiveKeys) ? raceSelection.passiveKeys.slice() : [],
+            raceModifierStep,
+            raceModifiersBase,
+            raceModifiersProgressive,
+            activeRaceDisadvantageIds,
+            raceAnnulledDisadvantageIds,
             raceData,
             classData,
             fFim,
@@ -3161,7 +3502,10 @@
             rFim,
             cFim,
             caBase,
+            caAtributos,
+            caNivel,
             caInventario,
+            caEquipamentos,
             caTotal,
             hpMax,
             mpMax,
@@ -3186,7 +3530,7 @@
     }
 
     function alterarRecurso(recurso, delta) {
-        const ficha = obterDadosFichaBase(silencioso);
+        const ficha = obterDadosFichaBase(true);
         if (!ficha) return;
 
         const maximos = {
@@ -3282,15 +3626,54 @@
     }
 
     function aplicarDadosFicha(dados) {
+        const raceVariantSalva = Object.prototype.hasOwnProperty.call(dados, "raceVariant")
+            ? String(dados.raceVariant || "")
+            : "";
+        const desvantagensAtivasSalvas = Object.prototype.hasOwnProperty.call(dados, "activeRaceDisadvantageIds")
+            ? (Array.isArray(dados.activeRaceDisadvantageIds) ? JSON.stringify(dados.activeRaceDisadvantageIds) : String(dados.activeRaceDisadvantageIds || "[]"))
+            : "";
+        const origemDesvantagensSalva = Object.prototype.hasOwnProperty.call(dados, "raceDisadvantageSourceKey")
+            ? String(dados.raceDisadvantageSourceKey || "")
+            : "";
         SAVE_FIELD_IDS.forEach((id) => {
+            if (id === "raceVariant") return;
             if (!Object.prototype.hasOwnProperty.call(dados, id)) return;
             const el = document.getElementById(id);
             if (!el) return;
-            el.value = dados[id];
+            el.value = Array.isArray(dados[id]) ? JSON.stringify(dados[id]) : dados[id];
         });
+
+        const hybridPassiveKeysEl = document.getElementById("hybridPassiveKeys");
+        if (hybridPassiveKeysEl) {
+            if (Object.prototype.hasOwnProperty.call(dados, "hybridPassiveKeys")) {
+                hybridPassiveKeysEl.value = Array.isArray(dados.hybridPassiveKeys)
+                    ? JSON.stringify(dados.hybridPassiveKeys)
+                    : String(dados.hybridPassiveKeys || "[]");
+            } else if (Object.prototype.hasOwnProperty.call(dados, "hybridPassiveKey")) {
+                const legacy = String(dados.hybridPassiveKey || "").trim();
+                hybridPassiveKeysEl.value = legacy ? JSON.stringify([legacy]) : "[]";
+            }
+        }
 
         atualizarInterfaceRacaHibrida();
         triggerClassChecks();
+
+        const raceVariantEl = document.getElementById("raceVariant");
+        if (raceVariantEl) {
+            if (raceVariantSalva && [...raceVariantEl.options].some((opt) => opt.value === raceVariantSalva)) {
+                raceVariantEl.value = raceVariantSalva;
+            } else if (raceVariantEl.options.length) {
+                raceVariantEl.value = raceVariantEl.options[0].value;
+            }
+        }
+        if (desvantagensAtivasSalvas) {
+            const hidden = document.getElementById("activeRaceDisadvantageIds");
+            if (hidden) hidden.value = desvantagensAtivasSalvas;
+        }
+        if (origemDesvantagensSalva) {
+            const hidden = document.getElementById("raceDisadvantageSourceKey");
+            if (hidden) hidden.value = origemDesvantagensSalva;
+        }
 
         const subclasseEl = document.getElementById("subclasseId");
         const subclasseId = dados.subclasseId || "none";
@@ -3302,6 +3685,7 @@
 
         sincronizarAnotacoes(dados.anotacoes || "", "form");
         sincronizarInventarioTexto(dados.inventarioTexto || "", "form");
+        atualizarPainelRacial();
         renderPainelsDeClasse();
         atualizarResumoMoedas();
         atualizarPontosLivres();
@@ -3460,13 +3844,15 @@
                     ${skillTableLogic(ficha.nivel).map(s => `<div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:4px; text-align:center;"><small style="color:var(--text-muted); font-size:0.7em;">${s.name}</small><br><strong>${s.val}</strong></div>`).join('')}
                 </div>
 
-                <h4 style="color:var(--primary); margin-top:20px; border-bottom:1px solid #444; padding-bottom:5px;">Bonus de raca e classe</h4>
-                <ul style="list-style:none; padding:0; font-size:0.9em;">
-                    ${ficha.raceMode === "hybrid" ? `<li>&#129309; Origem hibrida: ${escaparHtml(ficha.raceLabel.replace(/^Hibrido:\\s*/, ""))}</li>` : ""}
-                    ${ficha.raceData.passivas.map(p => `<li>&#127811; ${p}</li>`).join('')}
-                    ${ficha.classData.passivas.map(p => `<li>&#128171; ${p}</li>`).join('')}
-                    ${efeitosSubclasse}
-                </ul>
+                ${criarResumoRacialResultadoHtml(ficha)}
+
+                <div class="resource-panel">
+                    <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Classe e subclasse</h4>
+                    <ul style="list-style:none; padding:0; font-size:0.9em;">
+                        ${ficha.classData.passivas.map(p => `<li>&#128171; ${p}</li>`).join('') || '<li>Nenhuma passiva de classe cadastrada.</li>'}
+                        ${efeitosSubclasse || ""}
+                    </ul>
+                </div>
 
                 <div class="resource-panel">
                     <h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Pericias Ativas</h4>

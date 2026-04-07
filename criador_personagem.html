@@ -749,7 +749,7 @@
 
                 <div class="form-group full-width">
                     <label for="race">Raca</label>
-                    <select id="race" onchange="atualizarInterfaceRacaHibridaAuto()">
+                    <select id="race" onchange="triggerClassChecks()">
                         <option value="1">Altos Elfos</option>
                         <option value="2">Anoes</option>
                         <option value="3">Automatos</option>
@@ -813,23 +813,34 @@
                         <option value="61">Vampyr’rein</option>
                         <option value="hybrid">Hibrido</option>
                     </select>
-                    <small class="field-help">A raca aplica modificadores e passivas raciais na ficha gerada.</small>
+                    <small class="field-help">O bonus racial base entra no nivel 1 e se repete nos niveis 21, 41, 61 e 81.</small>
                     <input type="hidden" id="hybridRaceIdsAuto" value="[]">
-                    <input type="hidden" id="hybridPassiveKeyAuto" value="">
+                    <input type="hidden" id="hybridPassiveKeysAuto" value="[]">
+                </div>
+
+                <div class="form-group full-width" id="raceVariantBlockAuto" style="display:none;">
+                    <label for="raceVariantAuto">Estagio ou variante da raca</label>
+                    <select id="raceVariantAuto" onchange="atualizarPainelRacialAuto()"></select>
+                    <small class="field-help">Use este campo quando a raca tiver estagio ou variante propria.</small>
                 </div>
 
                 <div class="form-group full-width" id="hybridRaceBlockAuto" style="display:none;">
                     <label>Origem hibrida</label>
-                    <small class="field-help">Escolha 2 ou mais racas diferentes. Os bonus raciais serao a media entre elas, arredondando para baixo. Depois escolha 1 passiva racial individual.</small>
+                    <small class="field-help">Escolha 2 ou mais racas diferentes. Primeiro a ficha calcula a media dos bonus raciais, arredonda para baixo e depois repete esse bonus nos niveis 21, 41, 61 e 81. As passivas raciais sao opcionais e voce pode marcar quantas quiser entre as racas escolhidas.</small>
                     <div id="hybridRaceListAuto" style="display:grid; gap:12px; margin-top:12px;"></div>
                     <div style="margin-top:12px;">
                         <button class="action-btn" type="button" onclick="adicionarRacaHibridaAuto()">Adicionar raca</button>
                     </div>
                     <div style="margin-top:12px;">
-                        <label for="hybridPassiveSelectAuto">Passiva racial do hibrido</label>
-                        <select id="hybridPassiveSelectAuto" onchange="sincronizarPassivaHibridaAuto(this.value)"></select>
+                        <label>Passivas raciais do hibrido</label>
+                        <div id="hybridPassiveListAuto" style="display:grid; gap:10px; margin-top:10px;"></div>
                     </div>
                     <small class="field-help" id="hybridRaceSummaryAuto"></small>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Resumo racial</label>
+                    <div id="racePanelContentAuto" class="field-help">Escolha uma raca para ver passiva, vantagens e desvantagens.</div>
                 </div>
             </div>
 
@@ -843,6 +854,7 @@
         </div>
     </main>
 
+<script src="racas_estruturadas.js"></script>
 <script>
     const racialModifiers = {
         "1": { "nome": "Altos Elfos", "modificadores": { "força": 0, "inteligência": 3, "forçaVontade": 0, "agilidade": 1, "resistência": 0, "carisma": 0 }, "passivas": ["Resistencia Magica: vantagem em rolagem de resistência magia."] },
@@ -932,6 +944,38 @@
         };
     }
 
+    function getRaceModifierStepAuto(level) {
+        const safeLevel = Math.max(1, parseInt(level, 10) || 1);
+        return Math.floor((safeLevel - 1) / 20) + 1;
+    }
+
+    function getProgressiveRaceModifiersAuto(baseModifiers, level) {
+        const step = getRaceModifierStepAuto(level);
+        const result = {};
+        RACE_ATTR_KEYS.forEach((attr) => {
+            result[attr] = Number(baseModifiers?.[attr] || 0) * step;
+        });
+        return result;
+    }
+
+    function summarizeRaceModifiersAuto(modifiers) {
+        const labels = {
+            "força": "For",
+            "inteligência": "Int",
+            "forçaVontade": "Von",
+            "agilidade": "Agi",
+            "resistência": "Res",
+            "carisma": "Car"
+        };
+        const parts = RACE_ATTR_KEYS
+            .map((attr) => {
+                const value = Number(modifiers?.[attr] || 0);
+                return value ? `${labels[attr] || attr} ${value > 0 ? "+" : ""}${value}` : "";
+            })
+            .filter(Boolean);
+        return parts.length ? parts.join(" | ") : "Sem bonus racial numerico";
+    }
+
     function getRaceOptionsAuto() {
         const select = document.getElementById("race");
         if (!select) return [];
@@ -943,10 +987,13 @@
             }));
     }
 
-    function getRaceDataAuto(raceId) {
+    function getRaceDataAuto(raceId, variantKey) {
         const option = getRaceOptionsAuto().find((item) => item.id === String(raceId));
         const empty = createEmptyRaceData(option ? option.nome : `Raca ${raceId}`);
         const base = racialModifiers[String(raceId)];
+        if (typeof window.resolveIndomitusRaceData === "function") {
+            return window.resolveIndomitusRaceData(String(raceId), base, variantKey);
+        }
         if (!base || typeof base !== "object") return empty;
         return {
             nome: base.nome || empty.nome,
@@ -954,8 +1001,97 @@
                 ...empty.modificadores,
                 ...(base.modificadores || {})
             },
-            passivas: Array.isArray(base.passivas) ? base.passivas.slice() : []
+            passivas: Array.isArray(base.passivas) ? base.passivas.slice() : [],
+            passivaRacial: Array.isArray(base.passivas) ? base.passivas.join(" | ") : "",
+            vantagensPadrao: [],
+            vantagensSituacionais: [],
+            desvantagens: []
         };
+    }
+
+    function getRaceVariantsAuto(raceId) {
+        if (typeof window.getIndomitusRaceVariants === "function") {
+            return window.getIndomitusRaceVariants(String(raceId), racialModifiers[String(raceId)]);
+        }
+        return [];
+    }
+
+    function updateRaceVariantAuto() {
+        const raceSelect = document.getElementById("race");
+        const block = document.getElementById("raceVariantBlockAuto");
+        const variantSelect = document.getElementById("raceVariantAuto");
+        if (!raceSelect || !block || !variantSelect) return;
+        if (raceSelect.value === HYBRID_RACE_VALUE) {
+            block.style.display = "none";
+            variantSelect.innerHTML = "";
+            variantSelect.value = "";
+            return;
+        }
+        const variants = getRaceVariantsAuto(raceSelect.value);
+        if (!variants.length) {
+            block.style.display = "none";
+            variantSelect.innerHTML = "";
+            variantSelect.value = "";
+            return;
+        }
+        block.style.display = "block";
+        let currentValue = String(variantSelect.value || "");
+        if (!variants.some((item) => item.key === currentValue)) {
+            currentValue = variants[0].key;
+        }
+        variantSelect.innerHTML = variants.map((item) => `<option value="${escapeHtml(item.key)}" ${item.key === currentValue ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("");
+        variantSelect.value = currentValue;
+    }
+
+    function getAnnulledDisadvantageIdsAuto(raceData) {
+        return new Set(
+            [...(raceData?.vantagensPadrao || []), ...(raceData?.vantagensSituacionais || [])]
+                .flatMap((item) => Array.isArray(item.annuls) ? item.annuls : [])
+                .map((item) => String(item || ""))
+                .filter(Boolean)
+        );
+    }
+
+    function renderRaceListAuto(itens, vazioTexto, anuladas) {
+        if (!Array.isArray(itens) || !itens.length) {
+            return `<div class="field-help">${escapeHtml(vazioTexto)}</div>`;
+        }
+        return `<div style="display:grid; gap:10px; margin-top:10px;">${itens.map((item) => {
+            const texto = escapeHtml(item?.texto || item?.passiva || item || "");
+            const anulada = Boolean(anuladas && item?.id && anuladas.has(item.id));
+            return `<div style="padding:10px 12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:rgba(255,255,255,0.03);"><strong>${texto}</strong>${anulada ? '<div class="field-help" style="margin-top:6px;">Marcada como anulada por uma vantagem racial.</div>' : ""}</div>`;
+        }).join("")}</div>`;
+    }
+
+    function atualizarPainelRacialAuto() {
+        const panel = document.getElementById("racePanelContentAuto");
+        const raceSelect = document.getElementById("race");
+        if (!panel || !raceSelect) return;
+        updateRaceVariantAuto();
+
+        if (raceSelect.value === HYBRID_RACE_VALUE) {
+            const ids = readHybridIdsAuto();
+            const nomes = ids.map((raceId) => getRaceDataAuto(raceId).baseNome || getRaceDataAuto(raceId).nome);
+            const passivas = getHybridPassivesAuto(ids).filter((item) => readHybridPassiveKeysAuto(ids).includes(item.key));
+            panel.innerHTML = `
+                <div class="field-help">Hibridos continuam usando media racial e passivas escolhidas. Vantagens e desvantagens estruturadas das racas base nao sao combinadas nesta rodada.</div>
+                <div style="margin-top:10px;"><strong>Origem atual:</strong> ${escapeHtml(nomes.join(" + ") || "Sem racas base")}</div>
+                <div style="margin-top:10px;"><strong>Passivas escolhidas:</strong> ${escapeHtml(passivas.length ? passivas.map((item) => `${item.raceName} - ${item.passiva}`).join(" | ") : "Nenhuma selecionada")}</div>
+            `;
+            return;
+        }
+
+        const raceData = getRaceDataAuto(raceSelect.value, document.getElementById("raceVariantAuto")?.value || "");
+        const anuladas = getAnnulledDisadvantageIdsAuto(raceData);
+        panel.innerHTML = `
+            <div style="display:grid; gap:14px;">
+                <div><strong>${escapeHtml(raceData.displayNome || raceData.nome || "Raca sem nome")}</strong></div>
+                <div><strong>Passiva racial</strong>${renderRaceListAuto(raceData.passivaRacial ? [{ texto: raceData.passivaRacial }] : [], "Nenhuma passiva racial cadastrada.", new Set())}</div>
+                <div><strong>Vantagens padrao</strong>${renderRaceListAuto(raceData.vantagensPadrao || [], "Nenhuma vantagem padrao cadastrada.", new Set())}</div>
+                <div><strong>Vantagens situacionais</strong>${renderRaceListAuto(raceData.vantagensSituacionais || [], "Nenhuma vantagem situacional cadastrada.", new Set())}</div>
+                <div><strong>Desvantagens</strong>${renderRaceListAuto(raceData.desvantagens || [], "Nenhuma desvantagem cadastrada.", anuladas)}</div>
+            </div>
+        `;
     }
 
     function normalizeHybridIdsAuto(raceIds) {
@@ -1001,9 +1137,53 @@
         });
     }
 
-    function sincronizarPassivaHibridaAuto(value) {
-        const hidden = document.getElementById("hybridPassiveKeyAuto");
-        if (hidden) hidden.value = String(value || "");
+    function normalizeHybridPassiveKeysAuto(passiveKeys, raceIds) {
+        const allowed = new Set(getHybridPassivesAuto(raceIds).map((item) => item.key));
+        let values = passiveKeys;
+        if (typeof values === "string") {
+            const raw = values.trim();
+            if (!raw) {
+                values = [];
+            } else {
+                try {
+                    values = JSON.parse(raw);
+                } catch (_error) {
+                    values = [raw];
+                }
+            }
+        }
+        const seen = new Set();
+        return (Array.isArray(values) ? values : [values])
+            .map((item) => String(item || ""))
+            .filter((item) => item && allowed.has(item))
+            .filter((item) => {
+                if (seen.has(item)) return false;
+                seen.add(item);
+                return true;
+            });
+    }
+
+    function readHybridPassiveKeysAuto(raceIds) {
+        const hidden = document.getElementById("hybridPassiveKeysAuto");
+        if (!hidden) return [];
+        return normalizeHybridPassiveKeysAuto(hidden.value || "[]", raceIds);
+    }
+
+    function writeHybridPassiveKeysAuto(passiveKeys, raceIds) {
+        const hidden = document.getElementById("hybridPassiveKeysAuto");
+        if (!hidden) return [];
+        const selected = normalizeHybridPassiveKeysAuto(passiveKeys, raceIds);
+        hidden.value = JSON.stringify(selected);
+        return selected;
+    }
+
+    function toggleHybridPassiveAuto(passiveKey, checked) {
+        const raceIds = readHybridIdsAuto();
+        const current = readHybridPassiveKeysAuto(raceIds);
+        const next = checked
+            ? [...current, String(passiveKey || "")]
+            : current.filter((item) => item !== String(passiveKey || ""));
+        writeHybridPassiveKeysAuto(next, raceIds);
         atualizarInterfaceRacaHibridaAuto();
     }
 
@@ -1016,8 +1196,6 @@
             return;
         }
         ids[index] = String(raceId);
-        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
-        if (passiveHidden) passiveHidden.value = "";
         writeHybridIdsAuto(ids);
         atualizarInterfaceRacaHibridaAuto();
     }
@@ -1031,8 +1209,6 @@
         }
         ids.push(nextRace.id);
         writeHybridIdsAuto(ids);
-        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
-        if (passiveHidden) passiveHidden.value = "";
         atualizarInterfaceRacaHibridaAuto();
     }
 
@@ -1044,8 +1220,6 @@
         }
         ids.splice(index, 1);
         writeHybridIdsAuto(ids);
-        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
-        if (passiveHidden) passiveHidden.value = "";
         atualizarInterfaceRacaHibridaAuto();
     }
 
@@ -1053,14 +1227,17 @@
         const raceSelect = document.getElementById("race");
         const block = document.getElementById("hybridRaceBlockAuto");
         const list = document.getElementById("hybridRaceListAuto");
-        const passiveSelect = document.getElementById("hybridPassiveSelectAuto");
-        const passiveHidden = document.getElementById("hybridPassiveKeyAuto");
+        const passiveList = document.getElementById("hybridPassiveListAuto");
+        const passiveHidden = document.getElementById("hybridPassiveKeysAuto");
         const summary = document.getElementById("hybridRaceSummaryAuto");
-        if (!raceSelect || !block || !list || !passiveSelect || !passiveHidden || !summary) return;
+        if (!raceSelect || !block || !list || !passiveList || !passiveHidden || !summary) return;
 
         const isHybrid = raceSelect.value === HYBRID_RACE_VALUE;
         block.style.display = isHybrid ? "block" : "none";
-        if (!isHybrid) return;
+        if (!isHybrid) {
+            updateRaceVariantAuto();
+            return;
+        }
 
         let ids = readHybridIdsAuto();
         const options = getRaceOptionsAuto();
@@ -1081,30 +1258,34 @@
         `).join("");
 
         const passivas = getHybridPassivesAuto(ids);
-        let passiveKey = String(passiveHidden.value || "");
-        if (!passivas.some((item) => item.key === passiveKey)) {
-            passiveKey = "";
-            passiveHidden.value = passiveKey;
-        }
-        passiveSelect.innerHTML = passivas.length
-            ? `<option value="" ${passiveKey ? "" : "selected"}>Escolha uma passiva</option>${passivas.map((item) => `<option value="${item.key}" ${item.key === passiveKey ? "selected" : ""}>${escapeHtml(item.raceName)} - ${escapeHtml(item.passiva)}</option>`).join("")}`
-            : `<option value="">Nenhuma passiva disponivel</option>`;
+        const passiveKeys = writeHybridPassiveKeysAuto(passiveHidden.value || "[]", ids);
+        passiveList.innerHTML = passivas.length
+            ? passivas.map((item) => `
+                <label style="display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:rgba(255,255,255,0.03);">
+                    <input type="checkbox" ${passiveKeys.includes(item.key) ? "checked" : ""} onchange="toggleHybridPassiveAuto('${item.key}', this.checked)">
+                    <span><strong>${escapeHtml(item.raceName)}</strong><br><small>${escapeHtml(item.passiva)}</small></span>
+                </label>
+            `).join("")
+            : `<div class="field-help">Nenhuma passiva disponivel para as racas escolhidas.</div>`;
 
         const nomes = ids.map((raceId) => getRaceDataAuto(raceId).nome);
-        const passivaAtual = passivas.find((item) => item.key === passiveKey);
-        summary.textContent = `Origem atual: ${nomes.join(" + ")}${passivaAtual ? ` | Passiva: ${passivaAtual.raceName} - ${passivaAtual.passiva}` : ""}`;
+        const selectedPassives = passivas.filter((item) => passiveKeys.includes(item.key));
+        summary.textContent = `Origem atual: ${nomes.join(" + ")} | Passivas: ${selectedPassives.length ? selectedPassives.map((item) => `${item.raceName} - ${item.passiva}`).join(" | ") : "Nenhuma selecionada"}`;
     }
 
     function resolveSelectedRaceAuto(silent) {
         const raceSelect = document.getElementById("race");
         if (!raceSelect) return null;
         if (raceSelect.value !== HYBRID_RACE_VALUE) {
+            const variantKey = document.getElementById("raceVariantAuto")?.value || "";
+            const raceData = getRaceDataAuto(raceSelect.value, variantKey);
             return {
                 mode: "normal",
-                raceLabel: String(raceSelect.options[raceSelect.selectedIndex]?.text || "Raca"),
+                raceLabel: String(raceData.displayNome || raceData.nome || raceSelect.options[raceSelect.selectedIndex]?.text || "Raca"),
                 raceIds: [String(raceSelect.value || "")].filter(Boolean),
-                passiveKey: "",
-                raceData: getRaceDataAuto(raceSelect.value)
+                passiveKeys: [],
+                raceVariant: raceData.variantKey || variantKey,
+                raceData
             };
         }
 
@@ -1115,12 +1296,8 @@
         }
 
         const passivas = getHybridPassivesAuto(ids);
-        const passiveKey = String(document.getElementById("hybridPassiveKeyAuto")?.value || "");
-        const passivaEscolhida = passivas.find((item) => item.key === passiveKey);
-        if (!passivaEscolhida) {
-            if (!silent) alert("Escolha 1 passiva racial para o hibrido.");
-            return null;
-        }
+        const passiveKeys = readHybridPassiveKeysAuto(ids);
+        const passivasEscolhidas = passivas.filter((item) => passiveKeys.includes(item.key));
 
         const soma = createEmptyRaceData().modificadores;
         const nomes = ids.map((raceId) => {
@@ -1140,11 +1317,16 @@
             mode: "hybrid",
             raceLabel,
             raceIds: ids,
-            passiveKey: passivaEscolhida.key,
+            passiveKeys,
+            raceVariant: "",
             raceData: {
                 nome: raceLabel,
                 modificadores,
-                passivas: [passivaEscolhida.passiva]
+                passivas: passivasEscolhidas.map((item) => item.passiva),
+                passivaRacial: "",
+                vantagensPadrao: [],
+                vantagensSituacionais: [],
+                desvantagens: []
             }
         };
     }
@@ -1194,6 +1376,8 @@
             container.style.display = "none";
         }
         atualizarInterfaceRacaHibridaAuto();
+        updateRaceVariantAuto();
+        atualizarPainelRacialAuto();
     }
 
     function generateCharacter() {
@@ -1226,14 +1410,20 @@
             distributed += gain;
         });
 
-        const getMod = (base, raceMod) => Math.floor(base / 2) + (raceMod * Math.max(1, Math.floor(level / 20)));
+        const raceModifierStep = getRaceModifierStepAuto(level);
+        const raceModifiersBase = {};
+        RACE_ATTR_KEYS.forEach((attr) => {
+            raceModifiersBase[attr] = Number(raceData.modificadores[attr] || 0);
+        });
+        const raceModifiersProgressive = getProgressiveRaceModifiersAuto(raceModifiersBase, level);
+        const getMod = (base, raceMod) => Math.floor(base / 2) + Number(raceMod || 0);
         
-        const fFim = getMod(baseStats.força, raceData.modificadores.força);
-        const iFim = getMod(baseStats.inteligência, raceData.modificadores.inteligência);
-        const vFim = getMod(baseStats.forçaVontade, raceData.modificadores.forçaVontade);
-        const aFim = getMod(baseStats.agilidade, raceData.modificadores.agilidade);
-        const rFim = getMod(baseStats.resistência, raceData.modificadores.resistência);
-        const cFim = getMod(baseStats.carisma, raceData.modificadores.carisma);
+        const fFim = getMod(baseStats.força, raceModifiersProgressive["força"]);
+        const iFim = getMod(baseStats.inteligência, raceModifiersProgressive["inteligência"]);
+        const vFim = getMod(baseStats.forçaVontade, raceModifiersProgressive["forçaVontade"]);
+        const aFim = getMod(baseStats.agilidade, raceModifiersProgressive["agilidade"]);
+        const rFim = getMod(baseStats.resistência, raceModifiersProgressive["resistência"]);
+        const cFim = getMod(baseStats.carisma, raceModifiersProgressive["carisma"]);
 
         // HP/MP/SP
         let hp = classData.hp + (level * 5) + rFim;
@@ -1246,6 +1436,48 @@
         const mkBox = (lbl, val) => `<div class='stat-box'><div class='stat-label'>${lbl}</div><div class='stat-value'>${val}</div></div>`;
         const subclassData = subKey !== 'none' && classData.subclasses[subKey] ? classData.subclasses[subKey] : null;
         const subclassText = subclassData ? subclassData.nome : 'Sem subclasse';
+        const renderRaceResultList = (itens, vazioTexto, anuladas) => {
+            if (!Array.isArray(itens) || !itens.length) {
+                return `<p class="field-help">${escapeHtml(vazioTexto)}</p>`;
+            }
+            return `<div class="ability-grid">${itens.map((item) => {
+                const texto = escapeHtml(item?.texto || item?.passiva || item || "");
+                const anulada = Boolean(anuladas && item?.id && anuladas.has(item.id));
+                return `<div class="ability-card is-selected"><strong>${texto}</strong>${anulada ? '<small>Marcada como anulada por uma vantagem racial.</small>' : ''}</div>`;
+            }).join("")}</div>`;
+        };
+        const raceAnnulledIds = getAnnulledDisadvantageIdsAuto(raceData);
+        const raceDetailHtml = raceSelection.mode === "hybrid"
+            ? `
+                <h4 class="result-section-title">Resumo racial</h4>
+                <ul class="passive-list">
+                    <li><span class="passive-type">Origem:</span> ${escapeHtml(raceSelection.raceLabel.replace(/^Hibrido:\s*/, ""))}</li>
+                    <li><span class="passive-type">Base:</span> ${escapeHtml(summarizeRaceModifiersAuto(raceModifiersBase))}</li>
+                    <li><span class="passive-type">Nivel atual:</span> ${escapeHtml(summarizeRaceModifiersAuto(raceModifiersProgressive))}</li>
+                    <li><span class="passive-type">Passo atual:</span> x${raceModifierStep}</li>
+                    <li><span class="passive-type">Estrutura:</span> Hibridos continuam usando media racial e passivas escolhidas. Vantagens e desvantagens estruturadas nao sao combinadas nesta rodada.</li>
+                </ul>
+                <h4 class="result-section-title">Passivas raciais escolhidas</h4>
+                ${renderRaceResultList((raceData.passivas || []).map((texto) => ({ texto })), "Nenhuma passiva racial escolhida para o hibrido.", new Set())}
+            `
+            : `
+                <h4 class="result-section-title">Resumo racial</h4>
+                <ul class="passive-list">
+                    <li><span class="passive-type">Raca:</span> ${escapeHtml(raceData.displayNome || raceSelection.raceLabel)}</li>
+                    <li><span class="passive-type">Base:</span> ${escapeHtml(summarizeRaceModifiersAuto(raceModifiersBase))}</li>
+                    <li><span class="passive-type">Nivel atual:</span> ${escapeHtml(summarizeRaceModifiersAuto(raceModifiersProgressive))}</li>
+                    <li><span class="passive-type">Passo atual:</span> x${raceModifierStep}</li>
+                    <li><span class="passive-type">Regra:</span> Mod final = metade dos pontos + mod racial</li>
+                </ul>
+                <h4 class="result-section-title">Passiva racial</h4>
+                ${renderRaceResultList(raceData.passivaRacial ? [{ texto: raceData.passivaRacial }] : [], "Nenhuma passiva racial cadastrada.", new Set())}
+                <h4 class="result-section-title">Vantagens padrao</h4>
+                ${renderRaceResultList(raceData.vantagensPadrao || [], "Nenhuma vantagem padrao cadastrada.", new Set())}
+                <h4 class="result-section-title">Vantagens situacionais</h4>
+                ${renderRaceResultList(raceData.vantagensSituacionais || [], "Nenhuma vantagem situacional cadastrada.", new Set())}
+                <h4 class="result-section-title">Desvantagens</h4>
+                ${renderRaceResultList(raceData.desvantagens || [], "Nenhuma desvantagem cadastrada.", raceAnnulledIds)}
+            `;
 
         let html = `
             <div class="result-card">
@@ -1265,15 +1497,15 @@
                     ${mkBox('Resistencia', rFim)} ${mkBox('Carisma', cFim)}
                 </div>
 
+                ${raceDetailHtml}
+
                 <h4 class="result-section-title">Progresso automatico</h4>
                 <div class="progress-grid">
                     ${skillTableLogic(level).map(s => `<div class="progress-item"><small>${s.name}</small><strong>${s.val}</strong></div>`).join('')}
                 </div>
 
-                <h4 class="result-section-title">Passivas e efeitos</h4>
+                <h4 class="result-section-title">Passivas e efeitos de classe</h4>
                 <ul class="passive-list">
-                    ${raceSelection.mode === "hybrid" ? `<li><span class="passive-type">Origem:</span> ${escapeHtml(raceSelection.raceLabel.replace(/^Hibrido:\\s*/, ""))}</li>` : ""}
-                    ${raceData.passivas.map(p => `<li><span class="passive-type">Raca:</span> ${p}</li>`).join('')}
                     ${classData.passivas.map(p => `<li><span class="passive-type">Classe:</span> ${p}</li>`).join('')}
                     ${subclassData ? subclassData.efeitos.map(e => `<li><span class="passive-type">Subclasse:</span> ${e}</li>`).join('') : ''}
                 </ul>
