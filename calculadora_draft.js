@@ -1,5 +1,6 @@
 (function () {
     const STORAGE_KEY = "INDOMITUS_CALCULADORA_DRAFT_V1";
+    const storage = window.INDOMITUS_STORAGE || {};
     const FIELD_IDS = [
         "equipamento",
         "modificador-forca",
@@ -8,18 +9,23 @@
         "raridade",
         "cristal",
         "encantamento_grau",
-        "encantamento_tipo"
+        "encantamento_tipo",
+        "encantamento_elemento"
     ];
     let restoring = false;
     let timer = null;
 
     function readDraft() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
-        } catch (_error) {
-            return null;
-        }
+        return typeof storage.readJson === "function"
+            ? storage.readJson(STORAGE_KEY, null)
+            : (() => {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (_error) {
+                    return null;
+                }
+            })();
     }
 
     function writeDraft() {
@@ -33,7 +39,11 @@
             fusionIds: typeof obterIdsMateriaisFusao === "function" ? obterIdsMateriaisFusao() : [],
             hadCalculated: Boolean(document.getElementById("resultado-container") && document.getElementById("resultado-container").style.display === "block")
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        if (typeof storage.writeJson === "function") {
+            storage.writeJson(STORAGE_KEY, payload);
+        } else {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        }
     }
 
     function scheduleWriteDraft() {
@@ -78,7 +88,11 @@
     }
 
     function clearDraft() {
-        localStorage.removeItem(STORAGE_KEY);
+        if (typeof storage.remove === "function") {
+            storage.remove(STORAGE_KEY);
+        } else {
+            localStorage.removeItem(STORAGE_KEY);
+        }
         window.location.reload();
     }
 

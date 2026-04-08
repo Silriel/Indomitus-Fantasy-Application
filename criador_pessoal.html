@@ -1655,6 +1655,22 @@
                     <h4 style="color:var(--text-muted); border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:15px;">Inventario</h4>
                     <textarea id="inventarioTexto" class="notes-area" placeholder="Descreva mochila, suprimentos, chaves, mapas, consumiveis, recursos ou organizacao do inventario..." oninput="sincronizarInventarioTexto(this.value, 'form')"></textarea>
                     <div class="notes-help">Aqui voce pode guardar texto livre e tambem itens manuais ou importados da calculadora.</div>
+                    <div class="builder-grid" style="margin-top:12px;">
+                        <div class="resource-input">
+                            <label for="mochilaTipo">Mochila</label>
+                            <select id="mochilaTipo" onchange="if (typeof renderPainelInventario === 'function') renderPainelInventario(); recalcularSeResultadoVisivel();">
+                                <option value="sem_mochila">Sem mochila</option>
+                                <option value="pequena">Mochila Pequena</option>
+                                <option value="media">Mochila Media</option>
+                                <option value="grande">Mochila Grande</option>
+                                <option value="magica_comum">Mochila Magica Comum</option>
+                                <option value="magica_dimensional">Mochila Magica Dimensional</option>
+                            </select>
+                        </div>
+                        <div class="resource-input full-span">
+                            <div class="codex-note">CR base = 10 + (bonus final de Forca x 2). A mochila aumenta a capacidade total e aplica penalidades de movimento e furtividade.</div>
+                        </div>
+                    </div>
                     <div class="builder-grid">
                         <div class="resource-input">
                             <label for="inventarioManualNome">Nome do item</label>
@@ -1673,6 +1689,10 @@
                         <div class="resource-input">
                             <label for="inventarioManualCa">Bonus de CA</label>
                             <input type="number" id="inventarioManualCa" value="0" min="0" step="0.01">
+                        </div>
+                        <div class="resource-input">
+                            <label for="inventarioManualPeso">Peso (kg)</label>
+                            <input type="number" id="inventarioManualPeso" value="0" min="0" step="0.01">
                         </div>
                         <div class="resource-input full-span">
                             <label for="inventarioManualDescricao">Descricao do item</label>
@@ -1751,6 +1771,10 @@
 <script src="criador_pessoal_dados_classes_4.js"></script>
 <script src="criador_pessoal_dados_classes_5.js"></script>
 <script src="racas_estruturadas.js"></script>
+<script src="shared/ui/ui_core.js"></script>
+<script src="shared/storage/storage_core.js"></script>
+<script src="shared/rules/race_core.js"></script>
+<script src="shared/inventory/inventory_core.js"></script>
 <script>
     const SAVE_FILE_HEADER = "INDOMITUS_CRIADOR_PESSOAL_V1";
     const SAVE_FIELD_IDS = [
@@ -1782,6 +1806,7 @@
         "spAtual",
         "anotacoes",
         "inventarioTexto",
+        "mochilaTipo",
         "habilidadesSelecionadas",
         "passivasSelecionadas",
         "especializacoesSelecionadas",
@@ -1852,95 +1877,25 @@
         "25": { "nome": "Anões Abissais", "modificadores": { "força": 2, "inteligência": 1, "forçaVontade": 0, "agilidade": 0, "resistência": 3, "carisma": 0 }, "passivas": ["Visão no Escuro."] },
         "59": { "nome": "Vampiro", "modificadores": { "força": 3, "inteligência": 3, "forçaVontade": 3, "agilidade": 3, "resistência": 4, "carisma": 3 }, "passivas": ["Imortalidade relativa", "Dreno Vital."] }
     };
-    const HYBRID_RACE_VALUE = "hybrid";
-    const RACE_ATTR_KEYS = ["força", "inteligência", "forçaVontade", "agilidade", "resistência", "carisma"];
+    const raceCore = window.INDOMITUS_RACE_CORE;
+    const HYBRID_RACE_VALUE = raceCore.HYBRID_RACE_VALUE;
+    const RACE_ATTR_KEYS = raceCore.ATTR_KEYS;
 
-    function criarRaceDataVazia(nome) {
-        return {
-            nome: nome || "Raca sem dados",
-            modificadores: {
-                "força": 0,
-                "inteligência": 0,
-                "forçaVontade": 0,
-                "agilidade": 0,
-                "resistência": 0,
-                "carisma": 0
-            },
-            passivas: []
-        };
-    }
+    function criarRaceDataVazia(nome) { return raceCore.createEmptyRaceData(nome); }
 
-    function calcularPassoModificadorRacial(nivel) {
-        const nivelSeguro = Math.max(1, parseInt(nivel, 10) || 1);
-        return Math.floor((nivelSeguro - 1) / 20) + 1;
-    }
+    function calcularPassoModificadorRacial(nivel) { return raceCore.getRaceModifierStep(nivel); }
 
-    function calcularModificadoresRaciaisProgressivos(modificadoresBase, nivel) {
-        const passo = calcularPassoModificadorRacial(nivel);
-        const resultado = {};
-        RACE_ATTR_KEYS.forEach((attr) => {
-            resultado[attr] = Number(modificadoresBase?.[attr] || 0) * passo;
-        });
-        return resultado;
-    }
+    function calcularModificadoresRaciaisProgressivos(modificadoresBase, nivel) { return raceCore.getProgressiveRaceModifiers(modificadoresBase, nivel); }
 
-    function resumirModificadoresRaciais(modificadores) {
-        const labels = {
-            "força": "For",
-            "inteligência": "Int",
-            "forçaVontade": "Von",
-            "agilidade": "Agi",
-            "resistência": "Res",
-            "carisma": "Car"
-        };
-        const partes = RACE_ATTR_KEYS
-            .map((attr) => {
-                const valor = Number(modificadores?.[attr] || 0);
-                return valor ? `${labels[attr] || attr} ${valor > 0 ? "+" : ""}${valor}` : "";
-            })
-            .filter(Boolean);
-        return partes.length ? partes.join(" | ") : "Sem bonus racial numerico";
-    }
+    function resumirModificadoresRaciais(modificadores) { return raceCore.summarizeRaceModifiers(modificadores); }
 
-    function obterOpcoesRaciaisSelect(selectId) {
-        const select = document.getElementById(selectId || "raca");
-        if (!select) return [];
-        return [...select.options]
-            .filter((option) => option.value && option.value !== HYBRID_RACE_VALUE)
-            .map((option) => ({
-                id: String(option.value),
-                nome: String(option.textContent || option.innerText || option.value).trim()
-            }));
-    }
+    function obterOpcoesRaciaisSelect(selectId) { return raceCore.getRaceOptions(selectId || "raca"); }
 
-    function obterNomeRacialPorId(raceId, selectId) {
-        const option = obterOpcoesRaciaisSelect(selectId).find((item) => item.id === String(raceId));
-        return option ? option.nome : `Raca ${raceId}`;
-    }
+    function obterNomeRacialPorId(raceId, selectId) { return raceCore.getRaceNameById(raceId, selectId || "raca"); }
 
-    function obterRaceDataPorId(raceId, selectId, variantKey) {
-        const base = racialModifiers[String(raceId)];
-        if (typeof window.resolveIndomitusRaceData === "function") {
-            return window.resolveIndomitusRaceData(String(raceId), base, variantKey);
-        }
-        const vazio = criarRaceDataVazia(obterNomeRacialPorId(raceId, selectId));
-        if (!base || typeof base !== "object") return vazio;
-        return {
-            nome: base.nome || vazio.nome,
-            modificadores: {
-                ...vazio.modificadores,
-                ...(base.modificadores || {})
-            },
-            passivas: Array.isArray(base.passivas) ? base.passivas.slice() : []
-        };
-    }
+    function obterRaceDataPorId(raceId, selectId, variantKey) { return raceCore.getRaceData(raceId, racialModifiers, selectId || "raca", variantKey); }
 
-    function obterVariantesRaciaisDisponiveis(raceId, selectId) {
-        if (typeof window.getIndomitusRaceVariants === "function") {
-            return window.getIndomitusRaceVariants(String(raceId), racialModifiers[String(raceId)]);
-        }
-        return [];
-    }
+    function obterVariantesRaciaisDisponiveis(raceId, selectId) { return raceCore.getRaceVariants(raceId, racialModifiers, selectId || "raca"); }
 
     function atualizarInterfaceVarianteRacial() {
         const raceSelect = document.getElementById("raca");
@@ -2013,14 +1968,7 @@
         return normalized;
     }
 
-    function obterIdsDesvantagensAnuladas(raceData) {
-        return new Set(
-            [...(raceData?.vantagensPadrao || []), ...(raceData?.vantagensSituacionais || [])]
-                .flatMap((item) => Array.isArray(item.annuls) ? item.annuls : [])
-                .map((item) => String(item || ""))
-                .filter(Boolean)
-        );
-    }
+    function obterIdsDesvantagensAnuladas(raceData) { return raceCore.getAnnulledDisadvantageIds(raceData); }
 
     function removerDesvantagemRacial(disadvantageId) {
         const raceData = obterRaceDataPorId(document.getElementById("raca")?.value, "raca", document.getElementById("raceVariant")?.value);
@@ -2093,18 +2041,7 @@
         `;
     }
 
-    function normalizarIdsHibridos(raceIds, selectId) {
-        const permitidas = new Set(obterOpcoesRaciaisSelect(selectId).map((item) => item.id));
-        const usados = new Set();
-        return (Array.isArray(raceIds) ? raceIds : [])
-            .map((item) => String(item || ""))
-            .filter((item) => item && item !== HYBRID_RACE_VALUE && permitidas.has(item))
-            .filter((item) => {
-                if (usados.has(item)) return false;
-                usados.add(item);
-                return true;
-            });
-    }
+    function normalizarIdsHibridos(raceIds, selectId) { return raceCore.normalizeHybridIds(raceIds, selectId || "raca"); }
 
     function lerIdsHibridos(selectId) {
         const hidden = document.getElementById("hybridRaceIds");
@@ -2124,43 +2061,9 @@
         return ids;
     }
 
-    function obterPassivasHibridasDisponiveis(raceIds, selectId) {
-        return normalizarIdsHibridos(raceIds, selectId).flatMap((raceId) => {
-            const raceData = obterRaceDataPorId(raceId, selectId);
-            return (raceData.passivas || []).map((passiva, index) => ({
-                key: `${raceId}::${index}`,
-                raceId,
-                raceName: raceData.nome,
-                passiva: String(passiva || "")
-            }));
-        });
-    }
+    function obterPassivasHibridasDisponiveis(raceIds, selectId) { return raceCore.getHybridPassives(raceIds, racialModifiers, selectId || "raca"); }
 
-    function normalizarPassivasHibridasSelecionadas(passiveKeys, raceIds, selectId) {
-        const permitidas = new Set(obterPassivasHibridasDisponiveis(raceIds, selectId).map((item) => item.key));
-        let valores = passiveKeys;
-        if (typeof valores === "string") {
-            const bruto = valores.trim();
-            if (!bruto) {
-                valores = [];
-            } else {
-                try {
-                    valores = JSON.parse(bruto);
-                } catch (_error) {
-                    valores = [bruto];
-                }
-            }
-        }
-        const usados = new Set();
-        return (Array.isArray(valores) ? valores : [valores])
-            .map((item) => String(item || ""))
-            .filter((item) => item && permitidas.has(item))
-            .filter((item) => {
-                if (usados.has(item)) return false;
-                usados.add(item);
-                return true;
-            });
-    }
+    function normalizarPassivasHibridasSelecionadas(passiveKeys, raceIds, selectId) { return raceCore.normalizeHybridPassiveKeys(passiveKeys, raceIds, racialModifiers, selectId || "raca"); }
 
     function lerPassivasHibridasSelecionadas(raceIds, selectId) {
         const hidden = document.getElementById("hybridPassiveKeys");
@@ -2302,39 +2205,20 @@
             return null;
         }
 
-        const passivas = obterPassivasHibridasDisponiveis(ids, selectId);
-        const passiveKeys = lerPassivasHibridasSelecionadas(ids, selectId);
-        const passivasEscolhidas = passivas.filter((item) => passiveKeys.includes(item.key));
-
-        const soma = criarRaceDataVazia().modificadores;
-        const nomes = ids.map((raceId) => {
-            const raceData = obterRaceDataPorId(raceId, selectId);
-            RACE_ATTR_KEYS.forEach((attr) => {
-                soma[attr] += Number(raceData.modificadores[attr] || 0);
-            });
-            return raceData.nome;
-        });
-        const modificadores = {};
-        RACE_ATTR_KEYS.forEach((attr) => {
-            modificadores[attr] = Math.floor(soma[attr] / ids.length);
-        });
-
-        const raceLabel = `Hibrido: ${nomes.join(" + ")}`;
+        const resolvedHybrid = raceCore.resolveHybridRaceData(
+            ids,
+            lerPassivasHibridasSelecionadas(ids, selectId),
+            racialModifiers,
+            selectId || "raca",
+            obterNivelAtual()
+        );
         return {
             mode: "hybrid",
             raceIds: ids,
-            passiveKeys,
+            passiveKeys: resolvedHybrid.selectedPassiveKeys,
             raceVariant: "",
-            raceLabel,
-            raceData: {
-                nome: raceLabel,
-                modificadores,
-                passivas: passivasEscolhidas.map((item) => item.passiva),
-                passivaRacial: "",
-                vantagensPadrao: [],
-                vantagensSituacionais: [],
-                desvantagens: []
-            }
+            raceLabel: resolvedHybrid.raceLabel,
+            raceData: resolvedHybrid.raceData
         };
     }
 
@@ -4002,21 +3886,6 @@
         const input = document.getElementById(id);
         const valor = parseInt(input && input.value, 10);
         return Number.isFinite(valor) ? valor : 1;
-    }
-
-    function atualizarPontosLivres() {
-        const nivel = Math.max(1, parseInt(document.getElementById("nivel").value) || 1);
-        const total = 10 + (nivel - 1) * 5;
-        const gastos = ["forca", "inteligencia", "forcaVontade", "agilidade", "resistencia", "carisma"]
-            .reduce((acc, id) => acc + Math.max(0, lerAtributoDistribuicaoAtual(id) - 1), 0);
-
-        const sobra = total - gastos;
-        const el = document.getElementById("pontosTxt");
-        if (el) {
-            el.innerText = `Pontos DisponÃ­veis: ${sobra}`;
-            el.style.color = sobra < 0 ? "#ff4444" : "var(--primary)";
-        }
-        return sobra;
     }
 
     function atualizarPontosLivres() {

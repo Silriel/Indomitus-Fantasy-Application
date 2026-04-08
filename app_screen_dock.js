@@ -1,5 +1,6 @@
 (function () {
     const STORAGE_KEY = "INDOMITUS_SCREEN_DOCK_STATE_V1";
+    const storage = window.INDOMITUS_STORAGE || {};
     const LINKS = [
         { href: "calculadora_rpg.html", label: "Calculadora" },
         { href: "criador_pessoal.html", label: "Criador Pessoal" },
@@ -129,6 +130,9 @@
     }
 
     function readCollapsedState() {
+        if (typeof storage.readJson === "function") {
+            return storage.readJson(STORAGE_KEY, "collapsed") !== "open";
+        }
         try {
             return localStorage.getItem(STORAGE_KEY) !== "open";
         } catch (_error) {
@@ -137,6 +141,10 @@
     }
 
     function writeCollapsedState(isCollapsed) {
+        if (typeof storage.writeJson === "function") {
+            storage.writeJson(STORAGE_KEY, isCollapsed ? "collapsed" : "open");
+            return;
+        }
         try {
             localStorage.setItem(STORAGE_KEY, isCollapsed ? "collapsed" : "open");
         } catch (_error) {

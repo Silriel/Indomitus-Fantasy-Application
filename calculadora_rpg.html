@@ -1527,7 +1527,7 @@
                     <h3>Escolha a base do item</h3>
                     <p>Comece definindo o tipo do item. Isso ajusta os campos e o tipo de calculo usado no resultado.</p>
                 </div>
-                <div class="form-group full-width">
+                <div class="form-group full-width" id="group-material">
                     <label for="equipamento">Tipo de Equipamento</label>
                     <select id="equipamento" onchange="toggleCampos()">
                         <optgroup label="Armaduras">
@@ -1758,11 +1758,11 @@
                         <option value="99">99. Augieteritia</option>
                         <option value="100">100. Celestiarius (Divinos)</option>
                     </select>
-                    <div class="fusion-actions">
+                    <div class="fusion-actions" id="group-material-fusao-actions">
                         <button class="fusion-action" type="button" onclick="adicionarMaterialFusao()">Adicionar material à fusão</button>
                         <button class="fusion-action ghost" type="button" onclick="limparMateriaisFusao()">Limpar fusão</button>
                     </div>
-                    <div class="form-help">Se você usar só um material, a forja funciona normal. Se adicionar vários minérios, a forja faz a média arredondada dos bônus físicos, mágicos, de CA, cor e pontuação do material para entregar o resultado final.</div>
+                    <div class="form-help" id="group-material-fusao-help">Se você usar só um material, a forja funciona normal. Se adicionar vários minérios, a forja faz a média arredondada dos bônus físicos, mágicos, de CA, cor e pontuação do material para entregar o resultado final.</div>
                     <input type="hidden" id="material-fusao-state" value="">
                     <div id="material-fusao-list" class="fusion-list"></div>
                 </div>
@@ -1870,13 +1870,36 @@
 
                 <div class="form-group">
                     <label for="encantamento_tipo">Tipo do Encantamento</label>
-                    <select id="encantamento_tipo">
+                    <select id="encantamento_tipo" onchange="atualizarCamposEncantamento()">
                         <option value="dano_fisico">Dano Físico</option>
                         <option value="dano_magico">Dano Mágico</option>
                         <option value="dano_elemental">Dano Elemental (à escolha)</option>
                         <option value="ca">Classe de Armadura (CA)</option>
                         <option value="resistencia">Resistência Elemental (à escolha)</option>
                     </select>
+                </div>
+
+                <div class="form-group full-width" id="group-encantamento-elemento" style="display:none;">
+                    <label for="encantamento_elemento">Elemento do Encantamento</label>
+                    <select id="encantamento_elemento" onchange="atualizarCamposEncantamento()">
+                        <option value="fogo">Fogo</option>
+                        <option value="agua">Água</option>
+                        <option value="ar">Ar</option>
+                        <option value="terra">Terra</option>
+                        <option value="gelo">Gelo</option>
+                        <option value="eletrico">Elétrico</option>
+                        <option value="acido">Ácido</option>
+                        <option value="metal">Metal</option>
+                        <option value="planta">Planta</option>
+                        <option value="sangue">Sangue</option>
+                        <option value="veneno">Veneno</option>
+                        <option value="luz">Luz</option>
+                        <option value="trevas">Trevas</option>
+                        <option value="profano">Profano</option>
+                        <option value="draconico">Dracônico</option>
+                        <option value="divino">Divino</option>
+                    </select>
+                    <div class="form-help" id="encantamento_elemento_info">Escolha um elemento para ver as vantagens e desvantagens dele.</div>
                 </div>
             </div>
 
@@ -1895,339 +1918,72 @@
         </div>
     </main>
 
+    <script src="shared/ui/ui_core.js"></script>
+    <script src="shared/storage/storage_core.js"></script>
+    <script src="shared/data/forge_catalogs.js"></script>
+    <script src="shared/rules/forge_core.js"></script>
     <script>
         // ==========================================
         // DADOS DO SISTEMA DE JOGO (Preservados)
         // ==========================================
-        const tecidos = {
-    0: { nome: "Nenhum", bonusCa: 0, pontos: 0 },
-
-    1: { nome: "Couro Arcano 1", bonusCa: 1, pontos: 1 },
-    2: { nome: "Couro Arcano 2", bonusCa: 3, pontos: 2 },
-    3: { nome: "Couro Arcano 3", bonusCa: 6, pontos: 3 },
-
-    4: { nome: "Couro de Dragão 1", bonusCa: 2, pontos: 1 },
-    5: { nome: "Couro de Dragão 2", bonusCa: 4, pontos: 2 },
-    6: { nome: "Couro de Dragão 3", bonusCa: 7, pontos: 3 },
-
-    7: { nome: "Couro Emplumado 1", bonusCa: 2, pontos: 1 },
-    8: { nome: "Couro Emplumado 2", bonusCa: 4, pontos: 2 },
-    9: { nome: "Couro Emplumado 3", bonusCa: 8, pontos: 3 },
-
-    10: { nome: "Couro Escamoso 1", bonusCa: 3, pontos: 1 },
-    11: { nome: "Couro Escamoso 2", bonusCa: 5, pontos: 2 },
-    12: { nome: "Couro Escamoso 3", bonusCa: 10, pontos: 3 },
-
-    13: { nome: "Couro Espinhoso 1", bonusCa: 2, pontos: 1 },
-    14: { nome: "Couro Espinhoso 2", bonusCa: 4, pontos: 2 },
-    15: { nome: "Couro Espinhoso 3", bonusCa: 8, pontos: 3 },
-
-    16: { nome: "Couro Fino 1", bonusCa: 1, pontos: 1 },
-    17: { nome: "Couro Fino 2", bonusCa: 2, pontos: 2 },
-    18: { nome: "Couro Fino 3", bonusCa: 5, pontos: 3 },
-
-    19: { nome: "Couro Lanudo 1", bonusCa: 1, pontos: 1 },
-    20: { nome: "Couro Lanudo 2", bonusCa: 3, pontos: 2 },
-    21: { nome: "Couro Lanudo 3", bonusCa: 7, pontos: 3 },
-
-    22: { nome: "Couro Impermeável 1", bonusCa: 2, pontos: 1 },
-    23: { nome: "Couro Impermeável 2", bonusCa: 5, pontos: 2 },
-    24: { nome: "Couro Impermeável 3", bonusCa: 8, pontos: 3 },
-
-    25: { nome: "Couro Mágico 1", bonusCa: 3, pontos: 1 },
-    26: { nome: "Couro Mágico 2", bonusCa: 6, pontos: 2 },
-    27: { nome: "Couro Mágico 3", bonusCa: 10, pontos: 3 },
-
-    28: { nome: "Couro Reforçado 1", bonusCa: 6, pontos: 1 },
-    29: { nome: "Couro Reforçado 2", bonusCa: 10, pontos: 2 },
-    30: { nome: "Couro Reforçado 3", bonusCa: 12, pontos: 3 },
-
-    31: { nome: "Couro Sombrio 1", bonusCa: 2, pontos: 1 },
-    32: { nome: "Couro Sombrio 2", bonusCa: 4, pontos: 2 },
-    33: { nome: "Couro Sombrio 3", bonusCa: 8, pontos: 3 },
-
-    34: { nome: "Tecido Comum 1", bonusCa: 1, pontos: 1 },
-    35: { nome: "Tecido Comum 2", bonusCa: 2, pontos: 2 },
-    36: { nome: "Tecido Comum 3", bonusCa: 3, pontos: 3 },
-
-    37: { nome: "Tecido de Fogo Eterno 1", bonusCa: 2, pontos: 1 },
-    38: { nome: "Tecido de Fogo Eterno 2", bonusCa: 4, pontos: 2 },
-    39: { nome: "Tecido de Fogo Eterno 3", bonusCa: 7, pontos: 3 },
-
-    40: { nome: "Tecido de Linho 1", bonusCa: 1, pontos: 1 },
-    41: { nome: "Tecido de Linho 2", bonusCa: 2, pontos: 2 },
-    42: { nome: "Tecido de Linho 3", bonusCa: 4, pontos: 3 },
-
-    43: { nome: "Tecido de Nobre 1", bonusCa: 1, pontos: 1 },
-    44: { nome: "Tecido de Nobre 2", bonusCa: 3, pontos: 2 },
-    45: { nome: "Tecido de Nobre 3", bonusCa: 5, pontos: 3 },
-
-    46: { nome: "Tecido de Seda 1", bonusCa: 2, pontos: 1 },
-    47: { nome: "Tecido de Seda 2", bonusCa: 4, pontos: 2 },
-    48: { nome: "Tecido de Seda 3", bonusCa: 6, pontos: 3 },
-
-    49: { nome: "Tecido de Seda Lunar 1", bonusCa: 3, pontos: 1 },
-    50: { nome: "Tecido de Seda Lunar 2", bonusCa: 5, pontos: 2 },
-    51: { nome: "Tecido de Seda Lunar 3", bonusCa: 8, pontos: 3 },
-
-    52: { nome: "Tecido de Ossos 1", bonusCa: 3, pontos: 1 },
-    53: { nome: "Tecido de Ossos 2", bonusCa: 5, pontos: 2 },
-    54: { nome: "Tecido de Ossos 3", bonusCa: 9, pontos: 3 },
-
-    55: { nome: "Tecido Selvagem 1", bonusCa: 2, pontos: 1 },
-    56: { nome: "Tecido Selvagem 2", bonusCa: 4, pontos: 2 },
-    57: { nome: "Tecido Selvagem 3", bonusCa: 6, pontos: 3 },
-
-    58: { nome: "Tecido de Sombra 1", bonusCa: 1, pontos: 1 },
-    59: { nome: "Tecido de Sombra 2", bonusCa: 3, pontos: 2 },
-    60: { nome: "Tecido de Sombra 3", bonusCa: 5, pontos: 3 },
-
-    61: { nome: "Tecido Viscoso 1", bonusCa: 2, pontos: 1 },
-    62: { nome: "Tecido Viscoso 2", bonusCa: 4, pontos: 2 },
-    63: { nome: "Tecido Viscoso 3", bonusCa: 6, pontos: 3 }
-};
-
-
-    const materiais = {
-        1: { nome: "Cobre", cor: "Avermelhado ou alaranjado brilhante", corHex: "#c45c26", bonusFisico: 1, bonusMagico: 0, bonusCa: 1, pontos: 1 },
-        2: { nome: "Latão", cor: "Cor dourada clara com um brilho metálico", corHex: "#d4af37", bonusFisico: 0, bonusMagico: 1, bonusCa: 1, pontos: 1 },
-        3: { nome: "Bronze", cor: "Marrom dourado profundo", corHex: "#8b6914", bonusFisico: 1, bonusMagico: 0, bonusCa: 1, pontos: 1 },
-        4: { nome: "Níquel", cor: "Prateada metálica", corHex: "#a8a8a8", bonusFisico: 1, bonusMagico: 1, bonusCa: 1, pontos: 1 },
-        5: { nome: "Ferrotite", cor: "Cinza metálico escuro", corHex: "#4a4a4e", bonusFisico: 2, bonusMagico: 1, bonusCa: 1, pontos: 1 },
-        6: { nome: "Estanho", cor: "Prata opaca", corHex: "#b8b8b8", bonusFisico: 1, bonusMagico: 2, bonusCa: 1, pontos: 1 },
-        7: { nome: "Ferro", cor: "Cinza metálico escuro", corHex: "#43464b", bonusFisico: 2, bonusMagico: 1, bonusCa: 1, pontos: 1 },
-        8: { nome: "Alumínio", cor: "Prateado brilhante", corHex: "#d0d4dc", bonusFisico: 2, bonusMagico: 2, bonusCa: 1, pontos: 1 },
-        9: { nome: "Chumbo", cor: "Cinza-azulado opaco", corHex: "#6b7b8c", bonusFisico: 3, bonusMagico: 2, bonusCa: 2, pontos: 1 },
-        10: { nome: "Ferro Cinza", cor: "Cinza fosco", corHex: "#6e6e6e", bonusFisico: 2, bonusMagico: 3, bonusCa: 2, pontos: 1 },
-        11: { nome: "Granito de Ferro", cor: "Cinza escuro", corHex: "#3d3d3d", bonusFisico: 3, bonusMagico: 2, bonusCa: 2, pontos: 1 },
-        12: { nome: "Ferro Fundido", cor: "Cinza fosco", corHex: "#5c5c5c", bonusFisico: 3, bonusMagico: 3, bonusCa: 2, pontos: 1 },
-        13: { nome: "Alumite", cor: "Prata claro", corHex: "#c8c8d0", bonusFisico: 2, bonusMagico: 4, bonusCa: 3, pontos: 1 },
-        14: { nome: "Irídio", cor: "Prateado metálico brilhante", corHex: "#e8e8f0", bonusFisico: 4, bonusMagico: 2, bonusCa: 3, pontos: 1 },
-        15: { nome: "Forgotius", cor: "Prata esverdeada", corHex: "#9aa8a0", bonusFisico: 4, bonusMagico: 4, bonusCa: 3, pontos: 1 },
-        16: { nome: "Vanadio", cor: "Cinza metálico com brilho verde azulado", corHex: "#5f7a78", bonusFisico: 3, bonusMagico: 5, bonusCa: 4, pontos: 2 },
-        17: { nome: "Ferro forjado", cor: "Cinza fosco escuro", corHex: "#2f2f32", bonusFisico: 5, bonusMagico: 2, bonusCa: 4, pontos: 2 },
-        18: { nome: "Cobalita", cor: "Azul metálico profundo", corHex: "#1e3a5f", bonusFisico: 5, bonusMagico: 5, bonusCa: 4, pontos: 2 },
-        19: { nome: "Aço Bruto", cor: "Cinza metálico escuro", corHex: "#4a4a50", bonusFisico: 6, bonusMagico: 4, bonusCa: 4, pontos: 2 },
-        20: { nome: "Latão Vermelho", cor: "Dourado avermelhado", corHex: "#c85c3c", bonusFisico: 4, bonusMagico: 6, bonusCa: 5, pontos: 2 },
-        21: { nome: "Ferro Galvanizado", cor: "Prata metálico com tons de cinza claro", corHex: "#a8a8b0", bonusFisico: 6, bonusMagico: 5, bonusCa: 5, pontos: 2 },
-        22: { nome: "Obsidiana", cor: "Preto profundo e brilhante, vítreo", corHex: "#0d0d12", bonusFisico: 7, bonusMagico: 5, bonusCa: 6, pontos: 2 },
-        23: { nome: "Níquel Prateado", cor: "Prateado brilhante claro", corHex: "#e0e8e8", bonusFisico: 5, bonusMagico: 7, bonusCa: 6, pontos: 2 },
-        24: { nome: "Prata", cor: "Brilhante e prateada", corHex: "#c0c0c0", bonusFisico: 7, bonusMagico: 5, bonusCa: 6, pontos: 2 },
-        25: { nome: "Ouro", cor: "Dourado brilhante", corHex: "#ffd700", bonusFisico: 5, bonusMagico: 7, bonusCa: 6, pontos: 2 },
-        26: { nome: "Cobalto", cor: "Azul metálico intenso", corHex: "#0047ab", bonusFisico: 7, bonusMagico: 7, bonusCa: 6, pontos: 2 },
-        27: { nome: "Obsidianita (Elfos negros)", cor: "Preto com reflexos azulados ou arroxeado", corHex: "#1a1a2e", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
-        28: { nome: "Ferro Sangrento", cor: "Vermelho escuro, quase rubro", corHex: "#5c1010", bonusFisico: 6, bonusMagico: 8, bonusCa: 7, pontos: 2 },
-        29: { nome: "Electrum", cor: "Dourado claro", corHex: "#e8d060", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
-        30: { nome: "Silvaril (Elfos)", cor: "Prateado brilhante com brilho leve de azulado", corHex: "#c0d0e8", bonusFisico: 8, bonusMagico: 8, bonusCa: 7, pontos: 2 },
-        31: { nome: "Aço", cor: "Cinza metálico claro", corHex: "#a8a8b0", bonusFisico: 8, bonusMagico: 6, bonusCa: 7, pontos: 2 },
-        32: { nome: "Seregrite", cor: "Prateado luminoso, com um brilho etéreo", corHex: "#d0e0f0", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
-        33: { nome: "Silvarium (Elfos)", cor: "Prata pura com um leve brilho esverdeado", corHex: "#b8c8c0", bonusFisico: 6, bonusMagico: 9, bonusCa: 8, pontos: 2 },
-        34: { nome: "Electrum Gnômico", cor: "Dourado claro", corHex: "#e8d060", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
-        35: { nome: "Titânio", cor: "Cinza prateado", corHex: "#878681", bonusFisico: 9, bonusMagico: 6, bonusCa: 8, pontos: 2 },
-        36: { nome: "Tungstênio", cor: "Cinza metálico escuro", corHex: "#4a4a4e", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
-        37: { nome: "Aço Imperial (Humanos)", cor: "Prateado com tons azulados", corHex: "#708090", bonusFisico: 9, bonusMagico: 9, bonusCa: 8, pontos: 2 },
-        38: { nome: "Aquarion (Elfos do mar)", cor: "Transparente ou azul cristalino", corHex: "#87ceeb", bonusFisico: 7, bonusMagico: 10, bonusCa: 9, pontos: 3 },
-        39: { nome: "Sombraformium (Elfos negros)", cor: "Preto metálico com reflexos roxos", corHex: "#2d1a3d", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
-        40: { nome: "Pyronite (Elfos Vulcânicos)", cor: "Vermelho-alaranjado brilhante", corHex: "#ff4500", bonusFisico: 10, bonusMagico: 7, bonusCa: 9, pontos: 3 },
-        41: { nome: "Folgarium", cor: "Amarelo metálico intenso", corHex: "#e6c200", bonusFisico: 10, bonusMagico: 10, bonusCa: 9, pontos: 3 },
-        42: { nome: "Aço Vulcânico", cor: "Cinza escuro com reflexos vermelho e laranja", corHex: "#3d2a28", bonusFisico: 7, bonusMagico: 11, bonusCa: 10, pontos: 3 },
-        43: { nome: "Aço de Damasco", cor: "Cinza prateado com padrões ondulado", corHex: "#8b8b9e", bonusFisico: 11, bonusMagico: 7, bonusCa: 10, pontos: 3 },
-        44: { nome: "Aço Endurecido (Anões Profundos)", cor: "Cinza metálico opaco", corHex: "#696969", bonusFisico: 11, bonusMagico: 11, bonusCa: 10, pontos: 3 },
-        45: { nome: "Verdelita (Elfos da Floresta)", cor: "Verde metálico", corHex: "#228b22", bonusFisico: 8, bonusMagico: 12, bonusCa: 11, pontos: 3 },
-        46: { nome: "Paládio", cor: "Prateado brilhante com tom esbranquiçado", corHex: "#e8e8e8", bonusFisico: 12, bonusMagico: 8, bonusCa: 11, pontos: 3 },
-        47: { nome: "Adamantina", cor: "Vermelho claro e metálico", corHex: "#e07070", bonusFisico: 12, bonusMagico: 12, bonusCa: 11, pontos: 3 },
-        48: { nome: "Aço Rúnico (Anões)", cor: "Cinza escuro com runas brilhando", corHex: "#4a4a55", bonusFisico: 13, bonusMagico: 8, bonusCa: 12, pontos: 3 },
-        49: { nome: "Aço Negro", cor: "Preto profundo e fosco", corHex: "#0a0a0a", bonusFisico: 8, bonusMagico: 13, bonusCa: 12, pontos: 3 },
-        50: { nome: "Deserterium (Elfos das areias)", cor: "Dourado esbranquiçado", corHex: "#d4c4a8", bonusFisico: 13, bonusMagico: 13, bonusCa: 12, pontos: 3 },
-        51: { nome: "Ébano", cor: "Preto intenso e sólido", corHex: "#1c1c1c", bonusFisico: 14, bonusMagico: 9, bonusCa: 13, pontos: 3 },
-        52: { nome: "Uradium (Altum Unmo)", cor: "Azul-claro cintilante com brilho branco", corHex: "#b0e0e6", bonusFisico: 9, bonusMagico: 14, bonusCa: 13, pontos: 3 },
-        53: { nome: "Paladril", cor: "Branco-prateado com reflexos bordo", corHex: "#e8e0e4", bonusFisico: 14, bonusMagico: 14, bonusCa: 13, pontos: 3 },
-        54: { nome: "Mithril", cor: "Prateado brilhante com brilho azulado", corHex: "#c0e0ff", bonusFisico: 15, bonusMagico: 9, bonusCa: 14, pontos: 3 },
-        55: { nome: "Aço Sombrio (Anões profundos)", cor: "Preto com reflexos roxos e azulados", corHex: "#2a1a35", bonusFisico: 9, bonusMagico: 15, bonusCa: 14, pontos: 4 },
-        56: { nome: "Aço Infernal (Demônios)", cor: "Vermelho escuro e metálico", corHex: "#8b0000", bonusFisico: 15, bonusMagico: 15, bonusCa: 14, pontos: 4 },
-        57: { nome: "Ebonite Anã", cor: "Preto metálico com um brilho prateado", corHex: "#2a2a30", bonusFisico: 10, bonusMagico: 16, bonusCa: 15, pontos: 4 },
-        58: { nome: "Adamantina Anã", cor: "Vermelho metálico com um tom mais escuro", corHex: "#a03030", bonusFisico: 16, bonusMagico: 10, bonusCa: 15, pontos: 4 },
-        59: { nome: "Dolomita Anã", cor: "Cinza claro com veios brancos", corHex: "#d3d3c8", bonusFisico: 16, bonusMagico: 16, bonusCa: 15, pontos: 4 },
-        60: { nome: "Mithril Élfico", cor: "Prateado brilhante com tom esverdeado sutil", corHex: "#b8d8c8", bonusFisico: 20, bonusMagico: 12, bonusCa: 17, pontos: 4 },
-        61: { nome: "Aquilurite", cor: "Azul meia-noite opaco com brilhos cintilantes", corHex: "#191970", bonusFisico: 12, bonusMagico: 20, bonusCa: 17, pontos: 4 },
-        62: { nome: "Aelduro (Elfyed)", cor: "Esmeralda com veios de luz dourada-azul", corHex: "#50c878", bonusFisico: 20, bonusMagico: 20, bonusCa: 17, pontos: 4 },
-        63: { nome: "Oricalco", cor: "Dourado avermelhado", corHex: "#d4a574", bonusFisico: 13, bonusMagico: 22, bonusCa: 18, pontos: 4 },
-        64: { nome: "Mithril Ananico", cor: "Prateado escuro fosco", corHex: "#8899aa", bonusFisico: 22, bonusMagico: 13, bonusCa: 18, pontos: 4 },
-        65: { nome: "Terramite", cor: "Marrom terroso com veios dourados", corHex: "#8b7355", bonusFisico: 22, bonusMagico: 22, bonusCa: 18, pontos: 5 },
-        66: { nome: "Eldarium (Elfae)", cor: "Verde metálico com dourado", corHex: "#6b8e23", bonusFisico: 24, bonusMagico: 14, bonusCa: 19, pontos: 4 },
-        67: { nome: "Aço de Sangue", cor: "Vermelho escuro com veios pretos", corHex: "#4a0808", bonusFisico: 14, bonusMagico: 24, bonusCa: 19, pontos: 4 },
-        68: { nome: "Aurumvár (Elfyed)", cor: "Dourado com esverdeado", corHex: "#daa520", bonusFisico: 24, bonusMagico: 24, bonusCa: 19, pontos: 5 },
-        69: { nome: "Aço Dwever", cor: "Dourado profundo com reflexos azulados", corHex: "#6b8eb5", bonusFisico: 26, bonusMagico: 15, bonusCa: 20, pontos: 5 },
-        70: { nome: "Draconium (Draconatos)", cor: "Verde-escuro com reflexos dourado", corHex: "#2f4f2f", bonusFisico: 15, bonusMagico: 26, bonusCa: 20, pontos: 5 },
-        71: { nome: "Lumithril (Elfos da luz)", cor: "Prateado com brilho dourado-azul", corHex: "#e0e8ff", bonusFisico: 26, bonusMagico: 26, bonusCa: 20, pontos: 4 },
-        72: { nome: "Arkanium", cor: "Prateado com brilho arroxeado", corHex: "#9370db", bonusFisico: 17, bonusMagico: 30, bonusCa: 23, pontos: 5 },
-        73: { nome: "Ceramitium", cor: "Branco fosco", corHex: "#f5f5f0", bonusFisico: 30, bonusMagico: 17, bonusCa: 23, pontos: 5 },
-        74: { nome: "Runádium (Anões antigos)", cor: "Prateado reluzente com runas pulsantes", corHex: "#c0c0e0", bonusFisico: 30, bonusMagico: 30, bonusCa: 23, pontos: 5 },
-        75: { nome: "Plastidium", cor: "Cinza metálico", corHex: "#808080", bonusFisico: 34, bonusMagico: 19, bonusCa: 24, pontos: 5 },
-        76: { nome: "Soléther (Elfae)", cor: "Ouro líquido com filamentos azul-leitoso", corHex: "#ffd700", bonusFisico: 19, bonusMagico: 34, bonusCa: 24, pontos: 5 },
-        77: { nome: "Aço Celestial (Anjos)", cor: "Prateado com reflexos dourados e azuis", corHex: "#e6f0ff", bonusFisico: 34, bonusMagico: 34, bonusCa: 24, pontos: 5 },
-        78: { nome: "Aurium", cor: "Ouro brilhante", corHex: "#ffd700", bonusFisico: 38, bonusMagico: 21, bonusCa: 25, pontos: 5 },
-        79: { nome: "Thundrium", cor: "Azul metálico com traços elétricos", corHex: "#4169e1", bonusFisico: 21, bonusMagico: 38, bonusCa: 25, pontos: 5 },
-        80: { nome: "Luminarite (Elandres)", cor: "Prateado luminescente", corHex: "#f0f8ff", bonusFisico: 38, bonusMagico: 38, bonusCa: 25, pontos: 6 },
-        81: { nome: "Aetherium", cor: "Azul-claro translúcido", corHex: "#b0e0ff", bonusFisico: 42, bonusMagico: 23, bonusCa: 26, pontos: 6 },
-        82: { nome: "Lunargem", cor: "Prateado com brilho azulado", corHex: "#c0d0e8", bonusFisico: 23, bonusMagico: 42, bonusCa: 26, pontos: 6 },
-        83: { nome: "Solarite", cor: "Dourado com reflexos laranja", corHex: "#ffa500", bonusFisico: 42, bonusMagico: 42, bonusCa: 26, pontos: 6 },
-        84: { nome: "Aço Estelar (Divinos)", cor: "Preto com brilhos prateados", corHex: "#1a1a2e", bonusFisico: 60, bonusMagico: 32, bonusCa: 40, pontos: 6 },
-        85: { nome: "Aço do Caos (Demônios)", cor: "Preto com reflexos vermelhos e púrpura", corHex: "#2d0a2d", bonusFisico: 27, bonusMagico: 50, bonusCa: 30, pontos: 5 },
-        86: { nome: "Adamantium", cor: "Verde metálico escuro", corHex: "#2f4f4f", bonusFisico: 50, bonusMagico: 27, bonusCa: 30, pontos: 5 },
-        87: { nome: "Voidium", cor: "Preto absoluto", corHex: "#000000", bonusFisico: 32, bonusMagico: 60, bonusCa: 40, pontos: 5 },
-        88: { nome: "Asmeridium (1 Indivíduo)", cor: "Dourado brilhante com brilho luminoso", corHex: "#ffd700", bonusFisico: 50, bonusMagico: 50, bonusCa: 30, pontos: 5 },
-        89: { nome: "Stellarium", cor: "Prateado com brilho estelar", corHex: "#e8e8ff", bonusFisico: 60, bonusMagico: 60, bonusCa: 40, pontos: 5 },
-        90: { nome: "Celestium (Divinos)", cor: "Dourado com reflexos celestiais azulados", corHex: "#fffacd", bonusFisico: 70, bonusMagico: 47, bonusCa: 50, pontos: 7 },
-        91: { nome: "Chronium", cor: "Prateado com brilho dourado e azulado", corHex: "#c9b037", bonusFisico: 47, bonusMagico: 70, bonusCa: 50, pontos: 7 },
-        92: { nome: "Éterium", cor: "Azul-claro translúcido com brilho etéreo", corHex: "#87ceeb", bonusFisico: 70, bonusMagico: 70, bonusCa: 50, pontos: 7 },
-        93: { nome: "Astralite (Elandres)", cor: "Prateado com brilho estelar azulado", corHex: "#6495ed", bonusFisico: 800, bonusMagico: 1000, bonusCa: 150, pontos: 7 },
-        94: { nome: "Astrolite (Elandres)", cor: "Dourado com reflexos prateados", corHex: "#daa520", bonusFisico: 1000, bonusMagico: 800, bonusCa: 150, pontos: 7 },
-        95: { nome: "Eldarium Estelar (Elandres)", cor: "Prateado com brilhos estelares e azulados", corHex: "#e0f0ff", bonusFisico: 10000, bonusMagico: 10000, bonusCa: 1000, pontos: 7 },
-        96: { nome: "Estarlite", cor: "Prateado com brilhos de estrelas cintilantes", corHex: "#fff8dc", bonusFisico: 20000, bonusMagico: 10000, bonusCa: 5000, pontos: 7 },
-        97: { nome: "Nebularia", cor: "Roxo escuro com reflexos cósmicos", corHex: "#4b0082", bonusFisico: 40000, bonusMagico: 40000, bonusCa: 20000, pontos: 7 },
-        98: { nome: "Marprafita", cor: "Prata branco intenso com brilho divino", corHex: "#f8f8ff", bonusFisico: 50000, bonusMagico: 40000, bonusCa: 25000, pontos: 5000 },
-        99: { nome: "Augieteritia", cor: "Dourado intenso com brilho divino", corHex: "#ffd700", bonusFisico: 75000, bonusMagico: 75000, bonusCa: 50000, pontos: 10000 },
-        100: { nome: "Celestiarius (Divinos)", cor: "Branco brilhante com reflexo dourado e azul", corHex: "#fffaf0", bonusFisico: 99999, bonusMagico: 99999, bonusCa: 99999, pontos: 999999 },
-    };
-
-    const raridades = {
-        comum: {bonusEquipamento: " (+0)", bonusCa: 0, pontos: 1},
-        incomum: {bonusEquipamento: " (+1 a 2 d2)", bonusCa: 1, pontos: 2},
-        raro: {bonusEquipamento: " (+3 a 4 d2)", bonusCa: 2, pontos: 3},
-        epico: {bonusEquipamento: " (+5 a 6 d2)", bonusCa: 3, pontos: 4},
-        magistral: {bonusEquipamento: " (+7 a 8 d2)", bonusCa: 4, pontos: 5},
-        lendario: {bonusEquipamento: " (+9 a 10 d2)", bonusCa: 5, pontos: 6},
-        mitico: {bonusEquipamento: " (+11 a 16 d6)", bonusCa: 6, pontos: 7},
-        unico: {bonusEquipamento: " (+17 a 25 d9)", bonusCa: 8, pontos: 8},
-        cosmico: {bonusEquipamento: " (+26 a 50 d25)", bonusCa: 16, pontos: 9},
-        divino: {bonusEquipamento: " (+50 a 1000 d951)", bonusCa: 20, pontos: 10},
-        celestial: {bonusEquipamento: " (+1001 a 2000 d1000)", bonusCa: 28, pontos: 0},
-        tesouro: {bonusEquipamento: " (+2001 a Infinito)", bonusCa: "Sim", pontos: 0},
-    };
-
-    const cristais = {
-        0: {nome: "Nenhum", bonusMagico: 0, pontos: 0},
-        1: {nome: "Transparente", bonusMagico: 1, pontos: 1},
-        2: {nome: "Branco", bonusMagico: 1, pontos: 1},
-        3: {nome: "Marrom", bonusMagico: 2, pontos: 1},
-        4: {nome: "Amarelo", bonusMagico: 2, pontos: 1},
-        5: {nome: "Rosa", bonusMagico: 2, pontos: 1},
-        6: {nome: "Cinza", bonusMagico: 2, pontos: 1},
-        7: {nome: "Verde", bonusMagico: 2, pontos: 1},
-        8: {nome: "Violeta", bonusMagico: 3, pontos: 1},
-        9: {nome: "Malva", bonusMagico: 3, pontos: 1},
-        10: {nome: "Lilás", bonusMagico: 3, pontos: 1},
-        11: {nome: "Laranja", bonusMagico: 4, pontos: 1},
-        12: {nome: "Azul", bonusMagico: 4, pontos: 1},
-        13: {nome: "Índigo", bonusMagico: 4, pontos: 1},
-        14: {nome: "Fúcsia", bonusMagico: 4, pontos: 1},
-        15: {nome: "Verde", bonusMagico: 5, pontos: 1},
-        16: {nome: "Jade", bonusMagico: 5, pontos: 1},
-        17: {nome: "Turquesa", bonusMagico: 5, pontos: 1},
-        18: {nome: "Ardósia", bonusMagico: 5, pontos: 1},
-        19: {nome: "Cobre", bonusMagico: 6, pontos: 1},
-        20: {nome: "Borgonha", bonusMagico: 6, pontos: 1},
-        21: {nome: "Vermelho", bonusMagico: 7, pontos: 2},
-        22: {nome: "Alizarina", bonusMagico: 7, pontos: 2},
-        23: {nome: "Esmeralda", bonusMagico: 7, pontos: 2},
-        24: {nome: "Ciano", bonusMagico: 8, pontos: 2},
-        25: {nome: "Magenta", bonusMagico: 8, pontos: 2},
-        26: {nome: "Bordo", bonusMagico: 9, pontos: 2},
-        27: {nome: "Safira", bonusMagico: 9, pontos: 2},
-        28: {nome: "Roxo", bonusMagico: 10, pontos: 2},
-        29: {nome: "Citrino", bonusMagico: 10, pontos: 2},
-        30: {nome: "Cardo", bonusMagico: 11, pontos: 2},
-        31: {nome: "Âmbar", bonusMagico: 12, pontos: 2},
-        32: {nome: "Púrpura", bonusMagico: 12, pontos: 2},
-        33: {nome: "Rubi", bonusMagico: 12, pontos: 2},
-        34: {nome: "Carmesim", bonusMagico: 13, pontos: 2},
-        35: {nome: "Fogo", bonusMagico: 13, pontos: 2},
-        36: {nome: "Rútilo", bonusMagico: 13, pontos: 2},
-        37: {nome: "", bonusMagico: 14, pontos: 2},
-        38: {nome: "Aquamarina", bonusMagico: 14, pontos: 2},
-        39: {nome: "Ametista", bonusMagico: 15, pontos: 2},
-        40: {nome: "Arco-Íris", bonusMagico: 16, pontos: 2},
-        41: {nome: "Sangue", bonusMagico: 17, pontos: 2},
-        42: {nome: "Cobreado", bonusMagico: 18, pontos: 2},
-        43: {nome: "Prateado", bonusMagico: 19, pontos: 2},
-        44: {nome: "Dourado", bonusMagico: 20, pontos: 2},
-        45: {nome: "Erythion", bonusMagico: 22, pontos: 3},
-        46: {nome: "Sylvarius", bonusMagico: 22, pontos: 3},
-        47: {nome: "Cryonix", bonusMagico: 22, pontos: 3},
-        48: {nome: "Noctisfera", bonusMagico: 25, pontos: 3},
-        49: {nome: "Luminaris", bonusMagico: 27, pontos: 3},
-        50: {nome: "Aetherium", bonusMagico: 30, pontos: 3},
-        51: {nome: "Lunar", bonusMagico: 35, pontos: 4},
-        52: {nome: "Solar", bonusMagico: 40, pontos: 4},
-        53: {nome: "Estelar", bonusMagico: 45, pontos: 4},
-        54: {nome: "Nebular", bonusMagico: 50, pontos: 4},
-        55: {nome: "Cósmico", bonusMagico: 70, pontos: 4},
-        56: {nome: "Galático", bonusMagico: 100, pontos: 4},
-        57: {nome: "Universal", bonusMagico: 150, pontos: 4},
-        58: {nome: "Multiversal", bonusMagico: 200, pontos: 4},
-    };
-
-    const encGraus = {
-        "nenhum": { nome: "Nenhum", sucesso: "", pontos: 0, multPct: 0, bonusCa: 0, reves: 0, prof: "" },
-        "basico": { nome: "Básico", sucesso: "< 65 (d100)", pontos: 1, multPct: 0.5, bonusCa: 3, reves: 2, prof: "Iniciante" },
-        "intermediario": { nome: "Intermediário", sucesso: "< 70 (d100)", pontos: 3, multPct: 1, bonusCa: 6, reves: 4, prof: "Avançado" },
-        "avancado": { nome: "Avançado", sucesso: "< 700 (d1000)", pontos: 5, multPct: 1.5, bonusCa: 12, reves: 6, prof: "Superior" },
-        "superior": { nome: "Superior", sucesso: "< 800 (d1000)", pontos: 7, multPct: 3, bonusCa: 24, reves: 9, prof: "Mestre" },
-        "mestre": { nome: "Mestre", sucesso: "< 8500 (d10000)", pontos: 10, multPct: 5, bonusCa: 48, reves: 12, prof: "Grão-Mestre" }
-    };
-
-    const encTipos = {
-        "dano_fisico": { nome: "Bônus de dano físico", isCa: false },
-        "dano_magico": { nome: "Bônus de dano mágico", isCa: false },
-        "dano_elemental": { nome: "Bônus de dano elemental", isCa: false },
-        "ca": { nome: "Bônus classe de armadura", isCa: true },
-        "resistencia": { nome: "Resistência elemental", isCa: false }
-    };
-
-    const tiposConfig = {
-        armadura_definitiva:{ categoria: 'armadura', multCA: 1.00, peso: 22,   usaTecido: true,  label: 'Armadura Definitiva' },
-        armadura_poder:  { categoria: 'armadura', multCA: 1.00, peso: 25,   usaTecido: true,  label: 'Armadura de Poder' },
-        armadura_pesada: { categoria: 'armadura', multCA: 1.00, peso: 16,   usaTecido: false, label: 'Armadura Pesada' },
-        armadura_media:  { categoria: 'armadura', multCA: 0.80, peso: 12,   usaTecido: false, label: 'Armadura Média' },
-        armadura_leve:   { categoria: 'armadura', multCA: 0.70, peso: 7,    usaTecido: false, label: 'Armadura Leve' },
-        roupas:          { categoria: 'armadura', multCA: 0.40, peso: 3,    usaTecido: false, label: 'Roupas' },
-        escudo:          { categoria: 'armadura', multCA: 0.10, peso: 3,    usaTecido: false, label: 'Escudo' },
-        anel:            { categoria: 'adorno',   multCA: 0.10, peso: 0.5,  usaTecido: false, label: 'Anel' },
-        colar:           { categoria: 'adorno',   multCA: 0.25, peso: 0.5,  usaTecido: false, label: 'Colar' },
-        equip_pequeno:   { categoria: 'arma', dado: '1d6',  peso: 1, usaForca: false, label: 'Equipamento Pequeno' },
-        equip_misto:     { categoria: 'arma', dado: '1d8 (1 mão) / 1d10 (2 mãos)', peso: 2, usaForca: false, label: 'Equipamento Misto' },
-        equip_grande:    { categoria: 'arma', dado: '1d12', peso: 4, usaForca: true,  label: 'Equipamento Grande' },
-        equip_magico:    { categoria: 'arma', dado: '1d8',  peso: 5, usaForca: false, label: 'Equipamento Mágico', somenteMAG: true },
-        equip_definitivo:{ categoria: 'arma', dado: '1d8 (1 mão) / 1d10 (2 mãos)', peso: 4, usaForca: false, label: 'Equipamento Definitivo' },
-    };
+        const { tecidos, materiais, raridades, cristais, encGraus, encTipos, encantamentoElementos, tiposConfig } = window.INDOMITUS_FORGE_CATALOGS;
+    const {
+        rolarInteiro,
+        rolarDado,
+        rolarLoteDados,
+        resumirResultadosRolados,
+        rolarFaixaComDado,
+        rolarBonusAberto,
+        rolarBonusRaridade,
+        obterMetadadosEquipaveisForja,
+        formatarListaElemento,
+        calcularBonusPercentualArredondado,
+        obterCorTecidoBase
+    } = window.INDOMITUS_FORGE_CORE;
     const FORGED_ITEM_STORAGE_KEY = "INDOMITUS_FORGED_ITEMS_V1";
     let ultimoItemForjado = null;
 
-    function obterMetadadosEquipaveisForja(forgeTipo, cfg){
-        const tipoNormalizado = String(forgeTipo || "").trim();
-        if ((cfg && cfg.categoria === 'armadura' && tipoNormalizado !== 'escudo') || tipoNormalizado.startsWith('armadura') || tipoNormalizado === 'roupas') {
-            return { equipGroup: 'armadura', handMode: 'none' };
+    function obterElementoEncantamentoAtual() {
+        const tipoEnc = document.getElementById('encantamento_tipo')?.value;
+        if (tipoEnc !== 'dano_elemental' && tipoEnc !== 'resistencia') return null;
+        const elementoKey = document.getElementById('encantamento_elemento')?.value || 'fogo';
+        return window.INDOMITUS_FORGE_CORE.obterElementoEncantamentoAtual(elementoKey);
+    }
+
+    function atualizarCamposEncantamento() {
+        const tipoEnc = document.getElementById('encantamento_tipo')?.value;
+        const grupo = document.getElementById('group-encantamento-elemento');
+        const info = document.getElementById('encantamento_elemento_info');
+        const mostrar = tipoEnc === 'dano_elemental' || tipoEnc === 'resistencia';
+        if (grupo) grupo.style.display = mostrar ? 'flex' : 'none';
+        if (!mostrar) {
+            if (info) info.textContent = 'Escolha um elemento para ver as vantagens e desvantagens dele.';
+            return;
         }
-        if (tipoNormalizado === 'escudo') {
-            return { equipGroup: 'mao', handMode: 'one_hand' };
-        }
-        if (tipoNormalizado === 'equip_pequeno' || tipoNormalizado === 'equip_magico') {
-            return { equipGroup: 'mao', handMode: 'one_hand' };
-        }
-        if (tipoNormalizado === 'equip_grande') {
-            return { equipGroup: 'mao', handMode: 'two_hands' };
-        }
-        if (tipoNormalizado === 'equip_misto' || tipoNormalizado === 'equip_definitivo') {
-            return { equipGroup: 'mao', handMode: 'flex' };
-        }
-        if (tipoNormalizado === 'anel' || tipoNormalizado === 'colar' || (cfg && cfg.categoria === 'adorno')) {
-            return { equipGroup: 'adorno', handMode: 'none' };
-        }
-        return { equipGroup: 'nenhum', handMode: 'none' };
+        const elemento = obterElementoEncantamentoAtual();
+        if (!info || !elemento) return;
+        const efeito = tipoEnc === 'resistencia' ? 'resistencia' : 'dano';
+        info.textContent = `${efeito.charAt(0).toUpperCase() + efeito.slice(1)} de ${elemento.nome}. Vantagens: ${formatarListaElemento(elemento.vantagens)}. Desvantagens: ${formatarListaElemento(elemento.desvantagens)}.`;
+    }
+
+    function atualizarRotulosEncantamento() {
+        const selectGrau = document.getElementById('encantamento_grau');
+        if (!selectGrau) return;
+        [...selectGrau.options].forEach((option) => {
+            const grau = encGraus[option.value];
+            if (!grau) return;
+            option.textContent = option.value === 'nenhum'
+                ? 'Nenhum'
+                : `${grau.nome} (+${grau.pontos} ponto${grau.pontos === 1 ? '' : 's'} de encantamento)`;
+        });
     }
 
     function lerItensForjadosCompartilhados() {
+        const storage = window.INDOMITUS_STORAGE || {};
+        if (typeof storage.readJson === "function") {
+            const dados = storage.readJson(FORGED_ITEM_STORAGE_KEY, []);
+            return Array.isArray(dados) ? dados : [];
+        }
         try {
             const bruto = window.localStorage.getItem(FORGED_ITEM_STORAGE_KEY);
             if (!bruto) return [];
@@ -2239,7 +1995,13 @@
     }
 
     function salvarItensForjadosCompartilhados(lista) {
-        window.localStorage.setItem(FORGED_ITEM_STORAGE_KEY, JSON.stringify(Array.isArray(lista) ? lista : []));
+        const payload = Array.isArray(lista) ? lista : [];
+        const storage = window.INDOMITUS_STORAGE || {};
+        if (typeof storage.writeJson === "function") {
+            storage.writeJson(FORGED_ITEM_STORAGE_KEY, payload);
+            return;
+        }
+        window.localStorage.setItem(FORGED_ITEM_STORAGE_KEY, JSON.stringify(payload));
     }
 
     function exportarUltimoItemForjado() {
@@ -2262,9 +2024,27 @@
         const cfg = tiposConfig[tipo];
         const groupTecido = document.getElementById('group-tecido');
         const groupForca = document.getElementById('group-forca');
+        const groupMaterial = document.getElementById('group-material');
+        const fusionActions = document.getElementById('group-material-fusao-actions');
+        const fusionHelp = document.getElementById('group-material-fusao-help');
+        const fusionList = document.getElementById('material-fusao-list');
+        const usarSoTecido = Boolean(cfg && cfg.somenteTecido);
 
         if (groupTecido) groupTecido.style.display = (cfg && cfg.usaTecido) ? 'flex' : 'none';
         if (groupForca) groupForca.style.display = (cfg && cfg.usaForca) ? 'flex' : 'none';
+        if (groupMaterial) groupMaterial.style.display = usarSoTecido ? 'none' : 'flex';
+        if (fusionActions) fusionActions.style.display = usarSoTecido ? 'none' : 'flex';
+        if (fusionHelp) {
+            fusionHelp.textContent = usarSoTecido
+                ? 'Roupas usam apenas tecido ou couro. O material de minério não entra no cálculo deste tipo.'
+                : 'Se você usar só um material, a forja funciona normal. Se adicionar vários minérios, a forja faz a média arredondada dos bônus físicos, mágicos, de CA, cor e pontuação do material para entregar o resultado final.';
+        }
+        if (fusionList && usarSoTecido) {
+            fusionList.innerHTML = '<div class="fusion-empty">Roupas não usam minério. O cálculo desta peça usa apenas o tecido ou couro selecionado.</div>';
+        } else if (!usarSoTecido && fusionList && !fusionList.children.length) {
+            renderizarMateriaisFusao();
+        }
+        atualizarCamposEncantamento();
     }
 
     function aplicarTextosClarosCalculadora() {
@@ -2287,6 +2067,7 @@
         setText('label[for="cristal"]', 'Essencia');
         setText('label[for="encantamento_grau"]', 'Nivel do encantamento');
         setText('label[for="encantamento_tipo"]', 'Tipo do encantamento');
+        setText('label[for="encantamento_elemento"]', 'Elemento do encantamento');
 
         const heroMarks = [...document.querySelectorAll('.forge-mark')];
         if (heroMarks[0]) heroMarks[0].textContent = 'Tipo do item';
@@ -2315,7 +2096,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         aplicarTextosClarosCalculadora();
+        atualizarRotulosEncantamento();
         toggleCampos();
+        atualizarCamposEncantamento();
         renderizarMateriaisFusao();
     });
 
@@ -2376,6 +2159,12 @@
     function renderizarMateriaisFusao() {
         const container = document.getElementById('material-fusao-list');
         if (!container) return;
+        const tipo = document.getElementById('equipamento')?.value;
+        const cfg = tiposConfig[tipo];
+        if (cfg && cfg.somenteTecido) {
+            container.innerHTML = `<div class="fusion-empty">Roupas não usam minério. O cálculo desta peça usa apenas o tecido ou couro selecionado.</div>`;
+            return;
+        }
 
         const ids = obterIdsMateriaisFusao();
         if (!ids.length) {
@@ -2581,7 +2370,7 @@
     function obterArteEquipamento(tipo, cfg, materialId) {
         if (!cfg) return '';
         const materialKey = String(materialId || '1').trim();
-        const safeId = /^\d+$/.test(materialKey) ? String(Number(materialKey)).padStart(2, '0') : '01';
+        const safeId = /^\d+$/.test(materialKey) ? String(Math.max(1, Number(materialKey))).padStart(2, '0') : '01';
 
         if (tipo === 'armadura_definitiva') return `assets/forja/generated/armor-def-m${safeId}.png`;
         if (tipo === 'equip_definitivo') return `assets/forja/generated/weapon-def-m${safeId}.png`;
@@ -2596,13 +2385,15 @@
         if (!cfg) return;
 
         const materialVal = document.getElementById('material').value;
-        const materialIdsAtivos = obterIdsMateriaisAtivos();
+        const usarSoTecido = Boolean(cfg.somenteTecido);
+        const materialIdsAtivos = usarSoTecido ? ['0'] : obterIdsMateriaisAtivos();
         const raridadeVal = document.getElementById('raridade').value;
         const cristalVal = document.getElementById('cristal').value;
         const tecidoVal = document.getElementById('tecido').value;
         const encGrauVal = document.getElementById('encantamento_grau').value;
         const encTipoVal = document.getElementById('encantamento_tipo').value;
-        const materialCombinado = construirMaterialCombinado(materialIdsAtivos);
+        const materialCombinado = usarSoTecido ? { ...materiais[0], ids: ['0'], referenciaId: 0, isFusion: false } : construirMaterialCombinado(materialIdsAtivos);
+        const elementoEncantamento = obterElementoEncantamentoAtual();
 
         const sel = {
             material: materialCombinado,
@@ -2615,29 +2406,50 @@
 
         if (!sel.material || !sel.raridade) return;
 
+        const raridadeRolada = rolarBonusRaridade(raridadeVal);
+
         const pontos = (Number(sel.material.pontos) || 0)
                      + (Number(sel.raridade.pontos) || 0)
                      + (Number(sel.cristal.pontos) || 0)
                      + (Number(sel.tecido.pontos) || 0)
                      + (Number(sel.encGrau.pontos) || 0);
 
-        let bFisico = sel.material.bonusFisico || 0;
+        const bonusFisicoBase = Number(sel.material.bonusFisico || 0);
         let bMagico = (sel.material.bonusMagico || 0) + (sel.cristal.bonusMagico || 0);
         let bCa = sel.material.bonusCa || 0;
         
         if (cfg.usaTecido) bCa += sel.tecido.bonusCa;
-        
-        let rariCa = sel.raridade.bonusCa;
-        let isEspecialRari = (rariCa === "Sim");
-        if (!isEspecialRari) bCa += Number(rariCa);
+
+        const bonusRaridadeEquipamento = Number(raridadeRolada.totalBonusEquipamento || 0);
+        const bonusRaridadeCa = Number(raridadeRolada.bonusCa || 0);
+        if (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') {
+            bCa += bonusRaridadeCa;
+        }
 
         let extraCaEncanto = 0;
         let extraDanoPct = 0;
+        let extraDanoEncanto = 0;
+        let extraResistenciaEncanto = 0;
+        let baseEncantamento = 0;
         if (sel.encGrau.pontos > 0) {
             if (sel.encTipo.isCa) {
                 extraCaEncanto = sel.encGrau.bonusCa;
+                baseEncantamento = bCa + bonusRaridadeCa;
             } else {
                 extraDanoPct = sel.encGrau.multPct;
+                if (encTipoVal === 'dano_fisico') {
+                    baseEncantamento = bonusFisicoBase + bonusRaridadeEquipamento;
+                    extraDanoEncanto = calcularBonusPercentualArredondado(baseEncantamento, extraDanoPct);
+                } else if (encTipoVal === 'dano_magico') {
+                    baseEncantamento = bMagico;
+                    extraDanoEncanto = calcularBonusPercentualArredondado(baseEncantamento, extraDanoPct);
+                } else if (encTipoVal === 'dano_elemental') {
+                    baseEncantamento = bonusFisicoBase + bMagico + bonusRaridadeEquipamento;
+                    extraDanoEncanto = calcularBonusPercentualArredondado(baseEncantamento, extraDanoPct);
+                } else if (encTipoVal === 'resistencia') {
+                    baseEncantamento = bCa + bonusRaridadeCa;
+                    extraResistenciaEncanto = calcularBonusPercentualArredondado(baseEncantamento, extraDanoPct);
+                }
             }
         }
 
@@ -2647,18 +2459,27 @@
         resDiv.className = "result-card rarity-active rarity-" + raridadeVal;
         
         const m = sel.material;
-        const corHex = m.corHex || "#888888";
-        const corTxt = m.cor || "";
+        const dadosCorTecido = obterCorTecidoBase(tecidoVal);
+        const corHex = usarSoTecido ? dadosCorTecido.corHex : (m.corHex || "#888888");
+        const corTxt = usarSoTecido ? dadosCorTecido.cor : (m.cor || "");
         const iconLabel = obterRotuloIcone(tipo, cfg);
         const iconClass = obterClasseVisualIcone(tipo, cfg);
-        const iconArt = obterArteEquipamento(tipo, cfg, m.referenciaId || materialVal);
+        const iconArt = obterArteEquipamento(tipo, cfg, usarSoTecido ? 1 : (m.referenciaId || materialVal));
         const raridadeNome = obterTextoSelecionado('raridade');
         const caFinalNumero = Number((((bCa + extraCaEncanto) * cfg.multCA)).toFixed(2));
-        const totalBonusFixo = bFisico + bMagico;
+        const totalBonusFixoSemEncanto = bonusFisicoBase + bMagico + (cfg.categoria === 'arma' ? bonusRaridadeEquipamento : 0);
+        const totalBonusFixo = totalBonusFixoSemEncanto + extraDanoEncanto;
         let danoFinalTxt = cfg.categoria === 'arma' ? `${cfg.dado} + ${totalBonusFixo}` : '';
-        if (cfg.categoria === 'arma' && extraDanoPct > 0) danoFinalTxt += ` (+${extraDanoPct}%)`;
-        const materialLinha = m.isFusion ? `Combinacao media: ${m.descricaoMateriais}` : m.nome;
-        const materialDetalhe = m.isFusion ? 'Cor media da combinacao' : corTxt;
+        if (cfg.categoria === 'arma' && extraDanoEncanto > 0) danoFinalTxt += ` (encanto +${extraDanoEncanto})`;
+        const materialLinha = usarSoTecido
+            ? `Somente tecido: ${sel.tecido.nome}`
+            : (m.isFusion ? `Combinacao media: ${m.descricaoMateriais}` : m.nome);
+        const materialDetalhe = usarSoTecido
+            ? `Cor principal do tecido: ${corTxt}`
+            : (m.isFusion ? 'Cor media da combinacao' : corTxt);
+        const encantamentoElementoTexto = elementoEncantamento
+            ? `${elementoEncantamento.nome} | Vantagens: ${formatarListaElemento(elementoEncantamento.vantagens)} | Desvantagens: ${formatarListaElemento(elementoEncantamento.desvantagens)}`
+            : '';
 
         let html = `<h3 class="result-title">${cfg.label}</h3>`;
         html += `<p class="result-subtitle">
@@ -2672,6 +2493,7 @@
             <span class="hl">Raridade:</span> ${raridadeNome} <br>
             <span class="hl">Essencia:</span> ${sel.cristal.nome} 
             ${cfg.usaTecido ? `| <span class="hl">Camada base:</span> ${sel.tecido.nome}` : ''}
+            ${elementoEncantamento ? `<br><span class="hl">Elemento do encantamento:</span> ${escHtml(elementoEncantamento.nome)}` : ''}
         </p>`;
 
         html += `<div class="result-ribbon-row">
@@ -2705,26 +2527,48 @@
 
         if (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') {
             let caFinalVal = caFinalNumero.toFixed(2);
-            let caDisplay = isEspecialRari ? `${caFinalVal} + Especial` : caFinalVal;
-            html += criarBox('CA final', caDisplay);
-            html += criarBox('Bonus do material', `+${sel.material.bonusCa}`);
-            if (cfg.usaTecido) html += criarBox('Bonus da camada base', `+${sel.tecido.bonusCa}`);
+            html += criarBox('CA final', caFinalVal);
+            if (!usarSoTecido) html += criarBox('Bonus do material', `+${sel.material.bonusCa}`);
+            if (cfg.usaTecido) html += criarBox(usarSoTecido ? 'Bonus do tecido' : 'Bonus da camada base', `+${sel.tecido.bonusCa}`);
+            html += criarBox('Bonus de CA da raridade', `+${bonusRaridadeCa}`);
+            if (raridadeRolada.caFoiRolado) html += criarBox('Rolagem da raridade (CA)', escHtml(`${raridadeRolada.formulaCa} -> ${raridadeRolada.resumoCa}`));
             if (extraCaEncanto > 0) html += criarBox('Encanto (CA)', `+${extraCaEncanto}`);
+            if (extraResistenciaEncanto > 0) {
+                html += criarBox('Resistencia elemental aplicada', `+${extraResistenciaEncanto}`);
+                html += criarBox('Base da resistencia', `+${baseEncantamento}`);
+            }
         } else {
             html += criarBox('Dano Base', cfg.dado);
+            html += criarBox('Rolagem da raridade', escHtml(`${raridadeRolada.formulaEquipamento} -> +${bonusRaridadeEquipamento}`));
+            if (raridadeRolada.detalhes && raridadeRolada.formulaEquipamento !== 'Sem rolagem') {
+                html += criarBox('Detalhes da rolagem', escHtml(raridadeRolada.detalhes));
+            }
+            html += criarBox('Bonus rolado da raridade', `+${bonusRaridadeEquipamento}`);
+            if (extraDanoEncanto > 0) {
+                html += criarBox('Encanto aplicado', `+${extraDanoEncanto}`);
+                html += criarBox('Base do encanto', `+${baseEncantamento}`);
+            }
             html += criarBox('Bonus fixo', `+${totalBonusFixo}`);
             
             html += criarBox('Dano total estimado', danoFinalTxt, true);
         }
 
-        html += criarBox('Bonus fisico', `+${bFisico}`);
+        html += criarBox('Bonus fisico', `+${bonusFisicoBase}`);
         html += criarBox('Bonus magico', `+${bMagico}`);
-        html += criarBox('Bonus da raridade', sel.raridade.bonusEquipamento);
+        if (cfg.categoria !== 'arma') {
+            html += criarBox('Regra da raridade', escHtml(sel.raridade.bonusEquipamento));
+        }
         html += criarBox('Peso final', `${cfg.peso} kg`);
+        if (elementoEncantamento) {
+            html += criarBox('Elemento do encantamento', elementoEncantamento.nome);
+        }
 
         if (sel.encGrau.pontos > 0) {
             html += criarBox('Nivel do encantamento', sel.encGrau.nome);
             html += criarBox('Tipo do encantamento', sel.encTipo.nome);
+            html += criarBox('Pontos de encantamento', `+${sel.encGrau.pontos}`);
+            if (elementoEncantamento) html += criarBox('Vantagens do elemento', formatarListaElemento(elementoEncantamento.vantagens));
+            if (elementoEncantamento) html += criarBox('Desvantagens do elemento', formatarListaElemento(elementoEncantamento.desvantagens));
             html += criarBox('Chance de sucesso', sel.encGrau.sucesso);
             html += criarBox('Penalidade em falha', `-${sel.encGrau.reves}%`);
         }
@@ -2744,24 +2588,36 @@
             categoria: cfg.categoria,
             categoriaLabel: iconLabel,
             resumo: `${cfg.label} calculado`,
-            descricao: `Material: ${materialLinha} | Raridade: ${raridadeNome} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Camada base: ${sel.tecido.nome}` : ''}${m.isFusion ? ' | Regra: media arredondada dos materiais' : ''}`,
+            descricao: `Material: ${materialLinha} | Raridade: ${raridadeNome}${cfg.categoria === 'arma' ? ` | Rolagem da raridade: ${raridadeRolada.formulaEquipamento} = +${bonusRaridadeEquipamento}` : ` | Bonus de CA da raridade: +${bonusRaridadeCa}${raridadeRolada.caFoiRolado ? ` (${raridadeRolada.resumoCa})` : ''}`} | Essencia: ${sel.cristal.nome}${cfg.usaTecido ? ` | Camada base: ${sel.tecido.nome}` : ''}${m.isFusion ? ' | Regra: media arredondada dos materiais' : ''}${sel.encGrau.pontos > 0 ? ` | Encantamento: ${sel.encTipo.nome} (${sel.encGrau.nome}, +${sel.encGrau.pontos} ponto${sel.encGrau.pontos === 1 ? '' : 's'})${extraCaEncanto > 0 ? `, CA +${extraCaEncanto}` : ''}${extraDanoEncanto > 0 ? `, dano +${extraDanoEncanto}` : ''}${extraResistenciaEncanto > 0 ? `, resistencia +${extraResistenciaEncanto}` : ''}` : ''}${encantamentoElementoTexto ? ` | Encantamento elemental: ${encantamentoElementoTexto}` : ''}`,
             caBonus: (cfg.categoria === 'armadura' || cfg.categoria === 'adorno') ? Math.max(0, Math.floor(caFinalNumero)) : 0,
             equipado: false,
             equipGroup: equipMeta.equipGroup,
             handMode: equipMeta.handMode,
             equippedSlots: [],
             materialNome: materialLinha,
-            materialIds: m.ids || [String(materialVal)],
-            materialReferenciaId: String(m.referenciaId || materialVal || ""),
+            materialIds: usarSoTecido ? [] : (m.ids || [String(materialVal)]),
+            materialReferenciaId: String(usarSoTecido ? 0 : (m.referenciaId || materialVal || "")),
             materialCorHex: corHex,
             materialCor: materialDetalhe,
             raridadeId: raridadeVal,
             raridadeNome,
             peso: `${cfg.peso} kg`,
             pesoNumero: cfg.peso,
-            bonusFisico: bFisico,
+            bonusFisico: bonusFisicoBase,
             bonusMagico: bMagico,
             danoResumo: cfg.categoria === 'arma' ? danoFinalTxt : '',
+            raridadeFormula: (cfg.categoria === 'arma') ? raridadeRolada.formulaEquipamento : raridadeRolada.formulaCa,
+            raridadeBonusEquipamento: bonusRaridadeEquipamento,
+            raridadeBonusCa: bonusRaridadeCa,
+            raridadeDetalhes: raridadeRolada.detalhes || '',
+            encantamentoBonusAplicado: extraDanoEncanto,
+            encantamentoBonusCa: extraCaEncanto,
+            encantamentoBonusResistencia: extraResistenciaEncanto,
+            encantamentoPontos: sel.encGrau.pontos,
+            encantamentoTipo: sel.encTipo.nome,
+            encantamentoElemento: elementoEncantamento ? elementoEncantamento.nome : '',
+            encantamentoVantagens: elementoEncantamento ? elementoEncantamento.vantagens.slice() : [],
+            encantamentoDesvantagens: elementoEncantamento ? elementoEncantamento.desvantagens.slice() : [],
             fonte: "Calculadora RPG",
             artPath: iconArt
         };

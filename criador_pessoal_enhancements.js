@@ -2,6 +2,7 @@
     "use strict";
 
     const DRAFT_KEY = "INDOMITUS_FICHA_DRAFT_V2";
+    const inventoryCore = window.INDOMITUS_INVENTORY || {};
     const QUICK_ACTION_TYPES = [
         { value: "dano", label: "Dano" },
         { value: "cura", label: "Cura" },
@@ -9,7 +10,7 @@
         { value: "dano_efeito", label: "Dano + efeito" },
         { value: "cura_efeito", label: "Cura + efeito" }
     ];
-    const SLOT_LABELS = {
+    const SLOT_LABELS = inventoryCore.SLOT_LABELS || {
         armadura: "Armadura",
         mao_direita: "Mao direita",
         mao_esquerda: "Mao esquerda",
@@ -18,21 +19,22 @@
         adorno_3: "Adorno 3",
         nenhum: "Sem slot"
     };
-    const EQUIP_GROUP_LABELS = {
+    const EQUIP_GROUP_LABELS = inventoryCore.EQUIP_GROUP_LABELS || {
         armadura: "Armadura",
         mao: "Mao",
         adorno: "Adorno",
         nenhum: "Nao equipavel"
     };
-    const HAND_MODE_LABELS = {
+    const HAND_MODE_LABELS = inventoryCore.HAND_MODE_LABELS || {
         one_hand: "1 mao",
         two_hands: "2 maos",
         flex: "1 ou 2 maos",
         none: "Sem uso nas maos"
     };
-    const HAND_SLOTS = ["mao_direita", "mao_esquerda"];
-    const ADORN_SLOTS = ["adorno_1", "adorno_2", "adorno_3"];
-    const EQUIPMENT_SLOT_ORDER = ["armadura", ...HAND_SLOTS, ...ADORN_SLOTS];
+    const BACKPACK_CONFIGS = inventoryCore.BACKPACK_CONFIGS || {};
+    const HAND_SLOTS = Array.isArray(inventoryCore.HAND_SLOTS) ? inventoryCore.HAND_SLOTS.slice() : ["mao_direita", "mao_esquerda"];
+    const ADORN_SLOTS = Array.isArray(inventoryCore.ADORN_SLOTS) ? inventoryCore.ADORN_SLOTS.slice() : ["adorno_1", "adorno_2", "adorno_3"];
+    const EQUIPMENT_SLOT_ORDER = Array.isArray(inventoryCore.EQUIPMENT_SLOT_ORDER) ? inventoryCore.EQUIPMENT_SLOT_ORDER.slice() : ["armadura", ...HAND_SLOTS, ...ADORN_SLOTS];
     const DEFAULT_FILTERS = {
         abilities: { search: "", tier: "todos", unlockedOnly: false, selectedOnly: false },
         passives: { search: "", selected: "todas", requirement: "todas", availability: "todas" },
@@ -58,6 +60,7 @@
 
     const original = {};
     let autosaveTimer = null;
+    const storage = window.INDOMITUS_STORAGE || {};
 
     function clone(value) {
         return JSON.parse(JSON.stringify(value));
@@ -76,32 +79,82 @@
         return Number.isFinite(valor) ? Number(valor.toFixed(2)) : 0;
     }
 
-    function normalizarInteiro(valor, fallback) {
-        const numero = parseInt(valor, 10);
-        return Number.isFinite(numero) ? numero : (parseInt(fallback, 10) || 0);
+    function normalizarInteiro(valor, fallback) { return typeof inventoryCore.normalizarInteiro === "function" ? inventoryCore.normalizarInteiro(valor, fallback) : (() => { const numero = parseInt(valor, 10); return Number.isFinite(numero) ? numero : (parseInt(fallback, 10) || 0); })(); }
+
+    function parsePesoNumero(valor) { return typeof inventoryCore.parsePesoNumero === "function" ? inventoryCore.parsePesoNumero(valor) : 0; }
+
+    function obterConfigMochila(valor) { return typeof inventoryCore.obterConfigMochila === "function" ? inventoryCore.obterConfigMochila(valor) : (BACKPACK_CONFIGS[normalizarTexto(valor)] || BACKPACK_CONFIGS.sem_mochila); }
+
+    function formatarNumeroCompacto(valor) {
+        const numero = Number(valor || 0);
+        if (!Number.isFinite(numero)) return "0";
+        if (typeof window.formatarValorFicha === "function") {
+            return window.formatarValorFicha(numero);
+        }
+        return String(arredondar(numero));
     }
 
-    function parsePesoNumero(valor) {
-        if (typeof valor === "number" && Number.isFinite(valor)) return valor;
-        const match = String(valor || "").replace(",", ".").match(/-?\d+(\.\d+)?/);
-        return match ? Number(match[0]) : 0;
+    function formatarPeso(valor) {
+        return `${formatarNumeroCompacto(arredondar(valor))} kg`;
     }
 
-    function normalizarSlotTipo(valor) {
-        const slot = normalizarTexto(valor);
-        return Object.prototype.hasOwnProperty.call(SLOT_LABELS, slot) ? slot : "nenhum";
+    function calcularDadosTransporte(ficha, itens) {
+        const mochilaTipo = String(document.getElementById("mochilaTipo")?.value || ficha?.mochilaTipo || "sem_mochila");
+        if (typeof inventoryCore.calcularDadosTransporte === "function") {
+            return inventoryCore.calcularDadosTransporte(ficha, itens, mochilaTipo);
+        }
+        const lista = Array.isArray(itens) ? itens : [];
+        const mochila = obterConfigMochila(mochilaTipo);
+        const bonusForca = Number(ficha && ficha.fFim || 0);
+        const crBase = Math.max(0, 10 + (bonusForca * 2));
+        const capacidadeTotal = arredondar(crBase * mochila.multiplier);
+        const pesoCarregado = arredondar(lista.reduce((acc, item) => acc + parsePesoNumero(item && item.pesoNumero != null ? item.pesoNumero : item && item.peso), 0));
+        const restante = arredondar(capacidadeTotal - pesoCarregado);
+        const acimaDoLimite = pesoCarregado > capacidadeTotal;
+        return {
+            mochilaTipo,
+            mochilaNome: mochila.nome,
+            multiplier: mochila.multiplier,
+            crBase,
+            capacidadeTotal,
+            pesoCarregado,
+            restante,
+            excesso: acimaDoLimite ? arredondar(pesoCarregado - capacidadeTotal) : 0,
+            acimaDoLimite,
+            movePenaltyPct: mochila.movePenaltyPct,
+            stealthPenaltyPct: mochila.stealthPenaltyPct,
+            retrieveCost: mochila.retrieveCost
+        };
     }
 
-    function normalizarEquipGroup(valor) {
-        const group = normalizarTexto(valor);
-        return Object.prototype.hasOwnProperty.call(EQUIP_GROUP_LABELS, group) ? group : "nenhum";
+    function renderResumoTransporteHtml(transporte) {
+        if (!transporte) return "";
+        const statusTexto = transporte.acimaDoLimite
+            ? `Acima do limite em ${formatarPeso(transporte.excesso)}`
+            : `Dentro do limite. Espaço restante: ${formatarPeso(Math.max(0, transporte.restante))}`;
+        const penalidadeMov = transporte.movePenaltyPct ? `-${transporte.movePenaltyPct}%` : "Sem penalidade";
+        const penalidadeFurt = transporte.stealthPenaltyPct ? `-${transporte.stealthPenaltyPct}%` : "Sem penalidade";
+        return `
+            <div class="cp-transport-card ${transporte.acimaDoLimite ? "is-overweight" : ""}">
+                <div class="cp-transport-grid">
+                    <div class="cp-transport-cell"><strong>CR base</strong><small>${formatarNumeroCompacto(transporte.crBase)}</small></div>
+                    <div class="cp-transport-cell"><strong>Mochila</strong><small>${esc(transporte.mochilaNome)}</small></div>
+                    <div class="cp-transport-cell"><strong>Capacidade total</strong><small>${formatarPeso(transporte.capacidadeTotal)}</small></div>
+                    <div class="cp-transport-cell"><strong>Peso carregado</strong><small>${formatarPeso(transporte.pesoCarregado)}</small></div>
+                    <div class="cp-transport-cell"><strong>Movimento</strong><small>${esc(penalidadeMov)}</small></div>
+                    <div class="cp-transport-cell"><strong>Furtividade</strong><small>${esc(penalidadeFurt)}</small></div>
+                    <div class="cp-transport-cell"><strong>Retirar item</strong><small>${esc(transporte.retrieveCost)}</small></div>
+                    <div class="cp-transport-cell"><strong>Status</strong><small>${esc(statusTexto)}</small></div>
+                </div>
+            </div>
+        `;
     }
 
-    function normalizarHandMode(valor) {
-        const mode = normalizarTexto(valor);
-        if (mode === "one_hand" || mode === "two_hands" || mode === "flex" || mode === "none") return mode;
-        return "none";
-    }
+    function normalizarSlotTipo(valor) { return typeof inventoryCore.normalizarSlotTipo === "function" ? inventoryCore.normalizarSlotTipo(valor) : "nenhum"; }
+
+    function normalizarEquipGroup(valor) { return typeof inventoryCore.normalizarEquipGroup === "function" ? inventoryCore.normalizarEquipGroup(valor) : "nenhum"; }
+
+    function normalizarHandMode(valor) { return typeof inventoryCore.normalizarHandMode === "function" ? inventoryCore.normalizarHandMode(valor) : "none"; }
 
     function obterEstadoSerializado() {
         return {
@@ -208,9 +261,13 @@
     }
 
     function salvarRascunhoLocal() {
-        if (!window.localStorage || typeof window.coletarDadosFicha !== "function") return;
+        if (typeof window.coletarDadosFicha !== "function") return;
+        const payload = window.coletarDadosFicha();
+        if (typeof storage.writeJson === "function") {
+            storage.writeJson(DRAFT_KEY, payload);
+            return;
+        }
         try {
-            const payload = window.coletarDadosFicha();
             window.localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
         } catch (_error) {
             // ignora falhas de armazenamento local
@@ -218,11 +275,13 @@
     }
 
     function carregarRascunhoLocal() {
-        if (!window.localStorage) return false;
         try {
-            const bruto = window.localStorage.getItem(DRAFT_KEY);
-            if (!bruto) return false;
-            const payload = JSON.parse(bruto);
+            const payload = typeof storage.readJson === "function"
+                ? storage.readJson(DRAFT_KEY, null)
+                : (() => {
+                    const bruto = window.localStorage.getItem(DRAFT_KEY);
+                    return bruto ? JSON.parse(bruto) : null;
+                })();
             if (!payload || typeof payload !== "object" || !payload.dados) return false;
             window.aplicarDadosFicha(payload.dados);
             if (typeof window.atualizarStatusSave === "function") {
@@ -622,6 +681,11 @@
                 .cp-quick-field.full{grid-column:1 / -1}
                 .cp-status-warning{color:#ffd68c}
                 .cp-history-list{display:grid;gap:10px;margin-top:12px}
+                .cp-transport-card{margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(241,216,166,.14);background:rgba(255,255,255,.035)}
+                .cp-transport-card.is-overweight{border-color:rgba(255,118,118,.42);box-shadow:0 0 0 1px rgba(255,118,118,.15) inset}
+                .cp-transport-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+                .cp-transport-cell strong{display:block;margin-bottom:6px}
+                .cp-transport-cell small{display:block;color:var(--text-muted)}
             </style>
         `;
     }
@@ -812,6 +876,8 @@
         if (!painel) return;
         const itens = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
         const bonusCa = typeof window.obterBonusCaInventario === "function" ? window.obterBonusCaInventario() : 0;
+        const ficha = typeof window.obterDadosFichaBase === "function" ? window.obterDadosFichaBase(true) : null;
+        const transporte = calcularDadosTransporte(ficha, itens);
         const filtro = state.filters.inventory;
         const raridades = obterRaridadesDisponiveis(itens);
         const filtrados = itens.filter((item) => {
@@ -833,7 +899,7 @@
         const equipadosFiltrados = filtrados.filter((item) => item.equipado);
         const guardadosFiltrados = filtrados.filter((item) => !item.equipado);
 
-        painel.innerHTML = `${criarControlesFiltros()}<h4 class="codex-title">Itens do inventario</h4><p class="codex-note">A defesa soma a CA de qualquer item equipado. Use os slots abaixo para ver o que esta em uso.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA dos itens equipados: +${window.formatarValorFicha ? window.formatarValorFicha(bonusCa) : bonusCa}</span><span class="tag-pill">Comparando: ${state.compare.length}/2</span></div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small>${item ? `<small>${esc(item.raridadeNome || "Sem raridade")} | ${esc(item.materialNome || "Sem material")}</small>` : ""}</div>`).join("")}</div><div class="cp-filter-grid"><div class="cp-filter-box"><label>Buscar item</label><input type="text" value="${esc(filtro.search)}" oninput="setFiltro('inventory','search',this.value)" placeholder="Nome, material ou descricao"></div><div class="cp-filter-box"><label>Grupo</label><select onchange="setFiltro('inventory','type',this.value)"><option value="todos" ${filtro.type === "todos" ? "selected" : ""}>Todos</option><option value="armadura" ${filtro.type === "armadura" ? "selected" : ""}>Armadura</option><option value="mao" ${filtro.type === "mao" ? "selected" : ""}>Mao</option><option value="adorno" ${filtro.type === "adorno" ? "selected" : ""}>Adorno</option><option value="item" ${filtro.type === "item" ? "selected" : ""}>Item geral</option><option value="consumivel" ${filtro.type === "consumivel" ? "selected" : ""}>Consumivel</option><option value="nao_equipavel" ${filtro.type === "nao_equipavel" ? "selected" : ""}>Nao equipavel</option></select></div><div class="cp-filter-box"><label>Raridade</label><select onchange="setFiltro('inventory','rarity',this.value)"><option value="todas" ${filtro.rarity === "todas" ? "selected" : ""}>Todas</option>${raridades.map((nome) => `<option value="${esc(nome)}" ${filtro.rarity === nome ? "selected" : ""}>${esc(nome)}</option>`).join("")}</select></div><div class="cp-filter-box"><label>Status</label><select onchange="setFiltro('inventory','status',this.value)"><option value="todos" ${filtro.status === "todos" ? "selected" : ""}>Todos</option><option value="equipado" ${filtro.status === "equipado" ? "selected" : ""}>Equipado</option><option value="guardado" ${filtro.status === "guardado" ? "selected" : ""}>Guardado</option></select></div></div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(equipadosFiltrados, "Nenhum item equipado com esse filtro.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(guardadosFiltrados, "Nenhum item guardado com esse filtro.")}</div>`;
+        painel.innerHTML = `${criarControlesFiltros()}<h4 class="codex-title">Itens do inventario</h4><p class="codex-note">A defesa soma a CA de qualquer item equipado. O transporte usa CR = 10 + (bonus final de Forca x 2) e depois aplica a mochila escolhida.</p><div class="tag-list"><span class="tag-pill">Itens: ${itens.length}</span><span class="tag-pill">CA dos itens equipados: +${window.formatarValorFicha ? window.formatarValorFicha(bonusCa) : bonusCa}</span><span class="tag-pill">Peso carregado: ${formatarPeso(transporte.pesoCarregado)}</span><span class="tag-pill">Comparando: ${state.compare.length}/2</span></div>${renderResumoTransporteHtml(transporte)}<div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small>${item ? `<small>${esc(item.raridadeNome || "Sem raridade")} | ${esc(item.materialNome || "Sem material")}</small>` : ""}</div>`).join("")}</div><div class="cp-filter-grid"><div class="cp-filter-box"><label>Buscar item</label><input type="text" value="${esc(filtro.search)}" oninput="setFiltro('inventory','search',this.value)" placeholder="Nome, material ou descricao"></div><div class="cp-filter-box"><label>Grupo</label><select onchange="setFiltro('inventory','type',this.value)"><option value="todos" ${filtro.type === "todos" ? "selected" : ""}>Todos</option><option value="armadura" ${filtro.type === "armadura" ? "selected" : ""}>Armadura</option><option value="mao" ${filtro.type === "mao" ? "selected" : ""}>Mao</option><option value="adorno" ${filtro.type === "adorno" ? "selected" : ""}>Adorno</option><option value="item" ${filtro.type === "item" ? "selected" : ""}>Item geral</option><option value="consumivel" ${filtro.type === "consumivel" ? "selected" : ""}>Consumivel</option><option value="nao_equipavel" ${filtro.type === "nao_equipavel" ? "selected" : ""}>Nao equipavel</option></select></div><div class="cp-filter-box"><label>Raridade</label><select onchange="setFiltro('inventory','rarity',this.value)"><option value="todas" ${filtro.rarity === "todas" ? "selected" : ""}>Todas</option>${raridades.map((nome) => `<option value="${esc(nome)}" ${filtro.rarity === nome ? "selected" : ""}>${esc(nome)}</option>`).join("")}</select></div><div class="cp-filter-box"><label>Status</label><select onchange="setFiltro('inventory','status',this.value)"><option value="todos" ${filtro.status === "todos" ? "selected" : ""}>Todos</option><option value="equipado" ${filtro.status === "equipado" ? "selected" : ""}>Equipado</option><option value="guardado" ${filtro.status === "guardado" ? "selected" : ""}>Guardado</option></select></div></div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(equipadosFiltrados, "Nenhum item equipado com esse filtro.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(guardadosFiltrados, "Nenhum item guardado com esse filtro.")}</div>`;
     }
 
     function renderAcoesRapidasResultado() {
@@ -864,10 +930,12 @@
         const panel = [...resultado.querySelectorAll(".resource-panel")].find((item) => normalizarTexto(item.querySelector("h4")?.textContent) === "inventario");
         if (!panel) return;
         const itens = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
+        const ficha = typeof window.obterDadosFichaBase === "function" ? window.obterDadosFichaBase(true) : null;
+        const transporte = calcularDadosTransporte(ficha, itens);
         const equipados = EQUIPMENT_SLOT_ORDER.map((slot) => ({ slot, item: itens.find((item) => Array.isArray(item.equippedSlots) && item.equippedSlots.includes(slot)) || null }));
         const itensEquipados = itens.filter((item) => item.equipado);
         const itensGuardados = itens.filter((item) => !item.equipado);
-        panel.innerHTML = `<h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Inventario</h4><textarea id="inventarioTextoCard" class="notes-area" placeholder="Descreva o inventario dessa ficha..." oninput="sincronizarInventarioTexto(this.value, 'card')">${esc(document.getElementById("inventarioTexto")?.value || "")}</textarea><div class="notes-help">Os itens equipados ficam separados por slot e o restante continua guardado logo abaixo.</div><div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small></div>`).join("")}</div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(itensEquipados, "Nenhum item equipado ainda.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(itensGuardados, "Nenhum item guardado ainda.")}</div>`;
+        panel.innerHTML = `<h4 style="color:var(--primary); margin:0 0 14px 0; border-bottom:1px solid #444; padding-bottom:5px;">Inventario</h4><textarea id="inventarioTextoCard" class="notes-area" placeholder="Descreva o inventario dessa ficha..." oninput="sincronizarInventarioTexto(this.value, 'card')">${esc(document.getElementById("inventarioTexto")?.value || "")}</textarea><div class="notes-help">Os itens equipados ficam separados por slot e o restante continua guardado logo abaixo.</div>${renderResumoTransporteHtml(transporte)}<div class="cp-slot-grid">${equipados.map(({ slot, item }) => `<div class="cp-slot-card"><strong>${SLOT_LABELS[slot]}</strong><small>${item ? esc(item.nome) : '<span class="cp-slot-empty">Nenhum item equipado</span>'}</small></div>`).join("")}</div>${renderPainelComparacaoHtml(itens)}<div style="margin-top:14px;"><h4 class="codex-title">Equipado</h4>${renderListaInventarioHtml(itensEquipados, "Nenhum item equipado ainda.")}</div><div style="margin-top:14px;"><h4 class="codex-title">Inventario guardado</h4>${renderListaInventarioHtml(itensGuardados, "Nenhum item guardado ainda.")}</div>`;
     }
 
     function limparHistoricoCombate() {
@@ -1019,7 +1087,9 @@
             const caBaseManual = Math.max(0, normalizarInteiro(ficha.caBase, 2));
             const caAtributos = Math.floor((Number(ficha.aFim) || 0) / 10) + Math.floor((Number(ficha.rFim) || 0) / 10);
             const caNivel = Math.floor((Number(ficha.nivel) || 0) / 5);
+            const itensInventario = typeof window.obterInventarioItens === "function" ? window.obterInventarioItens() : [];
             const caEquipamentos = window.obterBonusCaInventario();
+            const transporte = calcularDadosTransporte(ficha, itensInventario);
             ficha.caBase = caBaseManual;
             ficha.caBaseManual = caBaseManual;
             ficha.caAtributos = caAtributos;
@@ -1027,6 +1097,17 @@
             ficha.caEquipamentos = caEquipamentos;
             ficha.caInventario = caEquipamentos;
             ficha.caTotal = caBaseManual + caAtributos + caNivel + caEquipamentos;
+            ficha.mochilaTipo = transporte.mochilaTipo;
+            ficha.mochilaNome = transporte.mochilaNome;
+            ficha.crBase = transporte.crBase;
+            ficha.capacidadeCarga = transporte.capacidadeTotal;
+            ficha.pesoCarregado = transporte.pesoCarregado;
+            ficha.cargaRestante = transporte.restante;
+            ficha.cargaExcedente = transporte.excesso;
+            ficha.cargaAcimaDoLimite = transporte.acimaDoLimite;
+            ficha.penalidadeMovimento = transporte.movePenaltyPct;
+            ficha.penalidadeFurtividade = transporte.stealthPenaltyPct;
+            ficha.acaoRetirarItem = transporte.retrieveCost;
             return ficha;
         };
 
@@ -1058,12 +1139,14 @@
             const groupEl = document.getElementById("inventarioManualEquipGroup");
             const handModeEl = document.getElementById("inventarioManualHandMode");
             const caEl = document.getElementById("inventarioManualCa");
+            const pesoEl = document.getElementById("inventarioManualPeso");
             const descricaoEl = document.getElementById("inventarioManualDescricao");
             const nome = String(nomeEl && nomeEl.value || "").trim();
             const descricao = String(descricaoEl && descricaoEl.value || "").trim();
             const tipo = INVENTORY_TYPE_LABELS[tipoEl?.value] ? tipoEl.value : "item";
             const categoria = tipo === "armadura" ? "armadura" : ((tipo === "equipamento") ? "arma" : "item");
             const caBonus = normalizarInteiro(caEl && caEl.value, 0);
+            const pesoNumero = Math.max(0, arredondar(parsePesoNumero(pesoEl && pesoEl.value)));
             if (!nome && !descricao) {
                 alert("Preencha pelo menos o nome ou a descricao do item manual.");
                 return;
@@ -1096,8 +1179,8 @@
                 materialReferenciaId: "",
                 raridadeId: "",
                 raridadeNome: "",
-                peso: "",
-                pesoNumero: 0,
+                peso: pesoNumero > 0 ? `${formatarNumeroCompacto(pesoNumero)} kg` : "",
+                pesoNumero,
                 danoResumo: "",
                 bonusFisico: 0,
                 bonusMagico: 0,
@@ -1109,6 +1192,7 @@
             if (nomeEl) nomeEl.value = "";
             if (descricaoEl) descricaoEl.value = "";
             if (caEl) caEl.value = "0";
+            if (pesoEl) pesoEl.value = "0";
             if (tipoEl) tipoEl.value = "item";
             if (groupEl) groupEl.value = "auto";
             if (handModeEl) handModeEl.value = "auto";
@@ -1216,13 +1300,18 @@
         if (!carregarRascunhoLocal() && typeof window.renderPainelsDeClasse === "function") {
             window.renderPainelsDeClasse();
         }
+        if (typeof window.renderPainelInventario === "function") {
+            window.renderPainelInventario();
+        }
         if (document.getElementById("resultado")?.innerHTML.trim()) {
             window.calcularFicha(true);
         }
     }
 
     function limparRascunhoLocalFicha() {
-        if (window.localStorage) {
+        if (typeof storage.remove === "function") {
+            storage.remove(DRAFT_KEY);
+        } else if (window.localStorage) {
             window.localStorage.removeItem(DRAFT_KEY);
         }
         window.location.reload();

@@ -1,15 +1,20 @@
 (function () {
     const STORAGE_KEY = "INDOMITUS_ROLAGENS_DRAFT_V1";
+    const storage = window.INDOMITUS_STORAGE || {};
     let restoring = false;
     let timer = null;
 
     function readDraft() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
-        } catch (_error) {
-            return null;
-        }
+        return typeof storage.readJson === "function"
+            ? storage.readJson(STORAGE_KEY, null)
+            : (() => {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (_error) {
+                    return null;
+                }
+            })();
     }
 
     function collectModifiers() {
@@ -37,7 +42,11 @@
             sidesMode: getActiveSides(),
             modifiers: collectModifiers()
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        if (typeof storage.writeJson === "function") {
+            storage.writeJson(STORAGE_KEY, payload);
+        } else {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        }
     }
 
     function scheduleWriteDraft() {
@@ -75,7 +84,11 @@
     }
 
     function clearDraft() {
-        localStorage.removeItem(STORAGE_KEY);
+        if (typeof storage.remove === "function") {
+            storage.remove(STORAGE_KEY);
+        } else {
+            localStorage.removeItem(STORAGE_KEY);
+        }
         if (typeof resetForm === "function") {
             resetForm();
         }

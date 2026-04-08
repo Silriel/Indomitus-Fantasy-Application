@@ -855,6 +855,8 @@
     </main>
 
 <script src="racas_estruturadas.js"></script>
+<script src="shared/ui/ui_core.js"></script>
+<script src="shared/rules/race_core.js"></script>
 <script>
     const racialModifiers = {
         "1": { "nome": "Altos Elfos", "modificadores": { "força": 0, "inteligência": 3, "forçaVontade": 0, "agilidade": 1, "resistência": 0, "carisma": 0 }, "passivas": ["Resistencia Magica: vantagem em rolagem de resistência magia."] },
@@ -919,102 +921,25 @@
         "60": { "nome": "Vampyr", "modificadores": { "força": 6, "inteligência": 2, "forçaVontade": 2, "agilidade": 6, "resistência": 6, "carisma": 1 }, "passivas": ["Sangue Roubado Ancestral", "Controle mental servos."] },
         "61": { "nome": "Vampyr’rein", "modificadores": { "força": 6, "inteligência": 7, "forçaVontade": 4, "agilidade": 5, "resistência": 5, "carisma": 5 }, "passivas": ["Status absolutos por drenagem", "Fragilidade solar extrema."] }
     };
-    const HYBRID_RACE_VALUE = "hybrid";
-    const RACE_ATTR_KEYS = ["força", "inteligência", "forçaVontade", "agilidade", "resistência", "carisma"];
+    const raceCore = window.INDOMITUS_RACE_CORE;
+    const HYBRID_RACE_VALUE = raceCore.HYBRID_RACE_VALUE;
+    const RACE_ATTR_KEYS = raceCore.ATTR_KEYS;
 
-    function escapeHtml(text) {
-        return String(text || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-    }
+    function escapeHtml(text) { return raceCore.escapeHtml(text); }
 
-    function createEmptyRaceData(name) {
-        return {
-            nome: name || "Raca sem dados",
-            modificadores: {
-                "força": 0,
-                "inteligência": 0,
-                "forçaVontade": 0,
-                "agilidade": 0,
-                "resistência": 0,
-                "carisma": 0
-            },
-            passivas: []
-        };
-    }
+    function createEmptyRaceData(name) { return raceCore.createEmptyRaceData(name); }
 
-    function getRaceModifierStepAuto(level) {
-        const safeLevel = Math.max(1, parseInt(level, 10) || 1);
-        return Math.floor((safeLevel - 1) / 20) + 1;
-    }
+    function getRaceModifierStepAuto(level) { return raceCore.getRaceModifierStep(level); }
 
-    function getProgressiveRaceModifiersAuto(baseModifiers, level) {
-        const step = getRaceModifierStepAuto(level);
-        const result = {};
-        RACE_ATTR_KEYS.forEach((attr) => {
-            result[attr] = Number(baseModifiers?.[attr] || 0) * step;
-        });
-        return result;
-    }
+    function getProgressiveRaceModifiersAuto(baseModifiers, level) { return raceCore.getProgressiveRaceModifiers(baseModifiers, level); }
 
-    function summarizeRaceModifiersAuto(modifiers) {
-        const labels = {
-            "força": "For",
-            "inteligência": "Int",
-            "forçaVontade": "Von",
-            "agilidade": "Agi",
-            "resistência": "Res",
-            "carisma": "Car"
-        };
-        const parts = RACE_ATTR_KEYS
-            .map((attr) => {
-                const value = Number(modifiers?.[attr] || 0);
-                return value ? `${labels[attr] || attr} ${value > 0 ? "+" : ""}${value}` : "";
-            })
-            .filter(Boolean);
-        return parts.length ? parts.join(" | ") : "Sem bonus racial numerico";
-    }
+    function summarizeRaceModifiersAuto(modifiers) { return raceCore.summarizeRaceModifiers(modifiers); }
 
-    function getRaceOptionsAuto() {
-        const select = document.getElementById("race");
-        if (!select) return [];
-        return [...select.options]
-            .filter((option) => option.value && option.value !== HYBRID_RACE_VALUE)
-            .map((option) => ({
-                id: String(option.value),
-                nome: String(option.textContent || option.innerText || option.value).trim()
-            }));
-    }
+    function getRaceOptionsAuto() { return raceCore.getRaceOptions("race"); }
 
-    function getRaceDataAuto(raceId, variantKey) {
-        const option = getRaceOptionsAuto().find((item) => item.id === String(raceId));
-        const empty = createEmptyRaceData(option ? option.nome : `Raca ${raceId}`);
-        const base = racialModifiers[String(raceId)];
-        if (typeof window.resolveIndomitusRaceData === "function") {
-            return window.resolveIndomitusRaceData(String(raceId), base, variantKey);
-        }
-        if (!base || typeof base !== "object") return empty;
-        return {
-            nome: base.nome || empty.nome,
-            modificadores: {
-                ...empty.modificadores,
-                ...(base.modificadores || {})
-            },
-            passivas: Array.isArray(base.passivas) ? base.passivas.slice() : [],
-            passivaRacial: Array.isArray(base.passivas) ? base.passivas.join(" | ") : "",
-            vantagensPadrao: [],
-            vantagensSituacionais: [],
-            desvantagens: []
-        };
-    }
+    function getRaceDataAuto(raceId, variantKey) { return raceCore.getRaceData(raceId, racialModifiers, "race", variantKey); }
 
-    function getRaceVariantsAuto(raceId) {
-        if (typeof window.getIndomitusRaceVariants === "function") {
-            return window.getIndomitusRaceVariants(String(raceId), racialModifiers[String(raceId)]);
-        }
-        return [];
-    }
+    function getRaceVariantsAuto(raceId) { return raceCore.getRaceVariants(raceId, racialModifiers); }
 
     function updateRaceVariantAuto() {
         const raceSelect = document.getElementById("race");
@@ -1043,14 +968,7 @@
         variantSelect.value = currentValue;
     }
 
-    function getAnnulledDisadvantageIdsAuto(raceData) {
-        return new Set(
-            [...(raceData?.vantagensPadrao || []), ...(raceData?.vantagensSituacionais || [])]
-                .flatMap((item) => Array.isArray(item.annuls) ? item.annuls : [])
-                .map((item) => String(item || ""))
-                .filter(Boolean)
-        );
-    }
+    function getAnnulledDisadvantageIdsAuto(raceData) { return raceCore.getAnnulledDisadvantageIds(raceData); }
 
     function renderRaceListAuto(itens, vazioTexto, anuladas) {
         if (!Array.isArray(itens) || !itens.length) {
@@ -1094,18 +1012,7 @@
         `;
     }
 
-    function normalizeHybridIdsAuto(raceIds) {
-        const validIds = new Set(getRaceOptionsAuto().map((item) => item.id));
-        const seen = new Set();
-        return (Array.isArray(raceIds) ? raceIds : [])
-            .map((item) => String(item || ""))
-            .filter((item) => item && item !== HYBRID_RACE_VALUE && validIds.has(item))
-            .filter((item) => {
-                if (seen.has(item)) return false;
-                seen.add(item);
-                return true;
-            });
-    }
+    function normalizeHybridIdsAuto(raceIds) { return raceCore.normalizeHybridIds(raceIds, "race"); }
 
     function readHybridIdsAuto() {
         const hidden = document.getElementById("hybridRaceIdsAuto");
@@ -1125,43 +1032,9 @@
         return ids;
     }
 
-    function getHybridPassivesAuto(raceIds) {
-        return normalizeHybridIdsAuto(raceIds).flatMap((raceId) => {
-            const raceData = getRaceDataAuto(raceId);
-            return (raceData.passivas || []).map((passiva, index) => ({
-                key: `${raceId}::${index}`,
-                raceId,
-                raceName: raceData.nome,
-                passiva: String(passiva || "")
-            }));
-        });
-    }
+    function getHybridPassivesAuto(raceIds) { return raceCore.getHybridPassives(raceIds, racialModifiers, "race"); }
 
-    function normalizeHybridPassiveKeysAuto(passiveKeys, raceIds) {
-        const allowed = new Set(getHybridPassivesAuto(raceIds).map((item) => item.key));
-        let values = passiveKeys;
-        if (typeof values === "string") {
-            const raw = values.trim();
-            if (!raw) {
-                values = [];
-            } else {
-                try {
-                    values = JSON.parse(raw);
-                } catch (_error) {
-                    values = [raw];
-                }
-            }
-        }
-        const seen = new Set();
-        return (Array.isArray(values) ? values : [values])
-            .map((item) => String(item || ""))
-            .filter((item) => item && allowed.has(item))
-            .filter((item) => {
-                if (seen.has(item)) return false;
-                seen.add(item);
-                return true;
-            });
-    }
+    function normalizeHybridPassiveKeysAuto(passiveKeys, raceIds) { return raceCore.normalizeHybridPassiveKeys(passiveKeys, raceIds, racialModifiers, "race"); }
 
     function readHybridPassiveKeysAuto(raceIds) {
         const hidden = document.getElementById("hybridPassiveKeysAuto");
@@ -1295,39 +1168,20 @@
             return null;
         }
 
-        const passivas = getHybridPassivesAuto(ids);
-        const passiveKeys = readHybridPassiveKeysAuto(ids);
-        const passivasEscolhidas = passivas.filter((item) => passiveKeys.includes(item.key));
-
-        const soma = createEmptyRaceData().modificadores;
-        const nomes = ids.map((raceId) => {
-            const raceData = getRaceDataAuto(raceId);
-            RACE_ATTR_KEYS.forEach((attr) => {
-                soma[attr] += Number(raceData.modificadores[attr] || 0);
-            });
-            return raceData.nome;
-        });
-        const modificadores = {};
-        RACE_ATTR_KEYS.forEach((attr) => {
-            modificadores[attr] = Math.floor(soma[attr] / ids.length);
-        });
-
-        const raceLabel = `Hibrido: ${nomes.join(" + ")}`;
+        const resolvedHybrid = raceCore.resolveHybridRaceData(
+            ids,
+            readHybridPassiveKeysAuto(ids),
+            racialModifiers,
+            "race",
+            document.getElementById("level")?.value || 1
+        );
         return {
             mode: "hybrid",
-            raceLabel,
+            raceLabel: resolvedHybrid.raceLabel,
             raceIds: ids,
-            passiveKeys,
+            passiveKeys: resolvedHybrid.selectedPassiveKeys,
             raceVariant: "",
-            raceData: {
-                nome: raceLabel,
-                modificadores,
-                passivas: passivasEscolhidas.map((item) => item.passiva),
-                passivaRacial: "",
-                vantagensPadrao: [],
-                vantagensSituacionais: [],
-                desvantagens: []
-            }
+            raceData: resolvedHybrid.raceData
         };
     }
 
